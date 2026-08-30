@@ -1,7 +1,8 @@
 # Security
 
-**Step:** 16 foundation + 18 hardening + 23 admin authentication shell  
-**Status:** Hosted schema is applied. This document describes the live authorization model plus the local admin sign-in shell. The Next.js app still does not use a service-role key.
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS
+
+**Status:** Hosted schema is applied. Admin sign-in and the Projects CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
 
 ---
 
@@ -72,6 +73,7 @@ RLS is **enabled and forced** on every application table.
 Public / authenticated SELECT policies:
 
 - `status = 'published'`
+- `project_sections`: also the parent `projects` row must be `published`
 - `credentials`: also `needs_verification = false`
 - `media_assets`: also `is_public = true`
 - `site_settings`: public-only website flags (`contact_form_enabled`, `site_indexable`); `USING (true)` is valid only while this invariant holds. Never store secrets, administrator data, or unpublished/internal settings in this table.
@@ -137,17 +139,30 @@ Aligned with `CONTENT_PRIVACY_CLASSIFICATION.md`:
 |---|---|
 | `/admin/login` | Password sign-in. Owners already signed in are redirected to `/admin`. |
 | `/admin` | Unauthenticated visitors redirect to login. Authenticated non-admins see access denied. Owners see the shell. |
+| `/admin/projects*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. |
 
 Authorization is `getUser()` then `rpc('is_admin')`. Fail closed if the helper errors.
+
+Projects mutations:
+
+- Allowlist fields only (no mass assignment)
+- Status and section track come from closed enums
+- Slugs must match `^[a-z0-9]+(?:-[a-z0-9]+)*$`
+- IDs must be UUIDs
+- Section writes require the section’s `project_id` to match the edited project
+- Public adapter functions filter `status = 'published'` in addition to RLS
+- After-save redirects use server-known UUIDs only
+
+The explicit content script `supabase/content/privai_guard_project.sql` is not a migration, is not auto-applied, and has not been applied to hosted Supabase.
 
 ---
 
 ## 11. What remains out of scope
 
-- Content CRUD
+- Experience, publications, credentials, and other CMS modules
 - Storage / uploads
 - Contact-form submission
-- Public content reads from Supabase
+- Switching public pages to Supabase before the seed is applied
 - User registration or password-reset UI
 - Role-management UI
 - Deploy

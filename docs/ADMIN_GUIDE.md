@@ -1,7 +1,8 @@
 # Admin Guide
 
-**Step:** 23 — Owner authentication and protected admin shell  
-**Status:** Authentication shell only. Content management is not implemented.
+**Step:** 26 — Projects CMS
+
+**Status:** Owner authentication plus the first content module (projects and project sections). Other CMS types are not implemented.
 
 This guide does not include passwords, user IDs, tokens, or other private identifiers.
 
@@ -12,71 +13,97 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | Route | Purpose |
 |---|---|
 | `/admin/login` | Owner sign-in. No registration. |
-| `/admin` | Protected administration shell |
+| `/admin` | Administration dashboard |
+| `/admin/projects` | List all project statuses |
+| `/admin/projects/new` | Create a project |
+| `/admin/projects/[id]` | Edit a project and its sections |
 
-Search engines are instructed not to index these routes (`robots.txt` and page-level `noindex`).
+Search engines are instructed not to index `/admin` routes.
 
 ---
 
 ## 2. No public signup
 
-There is no sign-up form, invite flow, or “create account” path in this application.
+There is no sign-up form, invite flow, or “create account” path.
 
-The only authorized administrator for the MVP is the Auth user that was provisioned in the Supabase dashboard and granted `role = owner` in `public.user_roles` through a trusted SQL-editor action.
+The only authorized administrator for the MVP is the Auth user provisioned in the Supabase dashboard and granted `role = owner` in `public.user_roles` through a trusted SQL-editor action.
 
 ---
 
 ## 3. Owner authorization model
 
-1. The visitor signs in with email and password through Supabase Auth.
-2. `/admin` validates the session on the server with `getUser()` (not `getSession()` alone).
-3. The page calls `public.is_admin()` over RPC. It does **not** query `public.user_roles` through the Data API.
-4. The shell renders only when `is_admin()` returns true.
+1. Sign in with email and password through Supabase Auth.
+2. Admin routes validate the session with `getUser()`.
+3. Routes and mutations call `public.is_admin()` over RPC. They do **not** query `public.user_roles`.
+4. Content renders or writes only when `is_admin()` returns true.
 
-| Visitor | `/admin` result |
+| Visitor | `/admin` and `/admin/projects*` |
 |---|---|
 | Not signed in | Redirect to `/admin/login` |
-| Signed in, not an admin | Access denied (no CMS) |
-| Signed-in owner / admin | Administration shell |
-
-Signing in does not grant privileges by itself. Authorization is the `user_roles` row plus `is_admin()`.
+| Signed in, not an admin | Access denied |
+| Signed-in owner / admin | Dashboard or Projects CMS |
 
 There is no role-management UI.
 
 ---
 
-## 4. Logout
+## 4. Projects CMS workflow
 
-Use **Log out** on the admin shell (or **Sign out** on the access-denied screen).
+1. Open **Projects** from the dashboard.
+2. Create a project or open an existing row.
+3. Edit name, slug, tagline, year, role, summary, limits, stack, featured flag, and sort order.
+4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
+5. Add, edit, reorder, or delete sections on the same project.
+6. Delete a project from its edit page after confirmation. Sections cascade with the project row.
 
-Sign-out clears the Supabase Auth session cookies and redirects to `/admin/login`. A later request to `/admin` must redirect to login again.
+The schema has no project-level career track, external URL, or SEO title/description. Career-track tagging lives on each section (`all`, `cybersecurity_grc`, `privacy_ai`).
 
 ---
 
-## 5. Troubleshooting authentication
+## 5. Draft / publish behavior
 
-Check these items without printing secrets:
+| Status | Admin | Public adapter | Current public pages |
+|---|---|---|---|
+| `draft` | Visible | Hidden | Still served from `src/content/` |
+| `published` | Visible | Eligible | Still served from `src/content/` |
+| `archived` | Visible | Hidden | Still served from `src/content/` |
+
+Public pages are **not** switched to Supabase in this step. After the reviewed seed is applied, switch `/projects` and `/projects/privai-guard` to `getPublishedProjects()` / `getPublishedProjectBySlug()`.
+
+---
+
+## 6. Project sections
+
+- Heading, body, track, status, and sort order
+- Move up / move down (only among sections of that project)
+- Delete requires an explicit confirmation
+- A section update or delete is rejected unless the section’s `project_id` matches the project being edited
+
+---
+
+## 7. Logout
+
+Use **Log out**. The session cookies are cleared and the browser returns to `/admin/login`.
+
+---
+
+## 8. Troubleshooting authentication
 
 1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
-2. The hosted project has the initial schema, including `public.is_admin()`.
-3. The owner Auth user exists and has exactly one `user_roles` row with `role = owner`.
-4. Invalid credentials always show a generic error. That is intentional and does not confirm whether an email exists.
-5. If sign-in succeeds but `/admin` shows access denied, the Auth user is missing an admin role row. Do not add that row through the public API.
-6. If an already authorized owner opens `/admin/login`, they are redirected to `/admin`.
-7. After logout, `/admin` must not render the shell.
-
-Do not put a service-role key in the Next.js app to “fix” authorization.
+2. The hosted project has `public.is_admin()` and the owner `user_roles` row.
+3. Invalid credentials show a generic error.
+4. Do not add a service-role key to this app.
 
 ---
 
-## 6. Future CMS scope
+## 9. Proposed content script
 
-Not in this phase:
+`supabase/content/privai_guard_project.sql` inserts the approved public PrivAI Guard project and seven sections if they are absent.
 
-- Profile, experience, project, publication, credential, media, resume, message, or settings editors
-- File uploads or Storage
-- Public-site content reads from Supabase
-- Contact-form submission
-- User registration, password reset, or role management
+It is not a schema migration and is not run by `supabase db push`, `supabase start`, or `supabase db reset`. It has not been applied to hosted Supabase. Apply it only in a later explicitly authorized content step. It contains no private-source material.
 
-Those features must keep using server-side `is_admin()` checks and the existing RLS / grants model.
+---
+
+## 10. Still out of scope
+
+Experience, publications, credentials, media/Storage, resume uploads, contact-form submission, messages inbox, site settings, registration, password reset, role management, and deploy.
