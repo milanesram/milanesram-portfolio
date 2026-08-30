@@ -73,6 +73,12 @@ export function AdminChrome({ email, title, children }: AdminChromeProps) {
               Skills
             </Link>
             <Link
+              href="/admin/settings"
+              className="text-sm font-medium text-ink-soft hover:text-ink"
+            >
+              Settings
+            </Link>
+            <Link
               href="/"
               className="text-sm font-medium text-ink-soft hover:text-ink"
             >

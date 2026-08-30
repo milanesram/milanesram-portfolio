@@ -1,8 +1,8 @@
 # Security
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS
 
-**Status:** Hosted schema is applied. Admin sign-in and the Projects, Experience, Education, Certifications, Training, and License CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
+**Status:** Hosted schema is applied. Admin sign-in and the Projects, Experience, Education, Certifications, Training, License, Skills, and Settings CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
 
 ---
 
@@ -77,6 +77,7 @@ Public / authenticated SELECT policies:
 - `experience_items`: also the parent `experiences` row must be `published`
 - `credentials`: also `needs_verification = false`
 - `media_assets`: also `is_public = true`
+- `site_profile`: public SELECT when `status = 'published'`
 - `site_settings`: public-only website flags (`contact_form_enabled`, `site_indexable`); `USING (true)` is valid only while this invariant holds. Never store secrets, administrator data, or unpublished/internal settings in this table.
 
 Admin policies use `USING ((SELECT public.is_admin()))` and matching `WITH CHECK`.
@@ -147,6 +148,7 @@ Aligned with `CONTENT_PRIVACY_CLASSIFICATION.md`:
 | `/admin/training*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Training writes only `credentials` rows with `kind = training`. |
 | `/admin/licenses*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. License writes only `credentials` rows with `kind = license`. |
 | `/admin/skills*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Skills writes only `focus_pages` rows and their `competencies` array. |
+| `/admin/settings` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Settings writes only the `site_profile` and `site_settings` singleton rows. |
 
 Authorization is `getUser()` then `rpc('is_admin')`. Fail closed if the helper errors.
 
@@ -222,6 +224,17 @@ Skills mutations:
 - Public adapter functions filter `status = published` in addition to RLS
 - After-save redirects use server-known UUIDs only
 
+Settings mutations:
+
+- Allowlist fields only (no mass assignment; `singleton_key` is server-fixed to `default`)
+- Profile status comes from closed intents (`draft`, `publish`, `unpublish`, `archive`, `keep`)
+- `site_settings` has no status column; only the two public flags are writable
+- `linkedin_url` must parse as an `https:` URL; `javascript:` and other schemes are rejected
+- `public_email` is format-validated as a public contact address, not the owner Auth email
+- There is no Delete and no `/new` route; missing rows are inserted once as the singleton
+- Public adapters return published profile fields only, or the two public flags; they omit Auth email and `user_roles`
+- Public pages still render from `src/content/`
+
 The explicit content script `supabase/content/privai_guard_project.sql` is not a migration, is not auto-applied, and has not been applied to hosted Supabase.
 
 Forward RLS corrections (not applied hosted):
@@ -237,7 +250,7 @@ Forward RLS corrections (not applied hosted):
 - Storage / uploads
 - Contact-form submission
 - Switching public pages to Supabase before reviewed content is applied
-- Loading real professional-experience, education, certification, training, license, or skills content into Supabase
+- Loading real professional-experience, education, certification, training, license, skills, or site-profile content into Supabase
 - User registration or password-reset UI
 - Role-management UI
 - Deploy
