@@ -1,8 +1,8 @@
 # Supabase Architecture
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS
 
-**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects` writes to Supabase through the authenticated server client and RLS.
+**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects` and `/admin/experience` write to Supabase through the authenticated server client and RLS.
 
 ---
 
@@ -29,6 +29,9 @@ Admin authentication:
 | `src/lib/admin/projects/` | Project validation and admin queries |
 | `src/app/admin/projects/actions.ts` | Project and section Server Actions |
 | `src/lib/content/projects.ts` | Public published-only reads (not wired to pages yet) |
+| `src/lib/admin/experience/` | Experience validation and admin queries |
+| `src/app/admin/experience/actions.ts` | Experience and item Server Actions |
+| `src/lib/content/experiences.ts` | Public published-only reads (not wired to pages yet) |
 
 The app never queries `user_roles` through the Data API.
 
@@ -96,6 +99,8 @@ No table stores the comprehensive CV or private-source documents.
 - That script is insert-if-absent for the approved public PrivAI Guard project and seven sections
 - Forward RLS correction (not applied hosted): `supabase/migrations/20260830030000_project_sections_select_parent_published.sql`
 - That file only replaces `project_sections_select_published` so a section is public when both the section and its parent project are `published`
+- Forward RLS correction (not applied hosted): `supabase/migrations/20260830040000_experience_items_select_parent_published.sql`
+- That file only replaces `experience_items_select_published` so an item is public when both the item and its parent experience are `published`
 - Generated types can replace the temporary boundary after review (see §9)
 
 ---
@@ -103,10 +108,10 @@ No table stores the comprehensive CV or private-source documents.
 ## 6. Future admin model
 
 1. The owner Auth user and `user_roles` (`role = owner`) row already exist in the hosted project.
-2. `/admin/login` uses password sign-in. `/admin` and `/admin/projects*` render only after `getUser()` and `is_admin()` succeed on the server.
-3. Projects CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key.
+2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, and `/admin/experience*` render only after `getUser()` and `is_admin()` succeed on the server.
+3. Projects and Experience CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key.
 4. Authenticated visitors who are not in `user_roles` can read published public content only and are denied the admin shell.
-5. Public project pages stay on `src/content/` until the seed is applied. Then switch them to `src/lib/content/projects.ts`.
+5. Public project and experience pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts` and `src/lib/content/experiences.ts`.
 6. Future role management remains out of scope for the MVP.
 
 See `docs/ADMIN_GUIDE.md`.

@@ -1,6 +1,6 @@
 # Security
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS
 
 **Status:** Hosted schema is applied. Admin sign-in and the Projects CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
 
@@ -74,6 +74,7 @@ Public / authenticated SELECT policies:
 
 - `status = 'published'`
 - `project_sections`: also the parent `projects` row must be `published`
+- `experience_items`: also the parent `experiences` row must be `published`
 - `credentials`: also `needs_verification = false`
 - `media_assets`: also `is_public = true`
 - `site_settings`: public-only website flags (`contact_form_enabled`, `site_indexable`); `USING (true)` is valid only while this invariant holds. Never store secrets, administrator data, or unpublished/internal settings in this table.
@@ -140,6 +141,7 @@ Aligned with `CONTENT_PRIVACY_CLASSIFICATION.md`:
 | `/admin/login` | Password sign-in. Owners already signed in are redirected to `/admin`. |
 | `/admin` | Unauthenticated visitors redirect to login. Authenticated non-admins see access denied. Owners see the shell. |
 | `/admin/projects*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. |
+| `/admin/experience*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. |
 
 Authorization is `getUser()` then `rpc('is_admin')`. Fail closed if the helper errors.
 
@@ -153,16 +155,33 @@ Projects mutations:
 - Public adapter functions filter `status = 'published'` in addition to RLS
 - After-save redirects use server-known UUIDs only
 
+Experience mutations:
+
+- Allowlist fields only (no mass assignment)
+- Kind, item track, and status come from closed enums
+- Dates must be valid `YYYY-MM-DD` values; end date cannot precede start date
+- IDs must be UUIDs
+- Item writes require the item’s `experience_id` to match the edited experience
+- Metric items require `metric_context`
+- Public adapter functions filter `status = 'published'` in addition to RLS
+- After-save redirects use server-known UUIDs only
+
 The explicit content script `supabase/content/privai_guard_project.sql` is not a migration, is not auto-applied, and has not been applied to hosted Supabase.
+
+Forward RLS corrections (not applied hosted):
+
+- `supabase/migrations/20260830030000_project_sections_select_parent_published.sql`
+- `supabase/migrations/20260830040000_experience_items_select_parent_published.sql`
 
 ---
 
 ## 11. What remains out of scope
 
-- Experience, publications, credentials, and other CMS modules
+- Publications, credentials, and other remaining CMS modules
 - Storage / uploads
 - Contact-form submission
-- Switching public pages to Supabase before the seed is applied
+- Switching public pages to Supabase before reviewed content is applied
+- Loading real professional-experience content into Supabase
 - User registration or password-reset UI
 - Role-management UI
 - Deploy
