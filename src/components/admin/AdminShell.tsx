@@ -5,7 +5,6 @@ const upcomingModules = [
   "Publications",
   "Credentials",
   "Resume Assets",
-  "Messages",
 ] as const;
 
 type AdminShellProps = {
@@ -44,8 +43,8 @@ export function AdminShell({ email }: AdminShellProps) {
         </h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
           Projects, Experience, Education, Certifications, Training,
-          Licenses, Skills, Settings, and Media are available. Other types
-          are not implemented yet.
+          Licenses, Skills, Settings, Media, and Inquiries are available.
+          Other types are not implemented yet.
         </p>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <li>
@@ -145,6 +144,18 @@ export function AdminShell({ email }: AdminShellProps) {
               <p className="mt-2 text-sm text-ink-soft">
                 Inspect and edit existing media metadata. Upload is not
                 available.
+              </p>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/admin/inquiries"
+              className="block rounded-xl border border-line bg-paper-elevated p-5 hover:border-ink/30"
+            >
+              <h3 className="text-base font-medium text-ink">Inquiries</h3>
+              <p className="mt-2 text-sm text-ink-soft">
+                Review owner-only inbox rows. Public submission is not
+                enabled.
               </p>
             </Link>
           </li>

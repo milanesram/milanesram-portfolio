@@ -1,8 +1,8 @@
 # Admin Guide
 
-**Step:** 33 — Media Assets CMS
+**Step:** 34 — Inquiry Management CMS
 
-**Status:** Owner authentication plus Projects, Experience, Education, Certifications, Training, License, Skills, Settings, and Media CMS. Other CMS types are not implemented.
+**Status:** Owner authentication plus Projects, Experience, Education, Certifications, Training, License, Skills, Settings, Media, and Inquiries CMS. Other CMS types are not implemented.
 
 This guide does not include passwords, user IDs, tokens, or other private identifiers.
 
@@ -38,6 +38,8 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin/settings` | Edit the `site_profile` and `site_settings` singletons |
 | `/admin/media` | List existing media metadata |
 | `/admin/media/[id]` | Edit existing media metadata |
+| `/admin/inquiries` | List owner-only inquiry inbox rows |
+| `/admin/inquiries/[id]` | Review an inquiry and mark read/unread |
 
 Search engines are instructed not to index `/admin` routes.
 
@@ -58,11 +60,11 @@ The only authorized administrator for the MVP is the Auth user provisioned in th
 3. Routes and mutations call `public.is_admin()` over RPC. They do **not** query `public.user_roles`.
 4. Content renders or writes only when `is_admin()` returns true.
 
-| Visitor | `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*`, `/admin/training*`, `/admin/licenses*`, `/admin/skills*`, `/admin/settings`, `/admin/media*` |
+| Visitor | `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*`, `/admin/training*`, `/admin/licenses*`, `/admin/skills*`, `/admin/settings`, `/admin/media*`, `/admin/inquiries*` |
 |---|---|
 | Not signed in | Redirect to `/admin/login` |
 | Signed in, not an admin | Access denied |
-| Signed-in owner / admin | Dashboard, Projects, Experience, Education, Certifications, Training, Licenses, Skills, Settings, or Media CMS |
+| Signed-in owner / admin | Dashboard, Projects, Experience, Education, Certifications, Training, Licenses, Skills, Settings, Media, or Inquiries CMS |
 
 There is no role-management UI.
 
@@ -187,7 +189,19 @@ There is no `/new` route and no upload. `bucket_path` is owner-visible immutable
 
 ---
 
-## 13. Draft / publish behavior
+## 13. Inquiries CMS workflow
+
+1. Open **Inquiries** from the dashboard.
+2. Review owner-only `inquiries` rows: received time, sender name/email, context, track, and a short message preview.
+3. Open a row to read the full message. Sender fields are read-only.
+4. **Mark as read** or **Mark as unread**. `read_at` is set on the server; the browser does not supply a timestamp.
+5. Delete after confirmation. There is no archive or notes column.
+
+There is no `/new` route and no public submission path. Inquiry records are private administrative data and have no public content adapter. The public `/contact` page remains email, LinkedIn, and a disabled placeholder form.
+
+---
+
+## 14. Draft / publish behavior
 
 | Status | Admin | Public adapter | Current public pages |
 |---|---|---|---|
@@ -199,7 +213,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 14. Project sections
+## 15. Project sections
 
 - Heading, body, track, status, and sort order
 - Move up / move down (only among sections of that project)
@@ -208,7 +222,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 15. Experience items
+## 16. Experience items
 
 - Body, track, status, sort order, `is_metric`, `metric_context`, and `show_on_home`
 - Move up / move down (only among items of that experience)
@@ -218,7 +232,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 16. Focus-page competencies
+## 17. Focus-page competencies
 
 - Plain text values on `focus_pages.competencies`
 - Move up / move down (only within that page’s array)
@@ -228,13 +242,13 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 17. Logout
+## 18. Logout
 
 Use **Log out**. The session cookies are cleared and the browser returns to `/admin/login`.
 
 ---
 
-## 18. Troubleshooting authentication
+## 19. Troubleshooting authentication
 
 1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 2. The hosted project has `public.is_admin()` and the owner `user_roles` row.
@@ -243,7 +257,7 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ---
 
-## 19. Proposed content script
+## 20. Proposed content script
 
 `supabase/content/privai_guard_project.sql` inserts the approved public PrivAI Guard project and seven sections if they are absent.
 
@@ -251,6 +265,6 @@ It is not a schema migration and is not run by `supabase db push`, `supabase sta
 
 ---
 
-## 20. Still out of scope
+## 21. Still out of scope
 
-Publications, Storage upload, resume uploads, contact-form submission, messages inbox, registration, password reset, role management, public project/experience/education/certification/training/license/skills/settings/media cutover, real employment, education-history, certification, training, license, skills, site-profile, or media load, and deploy.
+Publications, Storage upload, resume uploads, public contact-form submission, registration, password reset, role management, public project/experience/education/certification/training/license/skills/settings/media cutover, real employment, education-history, certification, training, license, skills, site-profile, media, or inquiry load, and deploy.

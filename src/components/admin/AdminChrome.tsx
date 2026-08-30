@@ -85,6 +85,12 @@ export function AdminChrome({ email, title, children }: AdminChromeProps) {
               Media
             </Link>
             <Link
+              href="/admin/inquiries"
+              className="text-sm font-medium text-ink-soft hover:text-ink"
+            >
+              Inquiries
+            </Link>
+            <Link
               href="/"
               className="text-sm font-medium text-ink-soft hover:text-ink"
             >

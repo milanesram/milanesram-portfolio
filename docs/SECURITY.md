@@ -1,8 +1,8 @@
 # Security
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS + 33 Media CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS + 33 Media CMS + 34 Inquiries CMS
 
-**Status:** Hosted schema is applied. Admin sign-in and the Projects, Experience, Education, Certifications, Training, License, Skills, Settings, and Media CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
+**Status:** Hosted schema is applied. Admin sign-in and the Projects, Experience, Education, Certifications, Training, License, Skills, Settings, Media, and Inquiries CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
 
 ---
 
@@ -84,8 +84,11 @@ Admin policies use `USING ((SELECT public.is_admin()))` and matching `WITH CHECK
 
 `inquiries`:
 
+- No INSERT grant to `anon` or `authenticated`
 - No INSERT policy
-- Admin SELECT / UPDATE / DELETE only
+- Admin SELECT / UPDATE / DELETE only via `is_admin()`
+- No public SELECT policy
+- Sender name, email, organization, and message are private administrative PII
 
 Drafts, archived rows, private resume metadata, and the admin table are not visible to `anon`.
 
@@ -150,6 +153,7 @@ Aligned with `CONTENT_PRIVACY_CLASSIFICATION.md`:
 | `/admin/skills*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Skills writes only `focus_pages` rows and their `competencies` array. |
 | `/admin/settings` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Settings writes only the `site_profile` and `site_settings` singleton rows. |
 | `/admin/media*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Media writes only `media_assets` metadata and never Storage objects. |
+| `/admin/inquiries*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Inquiry writes only `read_at` or delete the row. Sender fields are not writable. |
 
 Authorization is `getUser()` then `rpc('is_admin')`. Fail closed if the helper errors.
 
@@ -247,6 +251,15 @@ Media mutations:
 - Delete removes metadata only. `focus_pages.resume_media_id` is ON DELETE SET NULL. Storage objects are not deleted
 - There is no `/new` route and no upload
 
+Inquiry mutations:
+
+- Allowlist fields only (`read_at`). Sender name, email, organization, context, track, and message are immutable
+- Read/unread intents are closed (`read`, `unread`). `read_at` is server-generated
+- No public inquiry helper. Inquiry records are private administrative data
+- Anonymous INSERT remains disabled. There is no public submission Server Action
+- Delete requires confirmation, UUID, and a pre-read. There is no archive column
+- URLs use inquiry UUIDs only. Sender email and message are not placed in query strings
+
 The explicit content script `supabase/content/privai_guard_project.sql` is not a migration, is not auto-applied, and has not been applied to hosted Supabase.
 
 Forward corrections (not applied hosted):
@@ -261,9 +274,9 @@ Forward corrections (not applied hosted):
 
 - Publications and other remaining CMS modules
 - Storage / uploads
-- Contact-form submission
+- Public contact-form submission / anonymous inquiry INSERT
 - Switching public pages to Supabase before reviewed content is applied
-- Loading real professional-experience, education, certification, training, license, skills, site-profile, or media content into Supabase
+- Loading real professional-experience, education, certification, training, license, skills, site-profile, media, or inquiry content into Supabase
 - User registration or password-reset UI
 - Role-management UI
 - Deploy
