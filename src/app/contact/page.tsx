@@ -1,8 +1,12 @@
+import { ContactForm } from "@/components/contact/ContactForm";
 import { ContactFormPlaceholder } from "@/components/contact/ContactFormPlaceholder";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
 import { siteProfile } from "@/content";
+import { getPublicContactFormToken } from "@/lib/contact/intake";
 import { createPageMetadata } from "@/lib/metadata";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "Contact",
@@ -10,7 +14,9 @@ export const metadata = createPageMetadata(
   "/contact",
 );
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const intakeToken = await getPublicContactFormToken();
+
   return (
     <>
       <PageHero
@@ -43,7 +49,11 @@ export default function ContactPage() {
           </li>
         </ul>
         <p className="text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
-        <ContactFormPlaceholder />
+        {intakeToken ? (
+          <ContactForm token={intakeToken} />
+        ) : (
+          <ContactFormPlaceholder />
+        )}
       </Container>
     </>
   );

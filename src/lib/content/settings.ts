@@ -7,9 +7,10 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
  * is `USING (true)` because every column is safe to expose. Never store
  * secrets or unpublished values in this table.
  *
- * Cutover: do not use this from robots, metadata, or the contact form
- * until an explicit later step. Public pages still render from
- * `src/content/` and static `robots.ts`.
+ * `/contact` may read `contactFormEnabled` for form activation only.
+ * Submission still requires the server-only `CONTACT_INTAKE_ENABLED`
+ * gate and secrets. Other public pages stay on `src/content/`.
+ * `robots.ts` remains static.
  */
 
 export type PublicSiteSettings = {

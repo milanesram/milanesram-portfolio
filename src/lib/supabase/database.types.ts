@@ -417,12 +417,43 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["inquiries"]["Insert"]>;
         Relationships: [];
       };
+      inquiry_submission_events: {
+        Row: {
+          id: string;
+          fingerprint_hash: string;
+          email_hash: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          fingerprint_hash: string;
+          email_hash: string;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["inquiry_submission_events"]["Insert"]
+        >;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
       is_admin: {
         Args: Record<string, never>;
         Returns: boolean;
+      };
+      submit_public_inquiry: {
+        Args: {
+          p_name: string;
+          p_email: string;
+          p_organization: string | null;
+          p_context: InquiryContext;
+          p_track: InquiryTrack;
+          p_message: string;
+          p_fingerprint_hash: string;
+          p_email_hash: string;
+        };
+        Returns: undefined;
       };
     };
     Enums: {

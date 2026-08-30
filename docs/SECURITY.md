@@ -1,8 +1,8 @@
 # Security
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS + 33 Media CMS + 34 Inquiries CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS + 33 Media CMS + 34 Inquiries CMS + 35 public inquiry intake
 
-**Status:** Hosted schema is applied. Admin sign-in and the Projects, Experience, Education, Certifications, Training, License, Skills, Settings, Media, and Inquiries CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
+**Status:** Hosted schema is applied. Admin sign-in and the Projects, Experience, Education, Certifications, Training, License, Skills, Settings, Media, and Inquiries CMS use the authenticated server client and RLS. Public inquiry intake is a fail-closed server path that calls a narrow RPC with a server-only service-role client. The browser never receives that key. The Step 35 migration is local-only and has not been applied hosted.
 
 ---
 
@@ -12,9 +12,11 @@
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | `.env.local` | URL is public by design |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `.env.local` | Publishable / anon key; still do not commit |
-| Service-role / secret key | **Not used** | Must not enter this Next.js app |
+| `SUPABASE_SERVICE_ROLE_KEY` | server-only `.env.local` | Never `NEXT_PUBLIC_`. Used only to call `submit_public_inquiry`. |
+| `CONTACT_INTAKE_ENABLED` | server-only `.env.local` | Must equal `true` together with `site_settings.contact_form_enabled`. |
+| `CONTACT_RATE_LIMIT_SECRET` | server-only `.env.local` | HMAC secret for tokens and rate-limit hashes. >= 32 bytes. |
 
-`.env*` is gitignored. Do not print, log, or copy values. The app validates that the two public names exist; it does not echo them.
+`.env*` is gitignored. Do not print, log, or copy values. The app validates that the two public names exist; it does not echo them. Server-only intake secrets fail closed when missing. Never log name, email, organization, message, raw IP, HMAC values, form tokens, or secrets.
 
 ---
 
@@ -104,16 +106,31 @@ The hosted project has **Automatically expose new tables: DISABLED**. RLS is not
 4. **No** table privilege on `user_roles` to `anon` or `authenticated`. RLS remains ENABLED and FORCED. `is_admin()` may still read the table as `SECURITY DEFINER`.
 5. `GRANT SELECT, UPDATE, DELETE` on `inquiries` to `authenticated` (RLS: admin only)
 6. **No** `INSERT` grant on `inquiries` to `anon` or `authenticated`
+7. **No** table grants on `inquiry_submission_events` to `PUBLIC`, `anon`, or `authenticated`
+8. `EXECUTE` on `submit_public_inquiry` is granted only to `service_role`
 
 Table owners / dashboard roles retain their usual privileges.
 
 ---
 
-## 7. Contact-form approach (later)
+## 7. Public inquiry intake
 
-Do not open `inquiries` to unrestricted anonymous insert.
+Browser → `POST /api/contact` → server validation/abuse controls → server-only privileged client → `public.submit_public_inquiry` → `public.inquiries`.
 
-Later: Server Action or Edge Function, rate limiting, bot control, then a tightly scoped insert path. The public form remains inert until that work.
+- No anon or authenticated table INSERT on `inquiries`
+- No INSERT RLS policy
+- No public RPC EXECUTE for anon or authenticated
+- The server does not call `.from("inquiries").insert(...)`
+- `POST /api/contact` independently requires `CONTACT_INTAKE_ENABLED=true`, valid server secrets, and `site_settings.contact_form_enabled`. Missing or unreadable settings fail closed. The browser flag is never trusted.
+- Request bodies are read incrementally and capped at 12,288 bytes. Oversized or falsified Content-Length is rejected before the RPC.
+- Signed form token (2 hour max, 3 second minimum fill) is bot friction, not identity or one-time authentication. Replay within the lifetime is controlled by durable rate limits.
+- Honeypot and HMAC fingerprint/email hashes (IP/User-Agent are capped, hashed, and never stored)
+- Durable DB limits: 5 accepted submissions / 15 minutes per fingerprint, 3 / 60 minutes per email
+- Rate-limit events store hashes only and are deleted after 24 hours
+- `submit_public_inquiry` is `SECURITY DEFINER` with `search_path = pg_catalog` and schema-qualified `public` tables
+- CAPTCHA and email notifications are not implemented
+- Inquiry records remain private administrative data with no public content adapter
+- Hosted intake remains disabled until the Step 35 migration is applied and server secrets are configured
 
 ---
 
@@ -267,6 +284,7 @@ Forward corrections (not applied hosted):
 - `supabase/migrations/20260830030000_project_sections_select_parent_published.sql`
 - `supabase/migrations/20260830040000_experience_items_select_parent_published.sql`
 - `supabase/migrations/20260830050000_restrict_anon_media_asset_columns.sql`
+- `supabase/migrations/20260830060000_secure_public_inquiry_intake.sql`
 
 ---
 
@@ -274,10 +292,11 @@ Forward corrections (not applied hosted):
 
 - Publications and other remaining CMS modules
 - Storage / uploads
-- Public contact-form submission / anonymous inquiry INSERT
+- Direct anon/authenticated inquiry INSERT or public RPC EXECUTE
+- CAPTCHA, SMTP, and notification providers
 - Switching public pages to Supabase before reviewed content is applied
 - Loading real professional-experience, education, certification, training, license, skills, site-profile, media, or inquiry content into Supabase
 - User registration or password-reset UI
 - Role-management UI
 - Deploy
-- Service-role / secret keys in this app
+- Service-role or rate-limit secrets in the browser or `NEXT_PUBLIC_` variables

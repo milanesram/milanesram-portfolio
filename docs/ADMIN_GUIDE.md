@@ -1,8 +1,8 @@
 # Admin Guide
 
-**Step:** 34 — Inquiry Management CMS
+**Step:** 35 — Secure Public Inquiry Intake
 
-**Status:** Owner authentication plus Projects, Experience, Education, Certifications, Training, License, Skills, Settings, Media, and Inquiries CMS. Other CMS types are not implemented.
+**Status:** Owner CMS through Inquiries plus a fail-closed public intake foundation. Hosted intake remains disabled.
 
 This guide does not include passwords, user IDs, tokens, or other private identifiers.
 
@@ -197,7 +197,9 @@ There is no `/new` route and no upload. `bucket_path` is owner-visible immutable
 4. **Mark as read** or **Mark as unread**. `read_at` is set on the server; the browser does not supply a timestamp.
 5. Delete after confirmation. There is no archive or notes column.
 
-There is no `/new` route and no public submission path. Inquiry records are private administrative data and have no public content adapter. The public `/contact` page remains email, LinkedIn, and a disabled placeholder form.
+There is no `/new` route. Owner CMS still cannot INSERT. Inquiry records are private administrative data and have no public content adapter.
+
+Public `/contact` stays email, LinkedIn, and a disabled placeholder unless both `site_settings.contact_form_enabled` and server-only `CONTACT_INTAKE_ENABLED=true` are set and the intake secrets exist. Submissions go to `POST /api/contact`, then a server-only RPC. The Step 35 migration is not applied hosted, so current hosted intake stays off.
 
 ---
 
@@ -250,10 +252,10 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ## 19. Troubleshooting authentication
 
-1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Public intake also requires server-only `CONTACT_INTAKE_ENABLED`, `CONTACT_RATE_LIMIT_SECRET`, and `SUPABASE_SERVICE_ROLE_KEY` (never commit values).
 2. The hosted project has `public.is_admin()` and the owner `user_roles` row.
 3. Invalid credentials show a generic error.
-4. Do not add a service-role key to this app.
+4. Do not put `SUPABASE_SERVICE_ROLE_KEY`, `CONTACT_RATE_LIMIT_SECRET`, or `CONTACT_INTAKE_ENABLED` on a `NEXT_PUBLIC_` variable or in client code.
 
 ---
 
@@ -267,4 +269,4 @@ It is not a schema migration and is not run by `supabase db push`, `supabase sta
 
 ## 21. Still out of scope
 
-Publications, Storage upload, resume uploads, public contact-form submission, registration, password reset, role management, public project/experience/education/certification/training/license/skills/settings/media cutover, real employment, education-history, certification, training, license, skills, site-profile, media, or inquiry load, and deploy.
+Publications, Storage upload, resume uploads, CAPTCHA, email notifications, registration, password reset, role management, public project/experience/education/certification/training/license/skills/settings/media cutover, real employment, education-history, certification, training, license, skills, site-profile, media, or inquiry load, hosted intake activation, and deploy.

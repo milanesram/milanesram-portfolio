@@ -1,8 +1,8 @@
 # Supabase Architecture
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS + 33 Media CMS + 34 Inquiries CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS + 33 Media CMS + 34 Inquiries CMS + 35 public inquiry intake
 
-**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects`, `/admin/experience`, `/admin/education`, `/admin/certifications`, `/admin/training`, `/admin/licenses`, `/admin/skills`, `/admin/settings`, `/admin/media`, and `/admin/inquiries` write to Supabase through the authenticated server client and RLS.
+**Status:** Hosted schema is applied. Public pages still render from `src/content/` except the `/contact` form-activation flag. Admin CMS writes use the authenticated server client and RLS. Public inquiry intake, when both gates are on, uses a server-only privileged client to call `submit_public_inquiry`. The Step 35 migration is local-only.
 
 ---
 
@@ -50,12 +50,15 @@ Admin authentication:
 | `src/lib/admin/settings/` | Settings validation and admin queries (`site_profile` + `site_settings` singletons) |
 | `src/app/admin/settings/actions.ts` | Site profile and site settings Server Actions |
 | `src/lib/content/profile.ts` | Public published-only site-profile reads (not wired to pages yet) |
-| `src/lib/content/settings.ts` | Public site-settings flag reads (not wired to pages yet) |
+| `src/lib/content/settings.ts` | Public site-settings flag reads (`contactFormEnabled` may gate `/contact` only) |
 | `src/lib/admin/media/` | Media metadata validation and admin queries (`media_assets`) |
 | `src/app/admin/media/actions.ts` | Media metadata Server Actions (no Storage mutations) |
 | `src/lib/content/media.ts` | Public published+public media-metadata reads (not wired to pages yet) |
 | `src/lib/admin/inquiries/` | Inquiry inbox validation and admin queries (`inquiries`) |
 | `src/app/admin/inquiries/actions.ts` | Inquiry read-state and delete Server Actions (no INSERT) |
+| `src/lib/supabase/privileged.ts` | Server-only service-role client for the intake RPC |
+| `src/lib/contact/` | Intake config, HMAC tokens/hashes, validation, RPC helper |
+| `src/app/api/contact/route.ts` | `POST /api/contact` public intake endpoint |
 
 The app never queries `user_roles` through the Data API.
 
@@ -72,10 +75,10 @@ Rules:
 
 - Do not commit these files.
 - Do not print, log, or copy the values.
-- Do not add a service-role / secret key to the Next.js app.
+- Do not prefix `SUPABASE_SERVICE_ROLE_KEY`, `CONTACT_INTAKE_ENABLED`, or `CONTACT_RATE_LIMIT_SECRET` with `NEXT_PUBLIC_`.
 - Optional later: `NEXT_PUBLIC_SITE_URL` for canonical URLs (already used by metadata).
 
-A service-role key, if ever needed, belongs only in a locked-down server or Edge Function that is not this public app.
+`SUPABASE_SERVICE_ROLE_KEY` is server-only and is used only to execute `public.submit_public_inquiry`. It must never enter client components or the browser bundle.
 
 ---
 
@@ -102,7 +105,7 @@ The approved `docs/INITIAL_DATA_MODEL.md` is leaner than a one-table-per-noun li
 | skills | `focus_pages.competencies` | Text array; no skills table |
 | resume_assets | `media_assets` (`kind = resume_pdf`, `is_public`) | |
 | site_settings | `site_settings` | Public-only flags: contact form + indexability. Never secrets. |
-| contact_messages | `inquiries` | Admin-only; no anon insert yet |
+| contact_messages | `inquiries` | Admin-only table; public creation only via server RPC |
 
 No table stores the comprehensive CV or private-source documents.
 
@@ -110,7 +113,9 @@ No table stores the comprehensive CV or private-source documents.
 
 ## 4. Tables
 
-`user_roles`, `site_profile`, `site_settings`, `focus_pages`, `experiences`, `experience_items`, `projects`, `project_sections`, `publications`, `credentials`, `engagements`, `media_assets`, `inquiries`
+`user_roles`, `site_profile`, `site_settings`, `focus_pages`, `experiences`, `experience_items`, `projects`, `project_sections`, `publications`, `credentials`, `engagements`, `media_assets`, `inquiries`, `inquiry_submission_events`
+
+`inquiry_submission_events` is Data-API private: hash-only rate-limit rows, no `anon` / `authenticated` grants, FORCE RLS, and no public policies. Retention is opportunistic deletion of events older than 24 hours inside `submit_public_inquiry`.
 
 `user_roles` is Data-API private: no `anon` / `authenticated` table grants and no API-management RLS policy. `is_admin()` may still read it as `SECURITY DEFINER`. `EXECUTE` on `is_admin()` is granted to `authenticated` only (`PUBLIC` and `anon` remain revoked).
 
@@ -128,6 +133,7 @@ No table stores the comprehensive CV or private-source documents.
 - That file only replaces `project_sections_select_published` so a section is public when both the section and its parent project are `published`
 - Forward RLS correction (not applied hosted): `supabase/migrations/20260830040000_experience_items_select_parent_published.sql`
 - That file only replaces `experience_items_select_published` so an item is public when both the item and its parent experience are `published`
+- Forward intake foundation (not applied hosted): `supabase/migrations/20260830060000_secure_public_inquiry_intake.sql`
 - Generated types can replace the temporary boundary after review (see §9)
 
 ---
@@ -136,7 +142,7 @@ No table stores the comprehensive CV or private-source documents.
 
 1. The owner Auth user and `user_roles` (`role = owner`) row already exist in the hosted project.
 2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*`, `/admin/training*`, `/admin/licenses*`, `/admin/skills*`, `/admin/settings`, `/admin/media*`, and `/admin/inquiries*` render only after `getUser()` and `is_admin()` succeed on the server.
-3. Projects, Experience, Education, Certifications, Training, License, Skills, Settings, Media, and Inquiries CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key. Inquiry writes are `read_at` or delete only; there is no INSERT action.
+3. Projects, Experience, Education, Certifications, Training, License, Skills, Settings, Media, and Inquiries CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. Inquiry owner writes remain `read_at` or delete only; there is no owner INSERT action. Public inquiry creation uses a server-only service-role client to call `submit_public_inquiry` only.
 4. Authenticated visitors who are not in `user_roles` can read published public content only and are denied the admin shell.
 5. Public project, experience, education, certification, training, license, focus, identity, and media pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts`, `src/lib/content/experiences.ts`, `src/lib/content/education.ts`, `src/lib/content/certifications.ts`, `src/lib/content/training.ts`, `src/lib/content/licenses.ts`, `src/lib/content/skills.ts`, `src/lib/content/profile.ts`, `src/lib/content/settings.ts`, and `src/lib/content/media.ts`.
 6. Future role management remains out of scope for the MVP.
@@ -159,17 +165,15 @@ Planned later:
 
 ---
 
-## 8. Future contact-form security
+## 8. Public inquiry intake
 
-`inquiries` exists with **no** anonymous INSERT grant and **no** INSERT policy. Step 34 adds owner inbox review only. Inquiry records are private administrative data and have no public content adapter. The public contact page remains unchanged. Future public submission requires a dedicated security design.
+`inquiries` still has **no** anonymous or authenticated INSERT grant and **no** INSERT policy. Step 34 owner inbox behavior is unchanged.
 
-A later phase should add an abuse-controlled path, for example:
+Step 35 adds `inquiry_submission_events` (hash-only, no Data API grants) and `submit_public_inquiry` (`SECURITY DEFINER`, `search_path = pg_catalog`). Application tables are schema-qualified. EXECUTE is granted only to `service_role`. Anon and authenticated cannot call it.
 
-- Next.js Server Action or Edge Function
-- Rate limit, honeypot / Turnstile
-- Server-side insert using a locked-down path (not a wide-open anon table grant)
+`POST /api/contact` independently enforces both activation keys and a 12,288-byte incremental body cap. The signed form token is bot friction, not one-time authentication; durable rate limits control replay.
 
-Until then the public UI stays an inert form.
+`/contact` may show an active form only when `getPublicSiteSettings().contactFormEnabled` and `CONTACT_INTAKE_ENABLED=true` and the server-only secrets are present. Otherwise the existing disabled placeholder remains. Other public pages stay on `src/content/`. Hosted intake remains off until the local migration is applied and secrets are configured. CAPTCHA may be added later if abuse warrants it.
 
 ---
 
