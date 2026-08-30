@@ -146,6 +146,7 @@ Aligned with `CONTENT_PRIVACY_CLASSIFICATION.md`:
 | `/admin/certifications*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Certification writes only `credentials` rows with `kind = certification`. |
 | `/admin/training*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Training writes only `credentials` rows with `kind = training`. |
 | `/admin/licenses*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. License writes only `credentials` rows with `kind = license`. |
+| `/admin/skills*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Skills writes only `focus_pages` rows and their `competencies` array. |
 
 Authorization is `getUser()` then `rpc('is_admin')`. Fail closed if the helper errors.
 
@@ -210,6 +211,17 @@ License mutations:
 - Public adapter functions filter `kind = license`, `status = published`, and `needs_verification = false` in addition to RLS
 - After-save redirects use server-known UUIDs only
 
+Skills mutations:
+
+- Allowlist fields only (no mass assignment)
+- Status comes from closed intents (`draft`, `publish`, `unpublish`, `archive`, `keep`)
+- Slugs must match `^[a-z0-9]+(?:-[a-z0-9]+)*$`
+- IDs must be UUIDs
+- Focus-page updates do not write `competencies` or `resume_media_id`
+- Competency add, edit, reorder, and delete pre-read the page by UUID and rewrite only that row’s array
+- Public adapter functions filter `status = published` in addition to RLS
+- After-save redirects use server-known UUIDs only
+
 The explicit content script `supabase/content/privai_guard_project.sql` is not a migration, is not auto-applied, and has not been applied to hosted Supabase.
 
 Forward RLS corrections (not applied hosted):
@@ -225,7 +237,7 @@ Forward RLS corrections (not applied hosted):
 - Storage / uploads
 - Contact-form submission
 - Switching public pages to Supabase before reviewed content is applied
-- Loading real professional-experience, education, certification, training, or license content into Supabase
+- Loading real professional-experience, education, certification, training, license, or skills content into Supabase
 - User registration or password-reset UI
 - Role-management UI
 - Deploy
