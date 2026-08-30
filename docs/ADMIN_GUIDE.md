@@ -1,8 +1,8 @@
 # Admin Guide
 
-**Step:** 29 — Certifications CMS
+**Step:** 30 — Training + License CMS
 
-**Status:** Owner authentication plus Projects, Experience, Education, and Certifications CMS. Other CMS types are not implemented.
+**Status:** Owner authentication plus Projects, Experience, Education, Certifications, Training, and License CMS. Other CMS types are not implemented.
 
 This guide does not include passwords, user IDs, tokens, or other private identifiers.
 
@@ -26,6 +26,12 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin/certifications` | List certifications (credential `kind = certification`) |
 | `/admin/certifications/new` | Create a certification |
 | `/admin/certifications/[id]` | Edit a certification |
+| `/admin/training` | List training (credential `kind = training`) |
+| `/admin/training/new` | Create a training record |
+| `/admin/training/[id]` | Edit a training record |
+| `/admin/licenses` | List licenses (credential `kind = license`) |
+| `/admin/licenses/new` | Create a license |
+| `/admin/licenses/[id]` | Edit a license |
 
 Search engines are instructed not to index `/admin` routes.
 
@@ -46,11 +52,11 @@ The only authorized administrator for the MVP is the Auth user provisioned in th
 3. Routes and mutations call `public.is_admin()` over RPC. They do **not** query `public.user_roles`.
 4. Content renders or writes only when `is_admin()` returns true.
 
-| Visitor | `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*` |
+| Visitor | `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*`, `/admin/training*`, `/admin/licenses*` |
 |---|---|
 | Not signed in | Redirect to `/admin/login` |
 | Signed in, not an admin | Access denied |
-| Signed-in owner / admin | Dashboard, Projects, Experience, Education, or Certifications CMS |
+| Signed-in owner / admin | Dashboard, Projects, Experience, Education, Certifications, Training, or Licenses CMS |
 
 There is no role-management UI.
 
@@ -108,7 +114,35 @@ A published certification with `needs_verification = true` remains hidden from a
 
 ---
 
-## 8. Draft / publish behavior
+## 8. Training CMS workflow
+
+1. Open **Training** from the dashboard.
+2. Create a record or open an existing row.
+3. Edit name, issuer, year label, details, career track, highlight, needs-verification, and sort order.
+4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
+5. Delete a training record from its edit page after confirmation.
+
+Training is stored in `public.credentials` with `kind` fixed to `training`. Degree, certification, and license rows are out of scope for this module. There is no training child table. The schema has no training URL, credential ID, expiration, issue date, logo, or file attachment.
+
+A published training row with `needs_verification = true` remains hidden from anonymous public SELECT. The owner can toggle that flag in this CMS.
+
+---
+
+## 9. License CMS workflow
+
+1. Open **Licenses** from the dashboard.
+2. Create a record or open an existing row.
+3. Edit name, issuer, year label, details, career track, highlight, needs-verification, and sort order.
+4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
+5. Delete a license from its edit page after confirmation.
+
+Licenses are stored in `public.credentials` with `kind` fixed to `license`. Degree, certification, and training rows are out of scope for this module. There is no license child table. The schema has no license number, license state, verification URL, expiration, issue date, logo, or file attachment.
+
+A published license with `needs_verification = true` remains hidden from anonymous public SELECT. The owner can toggle that flag in this CMS.
+
+---
+
+## 10. Draft / publish behavior
 
 | Status | Admin | Public adapter | Current public pages |
 |---|---|---|---|
@@ -116,11 +150,11 @@ A published certification with `needs_verification = true` remains hidden from a
 | `published` | Visible | Eligible | Still served from `src/content/` |
 | `archived` | Visible | Hidden | Still served from `src/content/` |
 
-Public pages are **not** switched to Supabase in this step. After reviewed project content is applied, switch `/projects` and `/projects/privai-guard` to `getPublishedProjects()` / `getPublishedProjectBySlug()`. After reviewed experience content is loaded in a later step, switch `/experience` to `getPublishedExperiences()` / `getPublishedExperienceById()`. After reviewed education content is loaded, switch the Education group on `/credentials` (and home highlights) to `getPublishedEducation()` / `getPublishedEducationById()`. After reviewed certification content is loaded, switch the Certifications group on `/credentials` to `getPublishedCertifications()` / `getPublishedCertificationById()`.
+Public pages are **not** switched to Supabase in this step. After reviewed project content is applied, switch `/projects` and `/projects/privai-guard` to `getPublishedProjects()` / `getPublishedProjectBySlug()`. After reviewed experience content is loaded in a later step, switch `/experience` to `getPublishedExperiences()` / `getPublishedExperienceById()`. After reviewed education content is loaded, switch the Education group on `/credentials` (and home highlights) to `getPublishedEducation()` / `getPublishedEducationById()`. After reviewed certification content is loaded, switch the Certifications group on `/credentials` to `getPublishedCertifications()` / `getPublishedCertificationById()`. After reviewed training content is loaded, switch the Training group on `/credentials` to `getPublishedTraining()` / `getPublishedTrainingById()`. After reviewed license content is loaded, switch the Licenses group on `/credentials` to `getPublishedLicenses()` / `getPublishedLicenseById()`.
 
 ---
 
-## 9. Project sections
+## 11. Project sections
 
 - Heading, body, track, status, and sort order
 - Move up / move down (only among sections of that project)
@@ -129,7 +163,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 10. Experience items
+## 12. Experience items
 
 - Body, track, status, sort order, `is_metric`, `metric_context`, and `show_on_home`
 - Move up / move down (only among items of that experience)
@@ -139,13 +173,13 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 11. Logout
+## 13. Logout
 
 Use **Log out**. The session cookies are cleared and the browser returns to `/admin/login`.
 
 ---
 
-## 12. Troubleshooting authentication
+## 14. Troubleshooting authentication
 
 1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 2. The hosted project has `public.is_admin()` and the owner `user_roles` row.
@@ -154,7 +188,7 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ---
 
-## 13. Proposed content script
+## 15. Proposed content script
 
 `supabase/content/privai_guard_project.sql` inserts the approved public PrivAI Guard project and seven sections if they are absent.
 
@@ -162,6 +196,6 @@ It is not a schema migration and is not run by `supabase db push`, `supabase sta
 
 ---
 
-## 14. Still out of scope
+## 16. Still out of scope
 
-Publications, remaining credential kinds (training, license), media/Storage, resume uploads, contact-form submission, messages inbox, site settings, registration, password reset, role management, public project/experience/education/certification cutover, real employment, education-history, or certification load, and deploy.
+Publications, media/Storage, resume uploads, contact-form submission, messages inbox, site settings, registration, password reset, role management, public project/experience/education/certification/training/license cutover, real employment, education-history, certification, training, or license load, and deploy.

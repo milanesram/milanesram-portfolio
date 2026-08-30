@@ -1,8 +1,8 @@
 # Supabase Architecture
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS
 
-**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects`, `/admin/experience`, `/admin/education`, and `/admin/certifications` write to Supabase through the authenticated server client and RLS.
+**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects`, `/admin/experience`, `/admin/education`, `/admin/certifications`, `/admin/training`, and `/admin/licenses` write to Supabase through the authenticated server client and RLS.
 
 ---
 
@@ -38,6 +38,12 @@ Admin authentication:
 | `src/lib/admin/certifications/` | Certification validation and admin queries (`credentials.kind = certification`) |
 | `src/app/admin/certifications/actions.ts` | Certification Server Actions |
 | `src/lib/content/certifications.ts` | Public published-only certification reads (not wired to pages yet) |
+| `src/lib/admin/training/` | Training validation and admin queries (`credentials.kind = training`) |
+| `src/app/admin/training/actions.ts` | Training Server Actions |
+| `src/lib/content/training.ts` | Public published-only training reads (not wired to pages yet) |
+| `src/lib/admin/licenses/` | License validation and admin queries (`credentials.kind = license`) |
+| `src/app/admin/licenses/actions.ts` | License Server Actions |
+| `src/lib/content/licenses.ts` | Public published-only license reads (not wired to pages yet) |
 
 The app never queries `user_roles` through the Data API.
 
@@ -78,6 +84,8 @@ The approved `docs/INITIAL_DATA_MODEL.md` is leaner than a one-table-per-noun li
 | credentials | `credentials` | |
 | education | `credentials.kind = degree` | Same object type |
 | certifications | `credentials.kind = certification` | Same object type |
+| training | `credentials.kind = training` | Same object type |
+| licenses | `credentials.kind = license` | Same object type |
 | leadership | `engagements` | Speaking, advisory, awards, leadership |
 | skills | `focus_pages.competencies` | Text array; no skills table |
 | resume_assets | `media_assets` (`kind = resume_pdf`, `is_public`) | |
@@ -115,10 +123,10 @@ No table stores the comprehensive CV or private-source documents.
 ## 6. Future admin model
 
 1. The owner Auth user and `user_roles` (`role = owner`) row already exist in the hosted project.
-2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, and `/admin/certifications*` render only after `getUser()` and `is_admin()` succeed on the server.
-3. Projects, Experience, Education, and Certifications CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key.
+2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*`, `/admin/training*`, and `/admin/licenses*` render only after `getUser()` and `is_admin()` succeed on the server.
+3. Projects, Experience, Education, Certifications, Training, and License CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key.
 4. Authenticated visitors who are not in `user_roles` can read published public content only and are denied the admin shell.
-5. Public project, experience, education, and certification pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts`, `src/lib/content/experiences.ts`, `src/lib/content/education.ts`, and `src/lib/content/certifications.ts`.
+5. Public project, experience, education, certification, training, and license pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts`, `src/lib/content/experiences.ts`, `src/lib/content/education.ts`, `src/lib/content/certifications.ts`, `src/lib/content/training.ts`, and `src/lib/content/licenses.ts`.
 6. Future role management remains out of scope for the MVP.
 
 See `docs/ADMIN_GUIDE.md`.

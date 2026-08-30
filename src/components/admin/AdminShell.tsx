@@ -46,8 +46,8 @@ export function AdminShell({ email }: AdminShellProps) {
           Content management
         </h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
-          Projects, Experience, Education, and Certifications are available.
-          Other types are not implemented yet.
+          Projects, Experience, Education, Certifications, Training, and
+          Licenses are available. Other types are not implemented yet.
         </p>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <li>
@@ -91,6 +91,28 @@ export function AdminShell({ email }: AdminShellProps) {
               <h3 className="text-base font-medium text-ink">Certifications</h3>
               <p className="mt-2 text-sm text-ink-soft">
                 Create, draft, publish, and edit certification credentials.
+              </p>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/admin/training"
+              className="block rounded-xl border border-line bg-paper-elevated p-5 hover:border-ink/30"
+            >
+              <h3 className="text-base font-medium text-ink">Training</h3>
+              <p className="mt-2 text-sm text-ink-soft">
+                Create, draft, publish, and edit training credentials.
+              </p>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/admin/licenses"
+              className="block rounded-xl border border-line bg-paper-elevated p-5 hover:border-ink/30"
+            >
+              <h3 className="text-base font-medium text-ink">Licenses</h3>
+              <p className="mt-2 text-sm text-ink-soft">
+                Create, draft, publish, and edit license credentials.
               </p>
             </Link>
           </li>
