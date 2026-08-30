@@ -1,8 +1,8 @@
 # Admin Guide
 
-**Step:** 27 — Experience CMS
+**Step:** 28 — Education CMS
 
-**Status:** Owner authentication plus Projects and Experience CMS. Other CMS types are not implemented.
+**Status:** Owner authentication plus Projects, Experience, and Education CMS. Other CMS types are not implemented.
 
 This guide does not include passwords, user IDs, tokens, or other private identifiers.
 
@@ -20,6 +20,9 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin/experience` | List all experience statuses |
 | `/admin/experience/new` | Create an experience record |
 | `/admin/experience/[id]` | Edit an experience record and its items |
+| `/admin/education` | List education (credential `kind = degree`) |
+| `/admin/education/new` | Create an education record |
+| `/admin/education/[id]` | Edit an education record |
 
 Search engines are instructed not to index `/admin` routes.
 
@@ -40,11 +43,11 @@ The only authorized administrator for the MVP is the Auth user provisioned in th
 3. Routes and mutations call `public.is_admin()` over RPC. They do **not** query `public.user_roles`.
 4. Content renders or writes only when `is_admin()` returns true.
 
-| Visitor | `/admin`, `/admin/projects*`, `/admin/experience*` |
+| Visitor | `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*` |
 |---|---|
 | Not signed in | Redirect to `/admin/login` |
 | Signed in, not an admin | Access denied |
-| Signed-in owner / admin | Dashboard, Projects CMS, or Experience CMS |
+| Signed-in owner / admin | Dashboard, Projects CMS, Experience CMS, or Education CMS |
 
 There is no role-management UI.
 
@@ -76,7 +79,19 @@ Supported schema fields only. There is no company URL, logo, employment type, or
 
 ---
 
-## 6. Draft / publish behavior
+## 6. Education CMS workflow
+
+1. Open **Education** from the dashboard.
+2. Create a record or open an existing row.
+3. Edit name, issuer, year label, details, career track, highlight, needs-verification, and sort order.
+4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
+5. Delete an education record from its edit page after confirmation.
+
+Education is stored in `public.credentials` with `kind` fixed to `degree`. Certification, training, and license rows are out of scope for this module. There is no education child table. The schema has no school URL, logo, GPA, honors, field-of-study, or start/end date columns.
+
+---
+
+## 7. Draft / publish behavior
 
 | Status | Admin | Public adapter | Current public pages |
 |---|---|---|---|
@@ -84,11 +99,11 @@ Supported schema fields only. There is no company URL, logo, employment type, or
 | `published` | Visible | Eligible | Still served from `src/content/` |
 | `archived` | Visible | Hidden | Still served from `src/content/` |
 
-Public pages are **not** switched to Supabase in this step. After reviewed project content is applied, switch `/projects` and `/projects/privai-guard` to `getPublishedProjects()` / `getPublishedProjectBySlug()`. After reviewed experience content is loaded in a later step, switch `/experience` to `getPublishedExperiences()` / `getPublishedExperienceById()`.
+Public pages are **not** switched to Supabase in this step. After reviewed project content is applied, switch `/projects` and `/projects/privai-guard` to `getPublishedProjects()` / `getPublishedProjectBySlug()`. After reviewed experience content is loaded in a later step, switch `/experience` to `getPublishedExperiences()` / `getPublishedExperienceById()`. After reviewed education content is loaded, switch the Education group on `/credentials` (and home highlights) to `getPublishedEducation()` / `getPublishedEducationById()`.
 
 ---
 
-## 7. Project sections
+## 8. Project sections
 
 - Heading, body, track, status, and sort order
 - Move up / move down (only among sections of that project)
@@ -97,7 +112,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 8. Experience items
+## 9. Experience items
 
 - Body, track, status, sort order, `is_metric`, `metric_context`, and `show_on_home`
 - Move up / move down (only among items of that experience)
@@ -107,13 +122,13 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 9. Logout
+## 10. Logout
 
 Use **Log out**. The session cookies are cleared and the browser returns to `/admin/login`.
 
 ---
 
-## 10. Troubleshooting authentication
+## 11. Troubleshooting authentication
 
 1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 2. The hosted project has `public.is_admin()` and the owner `user_roles` row.
@@ -122,7 +137,7 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ---
 
-## 11. Proposed content script
+## 12. Proposed content script
 
 `supabase/content/privai_guard_project.sql` inserts the approved public PrivAI Guard project and seven sections if they are absent.
 
@@ -130,6 +145,6 @@ It is not a schema migration and is not run by `supabase db push`, `supabase sta
 
 ---
 
-## 12. Still out of scope
+## 13. Still out of scope
 
-Publications, credentials, media/Storage, resume uploads, contact-form submission, messages inbox, site settings, registration, password reset, role management, public experience/project cutover, real employment-history load, and deploy.
+Publications, remaining credential kinds (certification, training, license), media/Storage, resume uploads, contact-form submission, messages inbox, site settings, registration, password reset, role management, public project/experience/education cutover, real employment or education-history load, and deploy.

@@ -1,8 +1,8 @@
 # Supabase Architecture
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS
 
-**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects` and `/admin/experience` write to Supabase through the authenticated server client and RLS.
+**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects`, `/admin/experience`, and `/admin/education` write to Supabase through the authenticated server client and RLS.
 
 ---
 
@@ -32,6 +32,9 @@ Admin authentication:
 | `src/lib/admin/experience/` | Experience validation and admin queries |
 | `src/app/admin/experience/actions.ts` | Experience and item Server Actions |
 | `src/lib/content/experiences.ts` | Public published-only reads (not wired to pages yet) |
+| `src/lib/admin/education/` | Education validation and admin queries (`credentials.kind = degree`) |
+| `src/app/admin/education/actions.ts` | Education Server Actions |
+| `src/lib/content/education.ts` | Public published-only education reads (not wired to pages yet) |
 
 The app never queries `user_roles` through the Data API.
 
@@ -108,10 +111,10 @@ No table stores the comprehensive CV or private-source documents.
 ## 6. Future admin model
 
 1. The owner Auth user and `user_roles` (`role = owner`) row already exist in the hosted project.
-2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, and `/admin/experience*` render only after `getUser()` and `is_admin()` succeed on the server.
-3. Projects and Experience CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key.
+2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, `/admin/experience*`, and `/admin/education*` render only after `getUser()` and `is_admin()` succeed on the server.
+3. Projects, Experience, and Education CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key.
 4. Authenticated visitors who are not in `user_roles` can read published public content only and are denied the admin shell.
-5. Public project and experience pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts` and `src/lib/content/experiences.ts`.
+5. Public project, experience, and education pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts`, `src/lib/content/experiences.ts`, and `src/lib/content/education.ts`.
 6. Future role management remains out of scope for the MVP.
 
 See `docs/ADMIN_GUIDE.md`.
