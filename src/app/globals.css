@@ -11,6 +11,7 @@
   --accent-soft: #e4eeec;
   --copper: #7c5340;
   --focus: #1b5551;
+  --danger: #8a2f2b;
   --shadow: 0 1px 2px rgb(18 32 51 / 4%), 0 8px 24px rgb(18 32 51 / 4%);
   --container: 72rem;
   --container-narrow: 42rem;
@@ -26,6 +27,7 @@
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-copper: var(--copper);
+  --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-source-serif);
   --font-mono: var(--font-geist-mono);

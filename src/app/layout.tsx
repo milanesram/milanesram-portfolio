@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
-import { SiteShell } from "@/components/layout/SiteShell";
+import { AppChrome } from "@/components/layout/AppChrome";
 import { rootMetadata } from "@/lib/metadata";
 import "./globals.css";
 
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-paper font-sans text-ink">
-        <SiteShell>{children}</SiteShell>
+        <AppChrome>{children}</AppChrome>
       </body>
     </html>
   );

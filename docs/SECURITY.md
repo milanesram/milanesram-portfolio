@@ -1,7 +1,7 @@
 # Security
 
-**Step:** 16 foundation + 18 authorization hardening (local)  
-**Status:** Describes the intended hosted security model. The migration has not been applied remotely.
+**Step:** 16 foundation + 18 hardening + 23 admin authentication shell  
+**Status:** Hosted schema is applied. This document describes the live authorization model plus the local admin sign-in shell. The Next.js app still does not use a service-role key.
 
 ---
 
@@ -19,10 +19,13 @@
 
 ## 2. Authentication model
 
-- Supabase Auth will identify users later (magic link or password).
-- This step adds **no** sign-in UI and creates **no** users.
+- Supabase Auth password sign-in is used at `/admin/login`.
+- There is **no** public signup, invite, or forgot-password UI.
+- The MVP administrator is the manually provisioned owner Auth user.
+- Login and logout are Next.js Server Actions (Origin-checked) and do not log credentials.
 - Session cookies are refreshed in `src/proxy.ts` (Next.js 16 Proxy, not deprecated `middleware.ts`).
-- Authorization decisions must use `getClaims()` / `getUser()`, not `getSession()` alone.
+- Authorization decisions use `getUser()` plus `public.is_admin()`, not `getSession()` alone.
+- `/admin` is enforced on the server. Hidden navigation or client-only checks are not sufficient.
 
 ---
 
@@ -43,7 +46,7 @@ Admin status is an explicit row in `public.user_roles`:
 
 Signing in does **not** grant CMS rights.
 
-`user_roles` is **not** manageable through the public Data API. The first owner row must be inserted later in the SQL editor after an Auth user exists. There is no “first signup is admin” bootstrap. MVP role management through `anon` / `authenticated` grants is out of scope and would need a separately designed owner-only mechanism.
+`user_roles` is **not** manageable through the public Data API. The owner row was bootstrapped in the SQL editor. The admin app never queries `user_roles` directly; it calls `is_admin()`. There is no “first signup is admin” bootstrap and no role-management UI. MVP role changes remain an owner-only SQL-editor action.
 
 ---
 
@@ -128,12 +131,24 @@ Aligned with `CONTENT_PRIVACY_CLASSIFICATION.md`:
 
 ---
 
-## 10. What this step does not do
+## 10. Admin routes
 
-- Apply SQL to the hosted project
-- Create Auth users
-- Create Storage buckets
-- Build `/admin`
-- Connect the contact form
+| Route | Rule |
+|---|---|
+| `/admin/login` | Password sign-in. Owners already signed in are redirected to `/admin`. |
+| `/admin` | Unauthenticated visitors redirect to login. Authenticated non-admins see access denied. Owners see the shell. |
+
+Authorization is `getUser()` then `rpc('is_admin')`. Fail closed if the helper errors.
+
+---
+
+## 11. What remains out of scope
+
+- Content CRUD
+- Storage / uploads
+- Contact-form submission
+- Public content reads from Supabase
+- User registration or password-reset UI
+- Role-management UI
 - Deploy
-- Request or store a service-role key
+- Service-role / secret keys in this app

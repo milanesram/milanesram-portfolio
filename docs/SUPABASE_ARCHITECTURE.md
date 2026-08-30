@@ -1,9 +1,7 @@
 # Supabase Architecture
 
-**Step:** 16 foundation + 18 authorization hardening (local)  
-**Status:** Local preparation only. The hosted project has not been migrated. No remote tables, buckets, or users were created.
-
-This site currently renders from `src/content/`. The clients and schema below are the path to a later CMS. They are not wired to public pages yet.
+**Step:** 16 foundation + 18 hardening + 23 admin authentication shell  
+**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin` is an authentication shell only; CMS writes are not wired.
 
 ---
 
@@ -19,7 +17,16 @@ This site currently renders from `src/content/`. The clients and schema below ar
 
 Next.js 16 deprecates the `middleware.ts` convention in favor of `src/proxy.ts` exporting `proxy`. Session refresh lives there so Server Components do not have to write cookies.
 
-No authentication UI is included in this step.
+Admin authentication:
+
+| Module | Role |
+|---|---|
+| `src/lib/admin/authorization.ts` | Server-side `getUser()` + `rpc('is_admin')` |
+| `src/app/admin/actions.ts` | Sign-in / sign-out Server Actions |
+| `src/app/admin/login/page.tsx` | Login form; redirects authorized owners to `/admin` |
+| `src/app/admin/page.tsx` | Protected shell or access denied |
+
+The app never queries `user_roles` through the Data API.
 
 ---
 
@@ -80,23 +87,22 @@ No table stores the comprehensive CV or private-source documents.
 ## 5. Migration strategy
 
 - Versioned SQL: `supabase/migrations/20260830010000_initial_portfolio_schema.sql`
-- **Not applied** to the hosted project in this step
+- Applied to the hosted project in an earlier step
 - CREATE / ALTER ENABLE RLS / GRANT / REVOKE / POLICY / INDEX / FUNCTION / TRIGGER only
 - No DROP, TRUNCATE, or DELETE
-- After owner approval, apply with the Supabase CLI or SQL editor as a later step
-- Then generate types (see §9)
+- Generated types can replace the temporary boundary after review (see §9)
 
 ---
 
 ## 6. Future admin model
 
-1. Create the owner Auth user in the hosted project (later).
-2. Insert one `user_roles` row (`role = owner`) via the SQL editor. This bootstrap cannot be done through the public Data API. `user_roles` has no `anon` / `authenticated` table grants and no API-management RLS policy.
-3. Build `/admin` against the server client. Writes succeed only when `is_admin()` is true.
-4. Authenticated visitors who are not in `user_roles` can read published content only.
-5. Future role management is out of scope for the MVP and must be a separately designed owner-only mechanism (not Data API CRUD on `user_roles`).
+1. The owner Auth user and `user_roles` (`role = owner`) row already exist in the hosted project.
+2. `/admin/login` uses password sign-in. `/admin` renders only after `getUser()` and `is_admin()` succeed on the server.
+3. CMS writes are not implemented yet. When they are, they must go through the server client and still depend on `is_admin()` plus RLS.
+4. Authenticated visitors who are not in `user_roles` can read published public content only and are denied the admin shell.
+5. Future role management remains out of scope for the MVP and must be a separately designed owner-only mechanism (not Data API CRUD on `user_roles`).
 
-No `/admin` routes exist yet.
+See `docs/ADMIN_GUIDE.md`.
 
 ---
 
