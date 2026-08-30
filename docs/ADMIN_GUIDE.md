@@ -1,8 +1,8 @@
 # Admin Guide
 
-**Step:** 28 — Education CMS
+**Step:** 29 — Certifications CMS
 
-**Status:** Owner authentication plus Projects, Experience, and Education CMS. Other CMS types are not implemented.
+**Status:** Owner authentication plus Projects, Experience, Education, and Certifications CMS. Other CMS types are not implemented.
 
 This guide does not include passwords, user IDs, tokens, or other private identifiers.
 
@@ -23,6 +23,9 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin/education` | List education (credential `kind = degree`) |
 | `/admin/education/new` | Create an education record |
 | `/admin/education/[id]` | Edit an education record |
+| `/admin/certifications` | List certifications (credential `kind = certification`) |
+| `/admin/certifications/new` | Create a certification |
+| `/admin/certifications/[id]` | Edit a certification |
 
 Search engines are instructed not to index `/admin` routes.
 
@@ -43,11 +46,11 @@ The only authorized administrator for the MVP is the Auth user provisioned in th
 3. Routes and mutations call `public.is_admin()` over RPC. They do **not** query `public.user_roles`.
 4. Content renders or writes only when `is_admin()` returns true.
 
-| Visitor | `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*` |
+| Visitor | `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*` |
 |---|---|
 | Not signed in | Redirect to `/admin/login` |
 | Signed in, not an admin | Access denied |
-| Signed-in owner / admin | Dashboard, Projects CMS, Experience CMS, or Education CMS |
+| Signed-in owner / admin | Dashboard, Projects, Experience, Education, or Certifications CMS |
 
 There is no role-management UI.
 
@@ -91,7 +94,21 @@ Education is stored in `public.credentials` with `kind` fixed to `degree`. Certi
 
 ---
 
-## 7. Draft / publish behavior
+## 7. Certifications CMS workflow
+
+1. Open **Certifications** from the dashboard.
+2. Create a record or open an existing row.
+3. Edit name, issuer, year label, details, career track, highlight, needs-verification, and sort order.
+4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
+5. Delete a certification from its edit page after confirmation.
+
+Certifications are stored in `public.credentials` with `kind` fixed to `certification`. Degree, training, and license rows are out of scope for this module. There is no certification child table. The schema has no credential URL, verification URL, credential ID, expiration, issue date, logo, or file attachment.
+
+A published certification with `needs_verification = true` remains hidden from anonymous public SELECT. The owner can toggle that flag in this CMS.
+
+---
+
+## 8. Draft / publish behavior
 
 | Status | Admin | Public adapter | Current public pages |
 |---|---|---|---|
@@ -99,11 +116,11 @@ Education is stored in `public.credentials` with `kind` fixed to `degree`. Certi
 | `published` | Visible | Eligible | Still served from `src/content/` |
 | `archived` | Visible | Hidden | Still served from `src/content/` |
 
-Public pages are **not** switched to Supabase in this step. After reviewed project content is applied, switch `/projects` and `/projects/privai-guard` to `getPublishedProjects()` / `getPublishedProjectBySlug()`. After reviewed experience content is loaded in a later step, switch `/experience` to `getPublishedExperiences()` / `getPublishedExperienceById()`. After reviewed education content is loaded, switch the Education group on `/credentials` (and home highlights) to `getPublishedEducation()` / `getPublishedEducationById()`.
+Public pages are **not** switched to Supabase in this step. After reviewed project content is applied, switch `/projects` and `/projects/privai-guard` to `getPublishedProjects()` / `getPublishedProjectBySlug()`. After reviewed experience content is loaded in a later step, switch `/experience` to `getPublishedExperiences()` / `getPublishedExperienceById()`. After reviewed education content is loaded, switch the Education group on `/credentials` (and home highlights) to `getPublishedEducation()` / `getPublishedEducationById()`. After reviewed certification content is loaded, switch the Certifications group on `/credentials` to `getPublishedCertifications()` / `getPublishedCertificationById()`.
 
 ---
 
-## 8. Project sections
+## 9. Project sections
 
 - Heading, body, track, status, and sort order
 - Move up / move down (only among sections of that project)
@@ -112,7 +129,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 9. Experience items
+## 10. Experience items
 
 - Body, track, status, sort order, `is_metric`, `metric_context`, and `show_on_home`
 - Move up / move down (only among items of that experience)
@@ -122,13 +139,13 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 10. Logout
+## 11. Logout
 
 Use **Log out**. The session cookies are cleared and the browser returns to `/admin/login`.
 
 ---
 
-## 11. Troubleshooting authentication
+## 12. Troubleshooting authentication
 
 1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 2. The hosted project has `public.is_admin()` and the owner `user_roles` row.
@@ -137,7 +154,7 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ---
 
-## 12. Proposed content script
+## 13. Proposed content script
 
 `supabase/content/privai_guard_project.sql` inserts the approved public PrivAI Guard project and seven sections if they are absent.
 
@@ -145,6 +162,6 @@ It is not a schema migration and is not run by `supabase db push`, `supabase sta
 
 ---
 
-## 13. Still out of scope
+## 14. Still out of scope
 
-Publications, remaining credential kinds (certification, training, license), media/Storage, resume uploads, contact-form submission, messages inbox, site settings, registration, password reset, role management, public project/experience/education cutover, real employment or education-history load, and deploy.
+Publications, remaining credential kinds (training, license), media/Storage, resume uploads, contact-form submission, messages inbox, site settings, registration, password reset, role management, public project/experience/education/certification cutover, real employment, education-history, or certification load, and deploy.

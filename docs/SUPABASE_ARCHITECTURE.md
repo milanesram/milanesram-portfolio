@@ -1,8 +1,8 @@
 # Supabase Architecture
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS
 
-**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects`, `/admin/experience`, and `/admin/education` write to Supabase through the authenticated server client and RLS.
+**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects`, `/admin/experience`, `/admin/education`, and `/admin/certifications` write to Supabase through the authenticated server client and RLS.
 
 ---
 
@@ -35,6 +35,9 @@ Admin authentication:
 | `src/lib/admin/education/` | Education validation and admin queries (`credentials.kind = degree`) |
 | `src/app/admin/education/actions.ts` | Education Server Actions |
 | `src/lib/content/education.ts` | Public published-only education reads (not wired to pages yet) |
+| `src/lib/admin/certifications/` | Certification validation and admin queries (`credentials.kind = certification`) |
+| `src/app/admin/certifications/actions.ts` | Certification Server Actions |
+| `src/lib/content/certifications.ts` | Public published-only certification reads (not wired to pages yet) |
 
 The app never queries `user_roles` through the Data API.
 
@@ -74,6 +77,7 @@ The approved `docs/INITIAL_DATA_MODEL.md` is leaner than a one-table-per-noun li
 | publications | `publications` | |
 | credentials | `credentials` | |
 | education | `credentials.kind = degree` | Same object type |
+| certifications | `credentials.kind = certification` | Same object type |
 | leadership | `engagements` | Speaking, advisory, awards, leadership |
 | skills | `focus_pages.competencies` | Text array; no skills table |
 | resume_assets | `media_assets` (`kind = resume_pdf`, `is_public`) | |
@@ -111,10 +115,10 @@ No table stores the comprehensive CV or private-source documents.
 ## 6. Future admin model
 
 1. The owner Auth user and `user_roles` (`role = owner`) row already exist in the hosted project.
-2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, `/admin/experience*`, and `/admin/education*` render only after `getUser()` and `is_admin()` succeed on the server.
-3. Projects, Experience, and Education CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key.
+2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, and `/admin/certifications*` render only after `getUser()` and `is_admin()` succeed on the server.
+3. Projects, Experience, Education, and Certifications CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key.
 4. Authenticated visitors who are not in `user_roles` can read published public content only and are denied the admin shell.
-5. Public project, experience, and education pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts`, `src/lib/content/experiences.ts`, and `src/lib/content/education.ts`.
+5. Public project, experience, education, and certification pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts`, `src/lib/content/experiences.ts`, `src/lib/content/education.ts`, and `src/lib/content/certifications.ts`.
 6. Future role management remains out of scope for the MVP.
 
 See `docs/ADMIN_GUIDE.md`.

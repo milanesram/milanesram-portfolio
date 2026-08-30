@@ -1,8 +1,8 @@
 # Security
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS
 
-**Status:** Hosted schema is applied. Admin sign-in and the Projects, Experience, and Education CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
+**Status:** Hosted schema is applied. Admin sign-in and the Projects, Experience, Education, and Certifications CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
 
 ---
 
@@ -143,6 +143,7 @@ Aligned with `CONTENT_PRIVACY_CLASSIFICATION.md`:
 | `/admin/projects*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. |
 | `/admin/experience*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. |
 | `/admin/education*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Education writes only `credentials` rows with `kind = degree`. |
+| `/admin/certifications*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Certification writes only `credentials` rows with `kind = certification`. |
 
 Authorization is `getUser()` then `rpc('is_admin')`. Fail closed if the helper errors.
 
@@ -177,6 +178,16 @@ Education mutations:
 - Public adapter functions filter `kind = degree`, `status = published`, and `needs_verification = false` in addition to RLS
 - After-save redirects use server-known UUIDs only
 
+Certification mutations:
+
+- Allowlist fields only (no mass assignment)
+- `kind` is server-fixed to `certification`
+- Track and status come from closed enums
+- IDs must be UUIDs
+- Updates and deletes are scoped to `id` and `kind = certification`
+- Public adapter functions filter `kind = certification`, `status = published`, and `needs_verification = false` in addition to RLS
+- After-save redirects use server-known UUIDs only
+
 The explicit content script `supabase/content/privai_guard_project.sql` is not a migration, is not auto-applied, and has not been applied to hosted Supabase.
 
 Forward RLS corrections (not applied hosted):
@@ -188,11 +199,11 @@ Forward RLS corrections (not applied hosted):
 
 ## 11. What remains out of scope
 
-- Publications, remaining credential kinds, and other remaining CMS modules
+- Publications, remaining credential kinds (training, license), and other remaining CMS modules
 - Storage / uploads
 - Contact-form submission
 - Switching public pages to Supabase before reviewed content is applied
-- Loading real professional-experience or education content into Supabase
+- Loading real professional-experience, education, or certification content into Supabase
 - User registration or password-reset UI
 - Role-management UI
 - Deploy
