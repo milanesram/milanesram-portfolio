@@ -1,8 +1,8 @@
 # Admin Guide
 
-**Step:** 32 — Site Settings + Profile CMS
+**Step:** 33 — Media Assets CMS
 
-**Status:** Owner authentication plus Projects, Experience, Education, Certifications, Training, License, Skills, and Settings CMS. Other CMS types are not implemented.
+**Status:** Owner authentication plus Projects, Experience, Education, Certifications, Training, License, Skills, Settings, and Media CMS. Other CMS types are not implemented.
 
 This guide does not include passwords, user IDs, tokens, or other private identifiers.
 
@@ -36,6 +36,8 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin/skills/new` | Create a focus page (empty competencies) |
 | `/admin/skills/[id]` | Edit a focus page and its competencies |
 | `/admin/settings` | Edit the `site_profile` and `site_settings` singletons |
+| `/admin/media` | List existing media metadata |
+| `/admin/media/[id]` | Edit existing media metadata |
 
 Search engines are instructed not to index `/admin` routes.
 
@@ -56,11 +58,11 @@ The only authorized administrator for the MVP is the Auth user provisioned in th
 3. Routes and mutations call `public.is_admin()` over RPC. They do **not** query `public.user_roles`.
 4. Content renders or writes only when `is_admin()` returns true.
 
-| Visitor | `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*`, `/admin/training*`, `/admin/licenses*`, `/admin/skills*`, `/admin/settings` |
+| Visitor | `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*`, `/admin/training*`, `/admin/licenses*`, `/admin/skills*`, `/admin/settings`, `/admin/media*` |
 |---|---|
 | Not signed in | Redirect to `/admin/login` |
 | Signed in, not an admin | Access denied |
-| Signed-in owner / admin | Dashboard, Projects, Experience, Education, Certifications, Training, Licenses, Skills, or Settings CMS |
+| Signed-in owner / admin | Dashboard, Projects, Experience, Education, Certifications, Training, Licenses, Skills, Settings, or Media CMS |
 
 There is no role-management UI.
 
@@ -173,7 +175,19 @@ Saving the focus page does not overwrite competencies. Skill add, edit, reorder,
 
 ---
 
-## 12. Draft / publish behavior
+## 12. Media CMS workflow
+
+1. Open **Media** from the dashboard.
+2. Inspect existing `media_assets` metadata: title, alt text, kind, public flag, and status.
+3. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
+4. Public anonymous SELECT requires both `status = published` and `is_public = true`. Anon may read only public metadata columns (`id`, `kind`, `title`, `alt_text`, `is_public`, `status`), not `bucket_path` or timestamps.
+5. Delete metadata after confirmation. Focus-page `resume_media_id` references are SET NULL. Storage objects are not deleted because Storage is not configured.
+
+There is no `/new` route and no upload. `bucket_path` is owner-visible immutable storage identity and is not writable from the browser. Do not invent object paths.
+
+---
+
+## 13. Draft / publish behavior
 
 | Status | Admin | Public adapter | Current public pages |
 |---|---|---|---|
@@ -181,11 +195,11 @@ Saving the focus page does not overwrite competencies. Skill add, edit, reorder,
 | `published` | Visible | Eligible | Still served from `src/content/` |
 | `archived` | Visible | Hidden | Still served from `src/content/` |
 
-Public pages are **not** switched to Supabase in this step. After reviewed project content is applied, switch `/projects` and `/projects/privai-guard` to `getPublishedProjects()` / `getPublishedProjectBySlug()`. After reviewed experience content is loaded in a later step, switch `/experience` to `getPublishedExperiences()` / `getPublishedExperienceById()`. After reviewed education content is loaded, switch the Education group on `/credentials` (and home highlights) to `getPublishedEducation()` / `getPublishedEducationById()`. After reviewed certification content is loaded, switch the Certifications group on `/credentials` to `getPublishedCertifications()` / `getPublishedCertificationById()`. After reviewed training content is loaded, switch the Training group on `/credentials` to `getPublishedTraining()` / `getPublishedTrainingById()`. After reviewed license content is loaded, switch the Licenses group on `/credentials` to `getPublishedLicenses()` / `getPublishedLicenseById()`. After reviewed focus-page content is loaded, switch Home, About, and focus routes to `getPublishedFocusPages()` / `getPublishedFocusPageBySlug()`. After a reviewed `site_profile` row is published, switch Home, About, header, and footer identity to `getPublishedSiteProfile()`. After a later cutover, switch robots/indexability and the contact-form flag to `getPublicSiteSettings()`.
+Public pages are **not** switched to Supabase in this step. After reviewed project content is applied, switch `/projects` and `/projects/privai-guard` to `getPublishedProjects()` / `getPublishedProjectBySlug()`. After reviewed experience content is loaded in a later step, switch `/experience` to `getPublishedExperiences()` / `getPublishedExperienceById()`. After reviewed education content is loaded, switch the Education group on `/credentials` (and home highlights) to `getPublishedEducation()` / `getPublishedEducationById()`. After reviewed certification content is loaded, switch the Certifications group on `/credentials` to `getPublishedCertifications()` / `getPublishedCertificationById()`. After reviewed training content is loaded, switch the Training group on `/credentials` to `getPublishedTraining()` / `getPublishedTrainingById()`. After reviewed license content is loaded, switch the Licenses group on `/credentials` to `getPublishedLicenses()` / `getPublishedLicenseById()`. After reviewed focus-page content is loaded, switch Home, About, and focus routes to `getPublishedFocusPages()` / `getPublishedFocusPageBySlug()`. After a reviewed `site_profile` row is published, switch Home, About, header, and footer identity to `getPublishedSiteProfile()`. After a later cutover, switch robots/indexability and the contact-form flag to `getPublicSiteSettings()`. After reviewed public media metadata exists, switch resume/project media consumers to `getPublishedPublicMediaAssets()` / `getPublishedPublicMediaAssetById()`. Anonymous media SELECT also requires `is_public = true`.
 
 ---
 
-## 13. Project sections
+## 14. Project sections
 
 - Heading, body, track, status, and sort order
 - Move up / move down (only among sections of that project)
@@ -194,7 +208,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 14. Experience items
+## 15. Experience items
 
 - Body, track, status, sort order, `is_metric`, `metric_context`, and `show_on_home`
 - Move up / move down (only among items of that experience)
@@ -204,7 +218,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 15. Focus-page competencies
+## 16. Focus-page competencies
 
 - Plain text values on `focus_pages.competencies`
 - Move up / move down (only within that page’s array)
@@ -214,13 +228,13 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 16. Logout
+## 17. Logout
 
 Use **Log out**. The session cookies are cleared and the browser returns to `/admin/login`.
 
 ---
 
-## 17. Troubleshooting authentication
+## 18. Troubleshooting authentication
 
 1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 2. The hosted project has `public.is_admin()` and the owner `user_roles` row.
@@ -229,7 +243,7 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ---
 
-## 18. Proposed content script
+## 19. Proposed content script
 
 `supabase/content/privai_guard_project.sql` inserts the approved public PrivAI Guard project and seven sections if they are absent.
 
@@ -237,6 +251,6 @@ It is not a schema migration and is not run by `supabase db push`, `supabase sta
 
 ---
 
-## 19. Still out of scope
+## 20. Still out of scope
 
-Publications, media/Storage, resume uploads, contact-form submission, messages inbox, registration, password reset, role management, public project/experience/education/certification/training/license/skills/settings cutover, real employment, education-history, certification, training, license, skills, or site-profile load, and deploy.
+Publications, Storage upload, resume uploads, contact-form submission, messages inbox, registration, password reset, role management, public project/experience/education/certification/training/license/skills/settings/media cutover, real employment, education-history, certification, training, license, skills, site-profile, or media load, and deploy.

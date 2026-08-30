@@ -1,8 +1,8 @@
 # Supabase Architecture
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS + 33 Media CMS
 
-**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects`, `/admin/experience`, `/admin/education`, `/admin/certifications`, `/admin/training`, `/admin/licenses`, `/admin/skills`, and `/admin/settings` write to Supabase through the authenticated server client and RLS.
+**Status:** Hosted schema is applied. Public pages still render from `src/content/`. `/admin/projects`, `/admin/experience`, `/admin/education`, `/admin/certifications`, `/admin/training`, `/admin/licenses`, `/admin/skills`, `/admin/settings`, and `/admin/media` write to Supabase through the authenticated server client and RLS.
 
 ---
 
@@ -51,6 +51,9 @@ Admin authentication:
 | `src/app/admin/settings/actions.ts` | Site profile and site settings Server Actions |
 | `src/lib/content/profile.ts` | Public published-only site-profile reads (not wired to pages yet) |
 | `src/lib/content/settings.ts` | Public site-settings flag reads (not wired to pages yet) |
+| `src/lib/admin/media/` | Media metadata validation and admin queries (`media_assets`) |
+| `src/app/admin/media/actions.ts` | Media metadata Server Actions (no Storage mutations) |
+| `src/lib/content/media.ts` | Public published+public media-metadata reads (not wired to pages yet) |
 
 The app never queries `user_roles` through the Data API.
 
@@ -130,10 +133,10 @@ No table stores the comprehensive CV or private-source documents.
 ## 6. Future admin model
 
 1. The owner Auth user and `user_roles` (`role = owner`) row already exist in the hosted project.
-2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*`, `/admin/training*`, `/admin/licenses*`, `/admin/skills*`, and `/admin/settings` render only after `getUser()` and `is_admin()` succeed on the server.
-3. Projects, Experience, Education, Certifications, Training, License, Skills, and Settings CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key.
+2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*`, `/admin/training*`, `/admin/licenses*`, `/admin/skills*`, `/admin/settings`, and `/admin/media*` render only after `getUser()` and `is_admin()` succeed on the server.
+3. Projects, Experience, Education, Certifications, Training, License, Skills, Settings, and Media CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. There is no service-role key.
 4. Authenticated visitors who are not in `user_roles` can read published public content only and are denied the admin shell.
-5. Public project, experience, education, certification, training, license, focus, and identity pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts`, `src/lib/content/experiences.ts`, `src/lib/content/education.ts`, `src/lib/content/certifications.ts`, `src/lib/content/training.ts`, `src/lib/content/licenses.ts`, `src/lib/content/skills.ts`, `src/lib/content/profile.ts`, and `src/lib/content/settings.ts`.
+5. Public project, experience, education, certification, training, license, focus, identity, and media pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts`, `src/lib/content/experiences.ts`, `src/lib/content/education.ts`, `src/lib/content/certifications.ts`, `src/lib/content/training.ts`, `src/lib/content/licenses.ts`, `src/lib/content/skills.ts`, `src/lib/content/profile.ts`, `src/lib/content/settings.ts`, and `src/lib/content/media.ts`.
 6. Future role management remains out of scope for the MVP.
 
 See `docs/ADMIN_GUIDE.md`.
@@ -142,7 +145,9 @@ See `docs/ADMIN_GUIDE.md`.
 
 ## 7. Future Storage model
 
-`media_assets` holds metadata and a `bucket_path`. Buckets are **not** created in this step.
+`media_assets` holds metadata and a `bucket_path`. Buckets are **not** created. Step 33 is metadata and reference management only; Storage upload is deferred.
+
+`bucket_path` is owner-visible internal Storage identity. RLS still limits anonymous rows to `status = published` AND `is_public = true`. Column privileges then limit `anon` to `id`, `kind`, `title`, `alt_text`, `is_public`, and `status`. Direct anonymous `bucket_path` SELECT is denied. Authenticated owner Media CMS retains table-level SELECT. `supabase/migrations/20260830050000_restrict_anon_media_asset_columns.sql` is local-only and has not been applied hosted.
 
 Planned later:
 

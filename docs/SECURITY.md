@@ -1,8 +1,8 @@
 # Security
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS
+**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS + 33 Media CMS
 
-**Status:** Hosted schema is applied. Admin sign-in and the Projects, Experience, Education, Certifications, Training, License, Skills, and Settings CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
+**Status:** Hosted schema is applied. Admin sign-in and the Projects, Experience, Education, Certifications, Training, License, Skills, Settings, and Media CMS use the authenticated server client and RLS. The Next.js app still does not use a service-role key.
 
 ---
 
@@ -96,7 +96,7 @@ Drafts, archived rows, private resume metadata, and the admin table are not visi
 The hosted project has **Automatically expose new tables: DISABLED**. RLS is not enough; privileges are explicit.
 
 1. `REVOKE ALL` on every application table from `PUBLIC`, `anon`, and `authenticated`
-2. `GRANT SELECT` on published-content tables to `anon` and `authenticated`
+2. `GRANT SELECT` on published-content tables to `anon` and `authenticated`. `media_assets` is the exception: `anon` has column-level SELECT only (`id`, `kind`, `title`, `alt_text`, `is_public`, `status`). `bucket_path`, `created_at`, and `updated_at` are not granted to `anon`. Authenticated table-level SELECT is unchanged so the owner Media CMS can still read Storage identity.
 3. `GRANT INSERT, UPDATE, DELETE` on those CMS tables to `authenticated` (RLS still requires admin)
 4. **No** table privilege on `user_roles` to `anon` or `authenticated`. RLS remains ENABLED and FORCED. `is_admin()` may still read the table as `SECURITY DEFINER`.
 5. `GRANT SELECT, UPDATE, DELETE` on `inquiries` to `authenticated` (RLS: admin only)
@@ -116,7 +116,7 @@ Later: Server Action or Edge Function, rate limiting, bot control, then a tightl
 
 ## 8. Storage (later)
 
-No buckets in this step. When added:
+No buckets exist. Step 33 manages `media_assets` metadata only and does not upload, replace, or delete Storage objects. `bucket_path` is owner-visible internal Storage identity and is not writable from the browser. Anonymous row eligibility remains `status = published` and `is_public = true`. That RLS predicate does not hide columns: `anon` is granted only the public metadata fields. Direct anonymous `bucket_path` SELECT is denied. When buckets are added:
 
 - Do not upload `private-source/`
 - Public read only for published + `is_public` objects
@@ -149,6 +149,7 @@ Aligned with `CONTENT_PRIVACY_CLASSIFICATION.md`:
 | `/admin/licenses*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. License writes only `credentials` rows with `kind = license`. |
 | `/admin/skills*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Skills writes only `focus_pages` rows and their `competencies` array. |
 | `/admin/settings` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Settings writes only the `site_profile` and `site_settings` singleton rows. |
+| `/admin/media*` | Same authorization as `/admin`. Mutations re-check `is_admin()` on the server. Media writes only `media_assets` metadata and never Storage objects. |
 
 Authorization is `getUser()` then `rpc('is_admin')`. Fail closed if the helper errors.
 
@@ -235,12 +236,24 @@ Settings mutations:
 - Public adapters return published profile fields only, or the two public flags; they omit Auth email and `user_roles`
 - Public pages still render from `src/content/`
 
+Media mutations:
+
+- Allowlist fields only (no mass assignment; `bucket_path` is never accepted from the browser)
+- Kind is a closed enum (`resume_pdf`, `image`, `document`)
+- Status comes from closed intents (`draft`, `publish`, `unpublish`, `archive`, `keep`)
+- Anonymous row eligibility remains `status = published` and `is_public = true`
+- Anonymous column privileges are only `id`, `kind`, `title`, `alt_text`, `is_public`, and `status`
+- Direct anonymous `bucket_path` access is denied. Public adapters also omit `bucket_path` and timestamps
+- Delete removes metadata only. `focus_pages.resume_media_id` is ON DELETE SET NULL. Storage objects are not deleted
+- There is no `/new` route and no upload
+
 The explicit content script `supabase/content/privai_guard_project.sql` is not a migration, is not auto-applied, and has not been applied to hosted Supabase.
 
-Forward RLS corrections (not applied hosted):
+Forward corrections (not applied hosted):
 
 - `supabase/migrations/20260830030000_project_sections_select_parent_published.sql`
 - `supabase/migrations/20260830040000_experience_items_select_parent_published.sql`
+- `supabase/migrations/20260830050000_restrict_anon_media_asset_columns.sql`
 
 ---
 
@@ -250,7 +263,7 @@ Forward RLS corrections (not applied hosted):
 - Storage / uploads
 - Contact-form submission
 - Switching public pages to Supabase before reviewed content is applied
-- Loading real professional-experience, education, certification, training, license, skills, or site-profile content into Supabase
+- Loading real professional-experience, education, certification, training, license, skills, site-profile, or media content into Supabase
 - User registration or password-reset UI
 - Role-management UI
 - Deploy
