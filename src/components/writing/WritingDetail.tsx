@@ -54,8 +54,13 @@ export function WritingDetail({
         <p className="text-base leading-8 text-ink-soft">{publication.abstract}</p>
         <p className="mt-8 text-sm text-ink-faint">{publication.trackRelevance}</p>
         <AvailabilityCta publication={publication} />
-        {publication.externalUrl ? (
-          <p className="mt-8 text-sm text-ink-faint">
+        {publication.availability === "pdf" ? (
+          <p className="mt-6 text-sm text-ink-faint">
+            Presented in the form originally published.
+          </p>
+        ) : null}
+        {publication.availability === "external" && publication.externalUrl ? (
+          <p className="mt-6 text-sm text-ink-faint">
             Original source:{" "}
             <a
               href={publication.externalUrl}

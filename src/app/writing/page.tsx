@@ -1,26 +1,40 @@
-import { PageHero } from "@/components/ui/PageHero";
-import { PublicationCard } from "@/components/ui/PublicationCard";
+import type { Metadata } from "next";
 import { Container } from "@/components/layout/Container";
-import { publications } from "@/content";
+import { PageHero } from "@/components/ui/PageHero";
+import { WritingIndex } from "@/components/writing/WritingIndex";
+import {
+  WRITING_INDEX_COPY,
+  getPublishedPublications,
+} from "@/lib/content/publications";
 import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata = createPageMetadata(
-  "Writing",
-  "Selected publication on localizing the National Cybersecurity Plan 2023–2028 for local government units.",
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = createPageMetadata(
+  WRITING_INDEX_COPY.title,
+  "Selected professional writing by Rainier (Ram) Milanes across cybersecurity, GRC, IT risk, data privacy, AI governance, resilience, and technology policy.",
   "/writing",
 );
 
-export default function WritingPage() {
-  return (
-    <>
-      <PageHero
-        kicker="Writing"
-        title="Publications"
-        lede="Public writing that is already on the record. Year only is shown where a more precise date is ambiguous."
-      />
-      <Container className="py-16">
-        <PublicationCard publication={publications[0]} />
-      </Container>
-    </>
-  );
+export default async function WritingPage() {
+  const result = await getPublishedPublications();
+
+  if (!result.ok) {
+    return (
+      <>
+        <PageHero
+          kicker={WRITING_INDEX_COPY.eyebrow}
+          title={WRITING_INDEX_COPY.title}
+          lede="Writing is temporarily unavailable."
+        />
+        <Container className="py-16">
+          <p className="text-base leading-7 text-ink-soft">
+            Writing is temporarily unavailable.
+          </p>
+        </Container>
+      </>
+    );
+  }
+
+  return <WritingIndex publications={result.publications} />;
 }

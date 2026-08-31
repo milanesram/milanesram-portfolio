@@ -12,16 +12,13 @@ import type {
 /**
  * Public publication reads from Supabase.
  *
- * `/writing/[slug]` may look up a hosted published row. `/writing` remains
- * on `src/content/publications.ts` until an explicit content cutover.
- * Focus writing stays static. Do not import this helper from Home.
+ * `/writing` and `/writing/[slug]` use this helper. Focus writing stays
+ * static on `src/content/publications.ts`. Do not import this helper
+ * from Home or Focus.
  *
  * Uses the anonymous publishable client. RLS remains the publication
  * boundary (`status = published`). Does not read cookies, attach an owner
  * session, or use the service role. No writes.
- *
- * Future sitemap: add `/writing/{slug}` for published public items at
- * cutover. Do not emit slug URLs while hosted publications remain empty.
  */
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -76,6 +73,12 @@ export type PublishedPublicationsResult =
   | { ok: true; publications: PublishedPublication[] }
   | { ok: false };
 
+export type WritingLibraryGroups = {
+  lead: PublishedPublication | null;
+  availableHere: PublishedPublication[];
+  publishedElsewhere: PublishedPublication[];
+};
+
 export type PublishedPublicationResult =
   | { ok: true; publication: PublishedPublication }
   | { ok: true; publication: null }
@@ -109,6 +112,32 @@ function isPubliclyEligible(row: PublicationRow): boolean {
 
 export function getDocumentKindLabel(kind: DocumentKind): string {
   return DOCUMENT_KIND_LABELS[kind];
+}
+
+export function getAvailabilityLabel(
+  availability: PublicationAvailability,
+): string {
+  if (availability === "pdf") {
+    return "PDF available here";
+  }
+
+  if (availability === "external") {
+    return "Published elsewhere";
+  }
+
+  return "Read on this site";
+}
+
+export function groupPublishedWriting(
+  publications: PublishedPublication[],
+): WritingLibraryGroups {
+  const [lead, ...rest] = publications;
+
+  return {
+    lead: lead ?? null,
+    availableHere: rest.filter((item) => item.availability === "pdf"),
+    publishedElsewhere: rest.filter((item) => item.availability === "external"),
+  };
 }
 
 export function getTrackRelevance(track: TrackTag): string {
