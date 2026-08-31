@@ -1,16 +1,27 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { CaseStudySection, Project } from "@/content/types";
+import { createPublicSupabaseClient } from "@/lib/supabase/public";
 import type { ContentStatus, TrackTag } from "@/lib/supabase/database.types";
 
 /**
  * Public project reads from Supabase.
  *
- * Cutover: do not use these from `src/app/projects/**` until the reviewed
- * PrivAI Guard content script has been applied in an explicit later step.
- * Public pages still render from `src/content/projects.ts` so the site stays
- * populated.
+ * `/projects` and `/projects/privai-guard` read published rows through the
+ * anonymous publishable client. RLS remains the publication boundary.
+ * `src/content/projects.ts` is retained as rollback/reference and as the
+ * static source for routes that are not yet cut over.
  */
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+const SECTION_PRESENTATION_IDS: Record<string, string> = {
+  Problem: "problem",
+  Risk: "risk",
+  Guardrail: "guardrail",
+  Implementation: "implementation",
+  "Governance workflow": "workflow",
+  "Business value": "value",
+  "MVP boundary": "boundary",
+};
 
 export type PublishedProject = {
   id: string;
@@ -38,12 +49,70 @@ export type PublishedProjectDetail = PublishedProject & {
   sections: PublishedProjectSection[];
 };
 
+export type PublishedProjectsResult =
+  | { ok: true; projects: PublishedProject[] }
+  | { ok: false };
+
 function isPublishedStatus(status: ContentStatus): boolean {
   return status === "published";
 }
 
-export async function getPublishedProjects(): Promise<PublishedProject[]> {
-  const supabase = await createSupabaseServerClient();
+function mapProject(row: {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string;
+  year_label: string;
+  role: string;
+  summary: string;
+  limits: string;
+  stack: string[];
+  is_featured: boolean;
+  sort_order: number;
+}): PublishedProject {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    tagline: row.tagline,
+    yearLabel: row.year_label,
+    role: row.role,
+    summary: row.summary,
+    limits: row.limits,
+    stack: row.stack,
+    featured: row.is_featured,
+    sortOrder: row.sort_order,
+  };
+}
+
+export function toPresentationProject(project: PublishedProject): Project {
+  return {
+    id: project.slug,
+    slug: project.slug,
+    name: project.name,
+    tagline: project.tagline,
+    yearLabel: project.yearLabel,
+    role: project.role,
+    summary: project.summary,
+    limits: project.limits,
+    stack: project.stack,
+    featured: project.featured,
+    tracks: ["all"],
+  };
+}
+
+export function toPresentationSection(
+  section: PublishedProjectSection,
+): CaseStudySection {
+  return {
+    id: SECTION_PRESENTATION_IDS[section.heading] ?? section.heading,
+    heading: section.heading,
+    body: section.body,
+  };
+}
+
+export async function getPublishedProjects(): Promise<PublishedProjectsResult> {
+  const supabase = createPublicSupabaseClient();
   const { data, error } = await supabase
     .from("projects")
     .select(
@@ -54,24 +123,15 @@ export async function getPublishedProjects(): Promise<PublishedProject[]> {
     .order("name", { ascending: true });
 
   if (error || !data) {
-    return [];
+    return { ok: false };
   }
 
-  return data
-    .filter((row) => isPublishedStatus(row.status))
-    .map((row) => ({
-      id: row.id,
-      slug: row.slug,
-      name: row.name,
-      tagline: row.tagline,
-      yearLabel: row.year_label,
-      role: row.role,
-      summary: row.summary,
-      limits: row.limits,
-      stack: row.stack,
-      featured: row.is_featured,
-      sortOrder: row.sort_order,
-    }));
+  return {
+    ok: true,
+    projects: data
+      .filter((row) => isPublishedStatus(row.status))
+      .map(mapProject),
+  };
 }
 
 export async function getPublishedProjectBySlug(
@@ -81,7 +141,7 @@ export async function getPublishedProjectBySlug(
     return null;
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createPublicSupabaseClient();
   const { data: project, error } = await supabase
     .from("projects")
     .select(
@@ -107,17 +167,7 @@ export async function getPublishedProjectBySlug(
   }
 
   return {
-    id: project.id,
-    slug: project.slug,
-    name: project.name,
-    tagline: project.tagline,
-    yearLabel: project.year_label,
-    role: project.role,
-    summary: project.summary,
-    limits: project.limits,
-    stack: project.stack,
-    featured: project.is_featured,
-    sortOrder: project.sort_order,
+    ...mapProject(project),
     sections: (sections ?? [])
       .filter((section) => isPublishedStatus(section.status))
       .map((section) => ({

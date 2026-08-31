@@ -1,8 +1,15 @@
+import { notFound } from "next/navigation";
 import { CallToAction } from "@/components/ui/CallToAction";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
-import { featuredProject, privaiGuardSections } from "@/content";
+import {
+  getPublishedProjectBySlug,
+  toPresentationProject,
+  toPresentationSection,
+} from "@/lib/content/projects";
 import { createPageMetadata } from "@/lib/metadata";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "PrivAI Guard",
@@ -10,22 +17,31 @@ export const metadata = createPageMetadata(
   "/projects/privai-guard",
 );
 
-export default function PrivaiGuardPage() {
+export default async function PrivaiGuardPage() {
+  const project = await getPublishedProjectBySlug("privai-guard");
+
+  if (!project) {
+    notFound();
+  }
+
+  const view = toPresentationProject(project);
+  const sections = project.sections.map(toPresentationSection);
+
   return (
     <>
       <PageHero
         kicker="Case study · Northwestern MSIS capstone · 2026"
-        title={featuredProject.name}
-        lede={featuredProject.summary}
+        title={view.name}
+        lede={view.summary}
       >
         <p className="max-w-2xl rounded-xl bg-accent-soft px-4 py-3 text-sm leading-6 text-ink">
-          {featuredProject.limits}
+          {view.limits}
         </p>
       </PageHero>
       <Container narrow className="py-16">
-        <p className="text-sm text-ink-faint">Role: {featuredProject.role}</p>
+        <p className="text-sm text-ink-faint">Role: {view.role}</p>
 
-        {privaiGuardSections.map((section) => (
+        {sections.map((section) => (
           <section key={section.id} className="mt-12">
             <h2 className="font-serif text-2xl font-medium text-ink">
               {section.heading}
@@ -37,7 +53,7 @@ export default function PrivaiGuardPage() {
         <section className="mt-12">
           <h2 className="font-serif text-2xl font-medium text-ink">Stack</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
-            {featuredProject.stack.map((item) => (
+            {view.stack.map((item) => (
               <li
                 key={item}
                 className="rounded-full border border-line px-3 py-1 font-mono text-xs text-ink-soft"
