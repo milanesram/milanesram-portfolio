@@ -13,12 +13,18 @@ import {
   publicCredentials,
   publications,
   siteProfile,
+  type FocusPage,
   type TrackId,
 } from "@/content";
 import { experiencesForTrack } from "@/content";
 
-export function FocusView({ trackId }: { trackId: TrackId }) {
-  const track = focusPages.find((item) => item.id === trackId)!;
+export function FocusView({
+  trackId,
+  page,
+}: {
+  trackId: TrackId;
+  page: FocusPage;
+}) {
   const other = focusPages.find((item) => item.id !== trackId)!;
   const experiences = experiencesForTrack(trackId).filter(
     (item) => item.kind !== "leadership",
@@ -34,7 +40,7 @@ export function FocusView({ trackId }: { trackId: TrackId }) {
 
   return (
     <>
-      <PageHero kicker="Focus profile" title={track.headline} lede={track.summary}>
+      <PageHero kicker="Focus profile" title={page.headline} lede={page.summary}>
         <p className="text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <ButtonLink
@@ -58,7 +64,7 @@ export function FocusView({ trackId }: { trackId: TrackId }) {
         <Container>
           <SectionHeader kicker="Competencies" title="How this profile is read" />
           <ul className="mt-8 flex flex-wrap gap-2">
-            {track.competencies.map((item) => (
+            {page.competencies.map((item) => (
               <li
                 key={item}
                 className="rounded-full bg-accent-soft px-3 py-1 text-sm text-ink"
