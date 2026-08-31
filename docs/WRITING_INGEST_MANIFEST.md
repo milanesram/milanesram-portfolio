@@ -5,14 +5,16 @@
 | Field | Value |
 |---|---|
 | Date | 2026-08-31 |
-| Step | 49E — Initial publications ingest manifest and draft seed freeze |
+| Step | 49F — Draft metadata application and original PDF integrity freeze |
 | Repository | `/Users/mbair_ram/Documents/rainier-portfolio` |
 | Branch | `main` |
 | Foundation HEAD | `81cda2f2b745b6a5070b9615537178f0d471eef2` (`feat: establish publications foundation`) |
+| Ingest freeze HEAD | `19acd5636c6cb54109cca1aaff16bf5e86714da4` (`feat: prepare initial writing ingest`) |
 | Hosted project | `rainier-portfolio` / `itoctveqrtozdehoofoq` |
-| Hosted schema at freeze | Migrations through `20260831140000` applied. Publications 0. Media 0. Storage objects 0. |
-| Git-only seed | `supabase/migrations/20260831160000_initial_writing_draft_seed.sql` |
-| Application | Not applied in Step 49E |
+| Hosted schema | Migrations through `20260831160000` applied. 10 draft publications. 10 draft/private media rows. Storage objects 0. |
+| Draft seed | `supabase/migrations/20260831160000_initial_writing_draft_seed.sql` |
+| Application | Applied hosted in Step 49F. Not applied locally. |
+| Hosted byte size | **DEFERRED** — `media_assets.byte_size` remains NULL pending a follow-up versioned migration |
 
 ## 2. Owner publication policy
 
@@ -53,7 +55,7 @@ NCSP remains **out of this seed**:
 | Media `is_public` | `false` |
 | Media `status` | `draft` |
 | Source status | Owner-supplied previously published original |
-| Binary status | **NOT YET INGESTED** |
+| Binary status | **SOURCE VERIFIED — NOT YET UPLOADED** |
 | Original-publication consistency | **PRESERVE PDF UNCHANGED** |
 
 PDF bylines inside the originals are not altered. Website byline uses the helper fallback.
@@ -70,17 +72,37 @@ For self-hosted previously published works, the detail page may show a subordina
 
 Do not insert this into PDFs. Do not imply independent fact verification, employer endorsement, current regulatory status, or a correction. Not applied to `/writing/[slug]` in Step 49E.
 
-## 6. Future intake and integrity (Step 49F)
+## 6. Intake mapping and integrity (Step 49F)
 
-Recommended owner-controlled folder **outside Git** (do not create in this repository):
+Owner-controlled intake files were hashed in place. Source filenames were not renamed. Binaries were not copied into Git. Storage objects were not uploaded.
 
-`~/Documents/rainier-portfolio-publication-intake/`
+Authoritative filename → work mapping (do not infer titles from filenames):
 
-Place the exact original PDFs there. Storage filenames may be normalized; **binary contents must remain identical**.
+| Source filename | Work |
+|---|---|
+| `4 Minute Read_Cybersecurity & Society Vol. 1.pdf` | You Are Easier to Hack Than Everything |
+| `4 Minute Read_Cybersecurity & Society Vol. 2.pdf` | From Data Breach to Boardroom: Why Cybersecurity Is Now Corporate Governance |
+| `4 Minute Read_Cybersecurity & Society Vol. 3.pdf` | From Orb to Oversight: Why the NPC Paused World App |
+| `4 Minute Read_Cybersecurity & Society Vol. 4.pdf` | The Price of Ubiquity: GCash Is Now Critical Infrastructure |
+| `4 Minute Read_Cybersecurity & Society Vol. 5.pdf` | Contain the Rumor, Protect the People |
+| `AI for Privacy Documentation.pdf` | Leveraging Generative Artificial Intelligence for Privacy Compliance Documentation: A Governance Oriented Approach for the European Union, the Philippines, and the APEC Region |
+| `Before Blocks.pdf` | Before Blocks, Build the Bedrock: Why Blockchain Shouldn't Lead Philippine Budget Reform—Yet |
+| `Critical Analysis of the eGov Outage.pdf` | Architectural Fragility and the Illusion of Cost-Savings: A Critical Analysis of the eGov PH Super App Outage and the Imperative for Enterprise-Grade BC/DR |
+| `Editorial Philippine Elections 2025 and Data Privacy.pdf` | Philippine Elections 2025: The Alarming Rise of Unsecured Personal Data Processing |
+| `PPML_WP_v1.8.pdf` | Privacy-Preserving Machine Learning in Global Healthcare AI: Breaking the Clinical Validation Bottleneck Without Breaking the Law |
 
-Before upload, compute source filename, byte size, MIME, SHA-256, and page count where practical. After upload, verify the hosted object exists and that the downloaded SHA-256 equals the source SHA-256.
+SHA-256 is the integrity reference for Step 49G. Hosted download must match this hash byte-for-byte. Do not upload a copy, rename, or re-export.
 
-Do not copy PDFs into this repository.
+Shared integrity flags for all ten:
+
+| Field | Value |
+|---|---|
+| MIME | `application/pdf` |
+| Integrity status | `SOURCE VERIFIED` |
+| Hosted binary status | `NOT YET UPLOADED` |
+| Hosted SHA-256 | `PENDING 49G` |
+| Original binary rule | `PRESERVE PDF UNCHANGED` |
+| Hosted byte size | `HOSTED BYTE SIZE UPDATE DEFERRED` |
 
 ## 7. Works
 
@@ -105,6 +127,16 @@ Display order follows `sort_order`.
 | Binary status | NOT YET INGESTED |
 | Publication status | DRAFT |
 | Original-publication consistency | PRESERVE PDF UNCHANGED |
+| Original source filename | `PPML_WP_v1.8.pdf` |
+| MIME type | `application/pdf` |
+| Byte size | `837948` |
+| Page count | `15` |
+| SHA-256 | `25a67d3a44edfc94af5d7c41e0630572b565298cb58034b8a746e1f4c262d81c` |
+| Integrity status | SOURCE VERIFIED |
+| Hosted binary status | NOT YET UPLOADED |
+| Hosted SHA-256 | PENDING 49G |
+| Original binary rule | PRESERVE PDF UNCHANGED |
+| Hosted byte size | HOSTED BYTE SIZE UPDATE DEFERRED |
 | Abstract | A governance and architecture white paper examining how Federated Learning, Differential Privacy, and Fully Homomorphic Encryption can support clinical AI validation while reducing unnecessary movement of regulated health data. The paper connects privacy engineering, cybersecurity, clinical evidence, patient agency, infrastructure equity, and audit-ready governance. |
 
 ### 2. Architectural Fragility and the Illusion of Cost-Savings
@@ -126,6 +158,16 @@ Display order follows `sort_order`.
 | Binary status | NOT YET INGESTED |
 | Publication status | DRAFT |
 | Original-publication consistency | PRESERVE PDF UNCHANGED |
+| Original source filename | `Critical Analysis of the eGov Outage.pdf` |
+| MIME type | `application/pdf` |
+| Byte size | `233977` |
+| Page count | `19` |
+| SHA-256 | `4d2f49bf82ce6daf4f275492c4cc85406cfbe10e50a96ed5da552185f8416fe7` |
+| Integrity status | SOURCE VERIFIED |
+| Hosted binary status | NOT YET UPLOADED |
+| Hosted SHA-256 | PENDING 49G |
+| Original binary rule | PRESERVE PDF UNCHANGED |
+| Hosted byte size | HOSTED BYTE SIZE UPDATE DEFERRED |
 | Abstract | A resilience-focused analysis of the eGov PH Super App outage examining cloud capacity, availability, interoperability, identity governance, data protection, sovereign continuity, and business continuity and disaster recovery for national-scale digital services. |
 
 ### 3. Leveraging Generative Artificial Intelligence for Privacy Compliance Documentation
@@ -147,6 +189,16 @@ Display order follows `sort_order`.
 | Binary status | NOT YET INGESTED |
 | Publication status | DRAFT |
 | Original-publication consistency | PRESERVE PDF UNCHANGED |
+| Original source filename | `AI for Privacy Documentation.pdf` |
+| MIME type | `application/pdf` |
+| Byte size | `294920` |
+| Page count | `24` |
+| SHA-256 | `44ff142399d553003df612b8d86ab3e17223dc161df157ca3a795da6c88b6421` |
+| Integrity status | SOURCE VERIFIED |
+| Hosted binary status | NOT YET UPLOADED |
+| Hosted SHA-256 | PENDING 49G |
+| Original binary rule | PRESERVE PDF UNCHANGED |
+| Hosted byte size | HOSTED BYTE SIZE UPDATE DEFERRED |
 | Abstract | A governance-oriented white paper examining the use of Generative AI, Retrieval-Augmented Generation, and structured prompting to support privacy compliance documentation across European, Philippine, and Asia-Pacific regulatory environments. |
 
 ### 4. Contain the Rumor, Protect the People
@@ -168,6 +220,16 @@ Display order follows `sort_order`.
 | Binary status | NOT YET INGESTED |
 | Publication status | DRAFT |
 | Original-publication consistency | PRESERVE PDF UNCHANGED |
+| Original source filename | `4 Minute Read_Cybersecurity & Society Vol. 5.pdf` |
+| MIME type | `application/pdf` |
+| Byte size | `2531037` |
+| Page count | `2` |
+| SHA-256 | `bf70d6526760a104c01cf7e3290d2a772c6ecf1e296e2e781bf95102e66bef60` |
+| Integrity status | SOURCE VERIFIED |
+| Hosted binary status | NOT YET UPLOADED |
+| Hosted SHA-256 | PENDING 49G |
+| Original binary rule | PRESERVE PDF UNCHANGED |
+| Hosted byte size | HOSTED BYTE SIZE UPDATE DEFERRED |
 | Abstract | A concise incident-governance analysis of responsible communications during an unverified cyber event, emphasizing evidence discipline, public guidance, regulatory coordination, investigative integrity, and threat-actor incentives. |
 
 ### 5. From Data Breach to Boardroom
@@ -189,6 +251,16 @@ Display order follows `sort_order`.
 | Binary status | NOT YET INGESTED |
 | Publication status | DRAFT |
 | Original-publication consistency | PRESERVE PDF UNCHANGED |
+| Original source filename | `4 Minute Read_Cybersecurity & Society Vol. 2.pdf` |
+| MIME type | `application/pdf` |
+| Byte size | `12033529` |
+| Page count | `3` |
+| SHA-256 | `ae22d821e3d0396bdef29dede6dcc5c015692b7e7de212d1bfbc2850764cde31` |
+| Integrity status | SOURCE VERIFIED |
+| Hosted binary status | NOT YET UPLOADED |
+| Hosted SHA-256 | PENDING 49G |
+| Original binary rule | PRESERVE PDF UNCHANGED |
+| Hosted byte size | HOSTED BYTE SIZE UPDATE DEFERRED |
 | Abstract | A short professional analysis framing cybersecurity incidents as governance, resilience, accountability, regulatory, business-continuity, and trust issues rather than purely technical failures. |
 
 ### 6. From Orb to Oversight
@@ -210,6 +282,16 @@ Display order follows `sort_order`.
 | Binary status | NOT YET INGESTED |
 | Publication status | DRAFT |
 | Original-publication consistency | PRESERVE PDF UNCHANGED |
+| Original source filename | `4 Minute Read_Cybersecurity & Society Vol. 3.pdf` |
+| MIME type | `application/pdf` |
+| Byte size | `1418207` |
+| Page count | `3` |
+| SHA-256 | `fb2762c6bcdb6d0ed0e5c2207ae0a038639959a4d266bc790fc715a4df1b5224` |
+| Integrity status | SOURCE VERIFIED |
+| Hosted binary status | NOT YET UPLOADED |
+| Hosted SHA-256 | PENDING 49G |
+| Original binary rule | PRESERVE PDF UNCHANGED |
+| Hosted byte size | HOSTED BYTE SIZE UPDATE DEFERRED |
 | Abstract | A privacy-governance analysis of biometric processing, consent, transparency, proportionality, irreversible identity risk, and regulatory oversight through the World App and Orb case in the Philippines. |
 
 ### 7. You Are Easier to Hack Than Everything
@@ -231,6 +313,16 @@ Display order follows `sort_order`.
 | Binary status | NOT YET INGESTED |
 | Publication status | DRAFT |
 | Original-publication consistency | PRESERVE PDF UNCHANGED |
+| Original source filename | `4 Minute Read_Cybersecurity & Society Vol. 1.pdf` |
+| MIME type | `application/pdf` |
+| Byte size | `3288273` |
+| Page count | `3` |
+| SHA-256 | `90ba7ab0769b073c3d6ec6f48b2050d5a1b5caf60a33ebdc8587bf37ce6998ba` |
+| Integrity status | SOURCE VERIFIED |
+| Hosted binary status | NOT YET UPLOADED |
+| Hosted SHA-256 | PENDING 49G |
+| Original binary rule | PRESERVE PDF UNCHANGED |
+| Hosted byte size | HOSTED BYTE SIZE UPDATE DEFERRED |
 | Abstract | An accessible cybersecurity piece examining social engineering, human-centered attack techniques, organizational awareness, verification controls, and practical defenses against manipulation-based intrusion. |
 
 ### 8. Before Blocks, Build the Bedrock
@@ -252,6 +344,16 @@ Display order follows `sort_order`.
 | Binary status | NOT YET INGESTED |
 | Publication status | DRAFT |
 | Original-publication consistency | PRESERVE PDF UNCHANGED |
+| Original source filename | `Before Blocks.pdf` |
+| MIME type | `application/pdf` |
+| Byte size | `2938493` |
+| Page count | `4` |
+| SHA-256 | `d0a84e9836af51334dd73cc614102ad83a7112b0e8d28b73d1ff32addddd2515` |
+| Integrity status | SOURCE VERIFIED |
+| Hosted binary status | NOT YET UPLOADED |
+| Hosted SHA-256 | PENDING 49G |
+| Original binary rule | PRESERVE PDF UNCHANGED |
+| Hosted byte size | HOSTED BYTE SIZE UPDATE DEFERRED |
 | Abstract | An editorial arguing that public-sector digital reform should prioritize institutional capacity, interoperable and reliable data, security controls, auditability, and workforce readiness before adopting blockchain as a trust mechanism. |
 
 ### 9. The Price of Ubiquity
@@ -273,6 +375,16 @@ Display order follows `sort_order`.
 | Binary status | NOT YET INGESTED |
 | Publication status | DRAFT |
 | Original-publication consistency | PRESERVE PDF UNCHANGED |
+| Original source filename | `4 Minute Read_Cybersecurity & Society Vol. 4.pdf` |
+| MIME type | `application/pdf` |
+| Byte size | `5329293` |
+| Page count | `3` |
+| SHA-256 | `64828378cb4991e6110284b081f489c57b5154e52ece81d1c5987ad0c55e2bf0` |
+| Integrity status | SOURCE VERIFIED |
+| Hosted binary status | NOT YET UPLOADED |
+| Hosted SHA-256 | PENDING 49G |
+| Original binary rule | PRESERVE PDF UNCHANGED |
+| Hosted byte size | HOSTED BYTE SIZE UPDATE DEFERRED |
 | Abstract | A contemporaneous cybersecurity and public-trust analysis of the risk created when a widely used digital-payment platform becomes socially and economically critical infrastructure. |
 
 ### 10. Philippine Elections 2025
@@ -294,6 +406,16 @@ Display order follows `sort_order`.
 | Binary status | NOT YET INGESTED |
 | Publication status | DRAFT |
 | Original-publication consistency | PRESERVE PDF UNCHANGED |
+| Original source filename | `Editorial Philippine Elections 2025 and Data Privacy.pdf` |
+| MIME type | `application/pdf` |
+| Byte size | `5666770` |
+| Page count | `4` |
+| SHA-256 | `78200a44643572f06c9d65ba8e644ab2356cafcd9679e22614115e004381ead0` |
+| Integrity status | SOURCE VERIFIED |
+| Hosted binary status | NOT YET UPLOADED |
+| Hosted SHA-256 | PENDING 49G |
+| Original binary rule | PRESERVE PDF UNCHANGED |
+| Hosted byte size | HOSTED BYTE SIZE UPDATE DEFERRED |
 | Abstract | An editorial on privacy risk in election-period and public-assistance data processing, focusing on identification data, public disclosure, health information, proportionality, data minimization, and citizen awareness. |
 
 ## 8. Source-of-truth boundary
@@ -310,13 +432,14 @@ Display order follows `sort_order`.
 
 Do not conflate metadata curation with editing the work.
 
-## 9. What Step 49E does not do
+## 9. What Step 49F does not do
 
-- Apply the seed migration hosted or locally
-- Insert hosted rows
-- Upload PDFs
-- Publish rows
+- Upload PDFs to `public-media`
+- Publish publication or media rows
+- Set `is_public = true`
+- Ad hoc hosted `byte_size` UPDATE (deferred to a versioned migration)
 - Cut over `/writing`
 - Create an NCSP hosted row
 - Modify Home, Focus, schema, or Storage
-- Copy binaries into the repository
+- Copy or edit source PDFs
+- Implement the provenance line on `/writing/[slug]`
