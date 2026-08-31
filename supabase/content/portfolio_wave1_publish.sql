@@ -230,7 +230,7 @@ BEGIN
     UNION ALL
     SELECT id FROM public.projects WHERE slug IN ('privai-guard', 'dbnms', 'npcrs') AND status = 'published'
     UNION ALL
-    SELECT id FROM public.project_sections ps
+    SELECT ps.id FROM public.project_sections ps
       JOIN public.projects p ON p.id = ps.project_id
      WHERE p.slug = 'privai-guard' AND ps.status = 'published'
     UNION ALL
