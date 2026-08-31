@@ -1,76 +1,165 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { ContentStatus, MediaKind } from "@/lib/supabase/database.types";
-import { isUuid } from "@/lib/admin/ids";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { PUBLIC_MEDIA_BUCKET } from "@/lib/content/media-bucket";
+import { createPublicSupabaseClient } from "@/lib/supabase/public";
+import type {
+  ContentStatus,
+  Database,
+  MediaKind,
+  MediaPurpose,
+} from "@/lib/supabase/database.types";
 
 /**
  * Public media-metadata reads from Supabase.
  *
- * Cutover: do not use these from resume, project, or focus routes until
- * an explicit later step. Public pages still render from `src/content/`
- * and local `/public` assets.
+ * Cutover: do not import this from Home, About, Writing, Projects,
+ * Resume, or Focus until an explicit later step. This module establishes
+ * the anonymous read contract only.
  *
- * Returns published + public display metadata only. Omits `bucket_path`,
- * timestamps, and owner/Auth data. Storage objects are not served here.
+ * Uses the anonymous publishable client. RLS remains the publication
+ * boundary (published AND is_public). Does not read cookies, attach an
+ * owner session, or use the service role.
  */
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const MEDIA_COLUMNS =
+  "id, bucket_path, kind, purpose, title, alt_text, caption, credit, year_label, mime_type, byte_size, sort_order, status, is_public";
 
 export type PublishedPublicMedia = {
   id: string;
+  kind: MediaKind;
+  purpose: MediaPurpose | null;
   title: string;
   altText: string | null;
-  kind: MediaKind;
+  caption: string | null;
+  credit: string | null;
+  yearLabel: string | null;
+  mimeType: string | null;
+  byteSize: number | null;
+  bucketPath: string;
+  publicUrl: string;
+  sortOrder: number;
 };
 
-function isPubliclyReadable(
-  status: ContentStatus,
-  isPublic: boolean,
-): boolean {
+type PublicClient = SupabaseClient<Database>;
+
+type MediaRow = {
+  id: string;
+  bucket_path: string;
+  kind: MediaKind;
+  purpose: MediaPurpose | null;
+  title: string;
+  alt_text: string | null;
+  caption: string | null;
+  credit: string | null;
+  year_label: string | null;
+  mime_type: string | null;
+  byte_size: number | null;
+  sort_order: number;
+  status: ContentStatus;
+  is_public: boolean;
+};
+
+function isMediaUuid(value: string): boolean {
+  return UUID_PATTERN.test(value);
+}
+
+function isPubliclyReadable(status: ContentStatus, isPublic: boolean): boolean {
   return status === "published" && isPublic;
 }
 
-const MEDIA_COLUMNS = "id, title, alt_text, kind, status, is_public";
+function normalizeBucketPath(path: string): string | null {
+  const trimmed = path.trim();
 
-function mapMedia(row: {
-  id: string;
-  title: string;
-  alt_text: string | null;
-  kind: MediaKind;
-}): PublishedPublicMedia {
+  if (!trimmed || trimmed.startsWith("/") || trimmed.includes("..")) {
+    return null;
+  }
+
+  return trimmed;
+}
+
+function buildPublicMediaObjectUrl(
+  client: PublicClient,
+  bucketPath: string,
+): string | null {
+  const normalized = normalizeBucketPath(bucketPath);
+
+  if (!normalized) {
+    return null;
+  }
+
+  const { data } = client.storage.from(PUBLIC_MEDIA_BUCKET).getPublicUrl(normalized);
+  return data.publicUrl || null;
+}
+
+/**
+ * Deterministic public object URL for an approved public-media path.
+ * Uses Storage getPublicUrl. No signed URL, no listing, no write.
+ * Bucket name is fixed to public-media.
+ */
+export function getPublicMediaObjectUrl(bucketPath: string): string | null {
+  return buildPublicMediaObjectUrl(createPublicSupabaseClient(), bucketPath);
+}
+
+function mapMedia(client: PublicClient, row: MediaRow): PublishedPublicMedia | null {
+  const publicUrl = buildPublicMediaObjectUrl(client, row.bucket_path);
+
+  if (!publicUrl) {
+    return null;
+  }
+
   return {
     id: row.id,
+    kind: row.kind,
+    purpose: row.purpose,
     title: row.title,
     altText: row.alt_text,
-    kind: row.kind,
+    caption: row.caption,
+    credit: row.credit,
+    yearLabel: row.year_label,
+    mimeType: row.mime_type,
+    byteSize: row.byte_size,
+    bucketPath: row.bucket_path,
+    publicUrl,
+    sortOrder: row.sort_order,
   };
 }
 
 export async function getPublishedPublicMediaAssets(): Promise<
   PublishedPublicMedia[]
 > {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createPublicSupabaseClient();
   const { data, error } = await supabase
     .from("media_assets")
     .select(MEDIA_COLUMNS)
     .eq("status", "published")
     .eq("is_public", true)
+    .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
 
   if (error || !data) {
     return [];
   }
 
-  return data
-    .filter((row) => isPubliclyReadable(row.status, row.is_public))
-    .map(mapMedia);
+  return data.flatMap((row) => {
+    if (!isPubliclyReadable(row.status, row.is_public)) {
+      return [];
+    }
+
+    const mapped = mapMedia(supabase, row);
+    return mapped ? [mapped] : [];
+  });
 }
 
 export async function getPublishedPublicMediaAssetById(
   id: string,
 ): Promise<PublishedPublicMedia | null> {
-  if (!isUuid(id)) {
+  if (!isMediaUuid(id)) {
     return null;
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createPublicSupabaseClient();
   const { data, error } = await supabase
     .from("media_assets")
     .select(MEDIA_COLUMNS)
@@ -83,5 +172,5 @@ export async function getPublishedPublicMediaAssetById(
     return null;
   }
 
-  return mapMedia(data);
+  return mapMedia(supabase, data);
 }

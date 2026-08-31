@@ -27,6 +27,12 @@ export type EngagementKind =
 export type InquiryContext = "recruiter" | "hiring_manager" | "other";
 export type InquiryTrack = "cybersecurity_grc" | "privacy_ai" | "either";
 export type MediaKind = "resume_pdf" | "image" | "document";
+export type MediaPurpose =
+  | "portrait"
+  | "journey"
+  | "project"
+  | "publication"
+  | "resume";
 export type AdminRole = "owner" | "admin";
 
 export type Json =
@@ -372,8 +378,15 @@ export type Database = {
           id: string;
           bucket_path: string;
           kind: MediaKind;
+          purpose: MediaPurpose | null;
           title: string;
           alt_text: string | null;
+          caption: string | null;
+          credit: string | null;
+          year_label: string | null;
+          mime_type: string | null;
+          byte_size: number | null;
+          sort_order: number;
           is_public: boolean;
           status: ContentStatus;
         };
@@ -381,8 +394,15 @@ export type Database = {
           id?: string;
           bucket_path: string;
           kind: MediaKind;
+          purpose?: MediaPurpose | null;
           title: string;
           alt_text?: string | null;
+          caption?: string | null;
+          credit?: string | null;
+          year_label?: string | null;
+          mime_type?: string | null;
+          byte_size?: number | null;
+          sort_order?: number;
           is_public?: boolean;
           status?: ContentStatus;
           created_at?: string;
@@ -465,6 +485,7 @@ export type Database = {
       inquiry_context: InquiryContext;
       inquiry_track: InquiryTrack;
       media_kind: MediaKind;
+      media_purpose: MediaPurpose;
       admin_role: AdminRole;
     };
     CompositeTypes: Record<string, never>;
