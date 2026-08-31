@@ -7,7 +7,13 @@ const kindLabel: Record<Credential["kind"], string> = {
   license: "Licensure",
 };
 
-export function CredentialCard({ credential }: { credential: Credential }) {
+export function CredentialCard({
+  credential,
+  compact = false,
+}: {
+  credential: Credential;
+  compact?: boolean;
+}) {
   return (
     <article className="rounded-xl border border-line bg-paper-elevated p-5">
       <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
@@ -18,7 +24,7 @@ export function CredentialCard({ credential }: { credential: Credential }) {
         {credential.issuer}
         {credential.yearLabel ? ` · ${credential.yearLabel}` : null}
       </p>
-      {credential.details ? (
+      {!compact && credential.details ? (
         <p className="mt-3 text-sm leading-6 text-ink-soft">{credential.details}</p>
       ) : null}
     </article>

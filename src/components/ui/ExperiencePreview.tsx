@@ -4,11 +4,15 @@ import { bulletsForTrack } from "@/content";
 export function ExperiencePreview({
   experience,
   track,
+  showTitleSecondary = true,
 }: {
   experience: Experience;
   track?: "cyber" | "privacy";
+  showTitleSecondary?: boolean;
 }) {
-  const bullets = bulletsForTrack(experience, track).slice(0, 2);
+  const bullets = track
+    ? bulletsForTrack(experience, track).slice(0, 2)
+    : experience.bullets.slice(0, 2);
 
   return (
     <article className="border-t border-line py-6 first:border-t-0 first:pt-0">
@@ -21,7 +25,7 @@ export function ExperiencePreview({
         </p>
       </div>
       <p className="mt-1 text-sm font-medium text-ink-soft">{experience.title}</p>
-      {experience.titleSecondary ? (
+      {showTitleSecondary && experience.titleSecondary ? (
         <p className="text-sm text-ink-soft">{experience.titleSecondary}</p>
       ) : null}
       <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-ink-soft">
