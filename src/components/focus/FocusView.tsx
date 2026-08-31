@@ -3,7 +3,7 @@ import { CredentialCard } from "@/components/ui/CredentialCard";
 import { ExperiencePreview } from "@/components/ui/ExperiencePreview";
 import { PageHero } from "@/components/ui/PageHero";
 import { ProjectCard } from "@/components/ui/ProjectCard";
-import { PublicationCard } from "@/components/ui/PublicationCard";
+import { FocusWritingCard } from "@/components/focus/FocusWritingCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/layout/Container";
@@ -11,19 +11,21 @@ import {
   featuredProject,
   focusPages,
   publicCredentials,
-  publications,
   siteProfile,
   type FocusPage,
   type TrackId,
 } from "@/content";
 import { experiencesForTrack } from "@/content";
+import type { FocusSelectedWriting } from "@/lib/content/focus";
 
 export function FocusView({
   trackId,
   page,
+  selectedWriting,
 }: {
   trackId: TrackId;
   page: FocusPage;
+  selectedWriting: FocusSelectedWriting | null;
 }) {
   const other = focusPages.find((item) => item.id !== trackId)!;
   const experiences = experiencesForTrack(trackId).filter(
@@ -32,10 +34,6 @@ export function FocusView({
   const credentials = publicCredentials.filter(
     (credential) =>
       credential.tracks.includes(trackId) || credential.highlight || credential.kind === "license",
-  );
-  const writing = publications.filter(
-    (publication) =>
-      publication.tracks.includes(trackId) || publication.tracks.includes("all"),
   );
 
   return (
@@ -124,12 +122,12 @@ export function FocusView({
         </Container>
       </section>
 
-      {writing.length > 0 ? (
+      {selectedWriting ? (
         <section className="py-16">
           <Container>
-            <SectionHeader kicker="Writing" title="Selected publication" />
+            <SectionHeader kicker="Writing" title="Selected writing" />
             <div className="mt-8">
-              <PublicationCard publication={writing[0]} />
+              <FocusWritingCard publication={selectedWriting} />
             </div>
           </Container>
         </section>

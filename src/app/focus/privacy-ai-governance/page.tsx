@@ -4,6 +4,7 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
 import {
   getPublishedFocusPageBySlug,
+  getSelectedFocusWriting,
   toPresentationFocusPage,
 } from "@/lib/content/focus";
 import { createPageMetadata } from "@/lib/metadata";
@@ -40,10 +41,14 @@ export default async function PrivacyFocusPage() {
     notFound();
   }
 
+  const page = toPresentationFocusPage(result.page, "privacy");
+  const selectedWriting = await getSelectedFocusWriting(page.selectedWritingSlug);
+
   return (
     <FocusView
       trackId="privacy"
-      page={toPresentationFocusPage(result.page, "privacy")}
+      page={page}
+      selectedWriting={selectedWriting}
     />
   );
 }

@@ -69,16 +69,6 @@ export type Credential = {
   verification?: VerificationState;
 };
 
-export type Publication = {
-  id: string;
-  title: string;
-  publisher: string;
-  yearLabel: string;
-  abstract: string;
-  externalUrl: string;
-  tracks: Array<TrackId | "all">;
-};
-
 export type FocusPage = {
   id: TrackId;
   slug: string;
@@ -86,6 +76,7 @@ export type FocusPage = {
   headline: string;
   summary: string;
   competencies: string[];
+  selectedWritingSlug: string;
 };
 
 export type SiteProfile = {

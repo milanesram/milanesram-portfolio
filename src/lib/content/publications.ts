@@ -12,9 +12,9 @@ import type {
 /**
  * Public publication reads from Supabase.
  *
- * `/writing` and `/writing/[slug]` use this helper. Focus writing stays
- * static on `src/content/publications.ts`. Do not import this helper
- * from Home or Focus.
+ * `/writing` and `/writing/[slug]` use this helper. Focus server pages
+ * may resolve one frozen slug through `getPublishedPublicationBySlug`.
+ * Do not import this helper from Home or client presentation code.
  *
  * Uses the anonymous publishable client. RLS remains the publication
  * boundary (`status = published`). Does not read cookies, attach an owner

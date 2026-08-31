@@ -34,6 +34,7 @@ export const focusPages: FocusPage[] = [
       "Third-party risk",
       "Security governance",
     ],
+    selectedWritingSlug: "egov-ph-architectural-fragility-bcdr",
   },
   {
     id: "privacy",
@@ -54,6 +55,7 @@ export const focusPages: FocusPage[] = [
       "Audit evidence",
       "Remediation",
     ],
+    selectedWritingSlug: "privacy-preserving-machine-learning-global-healthcare-ai",
   },
 ];
 

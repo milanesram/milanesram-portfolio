@@ -1,5 +1,7 @@
 import type { FocusPage, TrackId } from "@/content/types";
+import { focusPages } from "@/content/site";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
+import { getPublishedPublicationBySlug } from "@/lib/content/publications";
 import type { ContentStatus } from "@/lib/supabase/database.types";
 
 /**
@@ -9,8 +11,17 @@ import type { ContentStatus } from "@/lib/supabase/database.types";
  * published focus record through the anonymous publishable client. RLS
  * remains the publication boundary. Supporting lists on FocusView stay on
  * their existing sources. `src/content/site.ts` is retained for Home,
- * Resume, footer, and presentation aliases.
+ * Resume, footer, presentation aliases, and the editorial selected-writing
+ * slug for each track.
  */
+
+export type FocusSelectedWriting = {
+  slug: string;
+  title: string;
+  documentKindLabel: string;
+  yearLabel: string;
+  abstract: string;
+};
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -40,6 +51,8 @@ export function toPresentationFocusPage(
   page: PublishedFocusPage,
   trackId: TrackId,
 ): FocusPage {
+  const configured = focusPages.find((item) => item.id === trackId);
+
   return {
     id: trackId,
     slug: page.slug,
@@ -47,6 +60,25 @@ export function toPresentationFocusPage(
     headline: page.headline,
     summary: page.summary,
     competencies: page.competencies,
+    selectedWritingSlug: configured?.selectedWritingSlug ?? "",
+  };
+}
+
+export async function getSelectedFocusWriting(
+  slug: string,
+): Promise<FocusSelectedWriting | null> {
+  const result = await getPublishedPublicationBySlug(slug);
+
+  if (!result.ok || !result.publication) {
+    return null;
+  }
+
+  return {
+    slug: result.publication.slug,
+    title: result.publication.title,
+    documentKindLabel: result.publication.documentKindLabel,
+    yearLabel: result.publication.yearLabel,
+    abstract: result.publication.abstract,
   };
 }
 
