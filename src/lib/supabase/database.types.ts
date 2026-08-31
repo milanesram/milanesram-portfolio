@@ -33,6 +33,17 @@ export type MediaPurpose =
   | "project"
   | "publication"
   | "resume";
+export type DocumentKind =
+  | "publication"
+  | "white_paper"
+  | "editorial"
+  | "feature"
+  | "four_minute_read"
+  | "other";
+export type PublicationRightsStatus =
+  | "host_pdf"
+  | "link_only"
+  | "review_required";
 export type AdminRole = "owner" | "admin";
 
 export type Json =
@@ -284,6 +295,9 @@ export type Database = {
           id: string;
           slug: string;
           title: string;
+          document_kind: DocumentKind;
+          rights_status: PublicationRightsStatus;
+          author: string | null;
           publisher: string;
           published_on: string | null;
           year_label: string;
@@ -292,11 +306,15 @@ export type Database = {
           track: TrackTag;
           status: ContentStatus;
           sort_order: number;
+          media_id: string | null;
         };
         Insert: {
           id?: string;
           slug: string;
           title: string;
+          document_kind: DocumentKind;
+          rights_status?: PublicationRightsStatus;
+          author?: string | null;
           publisher: string;
           published_on?: string | null;
           year_label: string;
@@ -305,11 +323,20 @@ export type Database = {
           track?: TrackTag;
           status?: ContentStatus;
           sort_order?: number;
+          media_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["publications"]["Insert"]>;
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "publications_media_id_fkey";
+            columns: ["media_id"];
+            isOneToOne: false;
+            referencedRelation: "media_assets";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       credentials: {
         Row: Row & {
@@ -486,6 +513,8 @@ export type Database = {
       inquiry_track: InquiryTrack;
       media_kind: MediaKind;
       media_purpose: MediaPurpose;
+      document_kind: DocumentKind;
+      publication_rights_status: PublicationRightsStatus;
       admin_role: AdminRole;
     };
     CompositeTypes: Record<string, never>;
