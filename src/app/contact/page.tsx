@@ -48,7 +48,9 @@ export default async function ContactPage() {
             </a>
           </li>
         </ul>
-        <p className="text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+        {siteProfile.workAuthorization ? (
+          <p className="text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+        ) : null}
         {intakeToken ? (
           <ContactForm token={intakeToken} />
         ) : (

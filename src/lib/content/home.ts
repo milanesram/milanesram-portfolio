@@ -12,13 +12,13 @@ export const homeAbsoluteTitle =
   "Rainier (Ram) Milanes — Cybersecurity, GRC, IT Risk & Privacy";
 
 export const homeDescription =
-  "I am targeting analyst, specialist, and consultant roles in cybersecurity, GRC, IT risk, privacy, and AI governance. Northwestern MSIS graduate. Applied technical evidence through PrivAI Guard. Authorized to work in the U.S. without sponsorship.";
+  "Cybersecurity governance, GRC, technology risk, privacy, and AI governance. Northwestern MSIS graduate. Applied technical evidence through PrivAI Guard.";
 
 export const homeHeroCopy = {
   eyebrow: "Rainier (Ram) Milanes",
   headline: "Cybersecurity, risk, and privacy work grounded in technical practice.",
   summary:
-    "I am targeting analyst, specialist, and consultant roles in cybersecurity, GRC, and privacy, with AI governance supported by current work. I earned a Northwestern MSIS (Security Specialization) and developed PrivAI Guard as applied technical evidence.",
+    "Substantial governance and privacy experience, an earned Northwestern MSIS (Security Specialization), and hands-on technical work through PrivAI Guard, a non-production Shadow AI governance capstone.",
   chips: [
     "Cybersecurity",
     "GRC",
@@ -27,8 +27,8 @@ export const homeHeroCopy = {
     "AI Governance",
   ] as const,
   primaryCta: {
-    href: "/resume",
-    label: "View resume options",
+    href: "/experience",
+    label: "View experience",
   },
   secondaryCta: {
     href: "/projects/privai-guard",
@@ -78,7 +78,7 @@ export const homeTracks = [
     resumeLabel: "Resume A",
     title: "Cybersecurity / GRC",
     summary:
-      "For cybersecurity, GRC, and IT-risk roles that need controls, audit readiness, and technology-risk translation.",
+      "For cybersecurity, GRC, and IT-risk work that needs controls, audit readiness, and technology-risk translation.",
     chips: ["IT risk", "GRC", "Controls", "Audit readiness"] as const,
     ctaLabel: "View this track",
     href: "/focus/cybersecurity-grc",
@@ -88,7 +88,7 @@ export const homeTracks = [
     resumeLabel: "Resume B",
     title: "Privacy / AI Governance",
     summary:
-      "For privacy and AI-governance roles that need privacy operations, risk assessment, and responsible human review.",
+      "For privacy and AI-governance work that needs privacy operations, risk assessment, and responsible human review.",
     chips: [
       "Data privacy",
       "Privacy-risk assessment",

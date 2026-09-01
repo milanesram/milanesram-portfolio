@@ -39,7 +39,9 @@ export function FocusView({
   return (
     <>
       <PageHero kicker="Focus profile" title={page.headline} lede={page.summary}>
-        <p className="text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+        {siteProfile.workAuthorization ? (
+          <p className="text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+        ) : null}
         <div className="mt-6 flex flex-wrap gap-3">
           <ButtonLink
             href="/resume"

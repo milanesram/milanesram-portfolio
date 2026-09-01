@@ -8,7 +8,9 @@ export function SiteFooter() {
         <div>
           <p className="font-serif text-xl text-ink">{siteProfile.displayName}</p>
           <p className="mt-3 text-sm leading-6 text-ink-soft">{siteProfile.headline}</p>
-          <p className="mt-4 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+          {siteProfile.workAuthorization ? (
+            <p className="mt-4 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+          ) : null}
         </div>
 
         <div>

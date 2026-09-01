@@ -225,11 +225,11 @@ export default async function HomePage() {
         <Container>
           <div className="rounded-2xl border border-line bg-paper-elevated px-6 py-10 sm:px-10">
             <h2 className="font-serif text-3xl font-medium text-ink">
-              Request a resume or start a conversation
+              Review the work or start a conversation
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-ink-soft">
-              Choose the resume track that fits the role, or reach me directly by email
-              or LinkedIn.
+              Explore experience, projects, and credentials, or reach me by email or
+              LinkedIn.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <ButtonLink href="/resume" variant="primary">

@@ -41,7 +41,9 @@ export function HomeHero({ portrait = null }: HomeHeroProps) {
               {homeHeroCopy.secondaryCta.label}
             </ButtonLink>
           </div>
-          <p className="mt-6 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+          {siteProfile.workAuthorization ? (
+            <p className="mt-6 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+          ) : null}
         </div>
         {portrait ? <HomePortrait portrait={portrait} /> : <PortraitSlot />}
       </div>

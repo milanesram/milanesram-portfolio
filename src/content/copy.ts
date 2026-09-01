@@ -1,11 +1,11 @@
 export const aboutCopy = {
   kicker: "About",
   title: "From privacy and governance work to cybersecurity and risk.",
-  lede: "I now focus on cybersecurity, GRC, and privacy work at the analyst, specialist, and consultant level. An earned Northwestern MSIS (Security Specialization) sits on a foundation of privacy regulation and governance practice.",
+  lede: "I work across cybersecurity governance, GRC, technology risk, privacy, and AI governance. An earned Northwestern MSIS (Security Specialization) sits on a foundation of privacy regulation and governance practice.",
   paragraphs: [
     "My foundation is privacy regulation, governance, and risk work. I have consulted for regulated organizations and worked with the National Privacy Commission, the Philippines' national privacy regulator, on assessments, controls, compliance operations, and technology-security implementation.",
     "Before that, I built an organization’s first privacy management program in a commercial setting and translated privacy, security, and compliance requirements into operating practice.",
-    "I earned a Northwestern MSIS (Security Specialization) and designed PrivAI Guard, a non-production Shadow AI governance capstone. That combination of security education and applied development is how I now pursue analyst, specialist, and consultant work in cybersecurity, GRC, and privacy.",
+    "I earned a Northwestern MSIS (Security Specialization) and designed PrivAI Guard, a non-production Shadow AI governance capstone. That combination of security education and applied development is how I keep cybersecurity, GRC, privacy, and AI-governance work technically current.",
   ],
   speaking:
     "I have spoken and advised on data privacy and cybersecurity for public-sector, academic, and private-sector audiences, including selected international briefings.",

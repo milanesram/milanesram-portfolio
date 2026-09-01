@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "About",
-  "Privacy and governance background, an earned Northwestern MSIS (Security Specialization), and current cybersecurity, GRC, and privacy work.",
+  "Privacy and governance background, an earned Northwestern MSIS (Security Specialization), and current cybersecurity, GRC, privacy, and AI-governance work.",
   "/about",
 );
 

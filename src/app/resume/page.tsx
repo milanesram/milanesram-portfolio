@@ -41,7 +41,9 @@ export default function ResumePage() {
           </a>
           .
         </p>
-        <p className="mt-4 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+        {siteProfile.workAuthorization ? (
+          <p className="mt-4 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+        ) : null}
         <p className="mt-2 text-sm text-ink-faint">
           Licensed to Practice Law in the Philippines. Not licensed to practice law in
           the United States.

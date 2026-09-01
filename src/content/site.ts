@@ -6,8 +6,8 @@ export const siteProfile: SiteProfile = {
   initials: "RM",
   headline: "Cybersecurity, GRC, IT risk, and privacy professional.",
   summary:
-    "Cybersecurity, GRC, IT-risk, and privacy professional targeting analyst, specialist, and consultant roles. I earned a Northwestern MSIS (Security Specialization) and combine governance and privacy experience with hands-on technical development through PrivAI Guard, a non-production Shadow AI governance capstone.",
-  workAuthorization: "Authorized to work in the U.S. without sponsorship",
+    "Cybersecurity, GRC, IT-risk, and privacy professional. I earned a Northwestern MSIS (Security Specialization) and combine governance and privacy experience with hands-on technical development through PrivAI Guard, a non-production Shadow AI governance capstone.",
+  workAuthorization: "",
   linkedinUrl: "https://www.linkedin.com/in/milanesram/",
   linkedinLabel: "linkedin.com/in/milanesram",
   email: "milanesram@gmail.com",
