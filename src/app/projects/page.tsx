@@ -1,6 +1,7 @@
 import { PageHero } from "@/components/ui/PageHero";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { Container } from "@/components/layout/Container";
+import { projectsCopy } from "@/content";
 import {
   getPublishedProjects,
   toPresentationProject,
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "Projects",
-  "Selected work including PrivAI Guard, a Shadow AI privacy-risk triage capstone, and national privacy-regulatory systems.",
+  "Selected work including PrivAI Guard, a non-production Shadow AI governance capstone, and national privacy-regulatory systems.",
   "/projects",
 );
 
@@ -21,9 +22,9 @@ export default async function ProjectsPage() {
   return (
     <>
       <PageHero
-        kicker="Projects"
-        title="Selected work"
-        lede="PrivAI Guard is the flagship technical case study. The national systems are described at public-function level only."
+        kicker={projectsCopy.kicker}
+        title={projectsCopy.title}
+        lede={projectsCopy.lede}
       />
       <Container className="grid gap-6 py-16 lg:grid-cols-2">
         {result.ok ? (

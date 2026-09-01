@@ -9,7 +9,7 @@ export const projects: Project[] = [
     yearLabel: "2026",
     role: "Designed and developed",
     summary:
-      "A cloud-deployed full-stack Shadow AI governance MVP that converts potentially risky AI use into structured risk assessment, governance review, remediation, audit evidence, and executive visibility.",
+      "A cloud-deployed full-stack Shadow AI governance MVP that converts potentially risky AI use into structured risk assessment, governance review, remediation, and audit evidence.",
     limits:
       "Northwestern University MSIS capstone MVP. Non-production. Synthetic demonstration data only. Human governance review — not automated legal or regulatory decisioning.",
     stack: [
@@ -81,7 +81,7 @@ export const privaiGuardSections: CaseStudySection[] = [
   {
     id: "workflow",
     heading: "Governance workflow",
-    body: "A reported use can be classified, scored, routed for human-reviewed internal-AI consideration, assigned remediation, and recorded as audit evidence with executive visibility. Reviewers — not the application — remain accountable for governance outcomes.",
+    body: "A reported use can be classified, scored, routed for human-reviewed internal-AI consideration, assigned remediation, and recorded as audit evidence. Reviewers — not the application — remain accountable for governance outcomes.",
   },
   {
     id: "value",

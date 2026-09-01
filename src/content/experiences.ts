@@ -14,7 +14,7 @@ export const experiences: Experience[] = [
     tracks: ["all"],
     bullets: [
       {
-        body: "Support regulated and high-risk organizations with cybersecurity, privacy, risk-management, and governance initiatives aligned with business and regulatory requirements.",
+        body: "Assess cybersecurity, privacy, and technology-risk issues for regulated and high-risk organizations and translate findings into governance, control, and remediation work.",
         tracks: ["all"],
       },
       {
@@ -44,11 +44,11 @@ export const experiences: Experience[] = [
     tracks: ["all"],
     bullets: [
       {
-        body: "Advised executive leadership on cybersecurity strategy, technology risk, critical-infrastructure protection, information security, and security-control implementation.",
+        body: "Assessed cybersecurity, technology-risk, and information-security issues and advised on control implementation and critical-infrastructure protection.",
         tracks: ["cyber", "all"],
       },
       {
-        body: "Advised executive leadership on cybersecurity strategy, information security, privacy compliance, technology risk, critical-infrastructure protection, and security-control implementation.",
+        body: "Assessed cybersecurity, privacy-compliance, and technology-risk issues and advised on control implementation and critical-infrastructure protection.",
         tracks: ["privacy"],
       },
       {
@@ -93,7 +93,7 @@ export const experiences: Experience[] = [
         tracks: ["all"],
       },
       {
-        body: "Managed multidisciplinary teams and high-volume privacy, security, and compliance workflows; conducted and oversaw privacy, security, technology, and compliance assessments.",
+        body: "Conducted and oversaw privacy, security, technology, and compliance assessments across high-volume operational workflows.",
         tracks: ["all"],
       },
       {
@@ -133,7 +133,7 @@ export const experiences: Experience[] = [
         tracks: ["all"],
       },
       {
-        body: "Led modernization, records digitalization, infrastructure improvements, vendor management, and cross-functional operational initiatives.",
+        body: "Modernized records handling, infrastructure, and vendor oversight in support of operational and information-security practice.",
         tracks: ["cyber", "all"],
       },
     ],
@@ -149,7 +149,7 @@ export const experiences: Experience[] = [
     tracks: ["all"],
     bullets: [
       {
-        body: "Directed IT planning, infrastructure modernization, information-security initiatives, and corporate-record digitalization to protect confidential organizational information.",
+        body: "Planned IT and information-security improvements and digitalized corporate records to protect confidential organizational information.",
         tracks: ["cyber", "all"],
       },
       {

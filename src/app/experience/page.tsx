@@ -2,6 +2,7 @@ import { CallToAction } from "@/components/ui/CallToAction";
 import { ExperienceEntry } from "@/components/ui/ExperienceEntry";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
+import { experienceCopy } from "@/content";
 import { getHybridPublicExperiences } from "@/lib/content/experiences";
 import { createPageMetadata } from "@/lib/metadata";
 
@@ -9,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "Experience",
-  "Professional experience in cybersecurity, GRC, privacy operations, and technology risk — from consulting to National Privacy Commission leadership.",
+  "Cybersecurity, GRC, privacy, and technology-risk experience spanning consulting, regulatory operations, and commercial privacy-program work.",
   "/experience",
 );
 
@@ -19,9 +20,9 @@ export default async function ExperiencePage() {
   return (
     <>
       <PageHero
-        kicker="Experience"
-        title="A single timeline"
-        lede="Roles and dates are the same across both employer pathways. Consulting and National Privacy Commission work overlapped from October 2024."
+        kicker={experienceCopy.kicker}
+        title={experienceCopy.title}
+        lede={experienceCopy.lede}
       />
       <Container className="py-16">
         {result.ok ? (
@@ -43,7 +44,7 @@ export default async function ExperiencePage() {
               {result.experiences.some((item) => item.kind === "leadership") ? (
                 <>
                   <h2 className="mt-12 font-serif text-2xl font-medium text-ink">
-                    Additional leadership
+                    {experienceCopy.additionalHeading}
                   </h2>
                   <div className="mt-6">
                     {result.experiences

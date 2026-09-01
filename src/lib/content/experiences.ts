@@ -10,10 +10,10 @@ import type {
 /**
  * Public experience reads from Supabase, plus the static Scionetrade hold.
  *
- * `/experience` reads published parents and children through the anonymous
- * publishable client, then merges only the existing static Scionetrade
- * record. RLS remains the publication boundary. Home and FocusView still
- * read `src/content/experiences.ts`.
+ * `/experience` and Home read published parents and children through the
+ * anonymous publishable client, then merge only the existing static
+ * Scionetrade record. RLS remains the publication boundary. FocusView
+ * still reads `src/content/experiences.ts`.
  */
 
 const MONTH_LABELS = [
