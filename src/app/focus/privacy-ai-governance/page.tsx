@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "Privacy and AI Governance",
-  "Privacy and AI-governance profile for Rainier (Ram) Milanes — privacy operations, privacy by design, and Shadow AI risk triage.",
+  "Privacy operations and AI-governance work for analyst, specialist, and consultant roles — privacy-risk assessment, data protection, and human review.",
   "/focus/privacy-ai-governance",
 );
 

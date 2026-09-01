@@ -50,7 +50,7 @@ export function FocusView({
               : "Privacy / AI Governance resume"}
           </ButtonLink>
           <ButtonLink href="/projects/privai-guard" variant="secondary">
-            PrivAI Guard case study
+            Read the PrivAI Guard case study
           </ButtonLink>
           <ButtonLink href="/contact" variant="accent">
             Contact
@@ -60,7 +60,7 @@ export function FocusView({
 
       <section className="py-16">
         <Container>
-          <SectionHeader kicker="Competencies" title="How this profile is read" />
+          <SectionHeader kicker="Competencies" title="What this track emphasizes" />
           <ul className="mt-8 flex flex-wrap gap-2">
             {page.competencies.map((item) => (
               <li

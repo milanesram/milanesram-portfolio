@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "Cybersecurity, GRC, and IT Risk",
-  "Cybersecurity, GRC, and IT-risk profile for Rainier (Ram) Milanes — security governance, controls, audit readiness, and technology risk.",
+  "Cybersecurity, GRC, and IT-risk work for analyst, specialist, and consultant roles — controls, audit readiness, and security governance.",
   "/focus/cybersecurity-grc",
 );
 

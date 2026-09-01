@@ -1,17 +1,18 @@
 export const aboutCopy = {
   kicker: "About",
-  title: "One professional background. Two employer lenses.",
-  lede: "I work at the intersection of cybersecurity, GRC, privacy, and AI governance — with regulator-side operating experience and current technical depth.",
+  title: "From privacy and governance work to cybersecurity and risk.",
+  lede: "I now focus on cybersecurity, GRC, and privacy work at the analyst, specialist, and consultant level. An earned Northwestern MSIS (Security Specialization) sits on a foundation of privacy regulation and governance practice.",
   paragraphs: [
-    "I am a cybersecurity, GRC, IT-risk, and privacy-governance professional. My recent work includes independent consulting for regulated and high-risk organizations, technology and security advisory at the National Privacy Commission of the Philippines, and leadership of that Commission’s compliance-monitoring operations.",
-    "Before that, I built an organization’s first privacy management program in a commercial setting and spent several years translating privacy, security, and compliance requirements into operating practice.",
-    "A Northwestern University Master of Science in Information Systems, Security Specialization, and PrivAI Guard — a Shadow AI privacy-risk triage capstone MVP — are how I keep the work technically current. PrivAI Guard is a non-production application that uses synthetic data and human review. It is not a commercial platform and it does not make automated legal or regulatory decisions.",
+    "My foundation is privacy regulation, governance, and risk work. I have consulted for regulated organizations and worked with the National Privacy Commission, the Philippines' national privacy regulator, on assessments, controls, compliance operations, and technology-security implementation.",
+    "Before that, I built an organization’s first privacy management program in a commercial setting and translated privacy, security, and compliance requirements into operating practice.",
+    "I earned a Northwestern MSIS (Security Specialization) and designed PrivAI Guard, a non-production Shadow AI governance capstone. That combination of security education and applied development is how I now pursue analyst, specialist, and consultant work in cybersecurity, GRC, and privacy.",
   ],
   speaking:
-    "I have lectured and advised on data privacy and protection for Philippine public-sector and academic audiences, private-sector privacy and cybersecurity forums, and selected international briefings. Individual host names are not listed on this MVP.",
+    "I have spoken and advised on data privacy and cybersecurity for public-sector, academic, and private-sector audiences, including selected international briefings.",
+  boundaryHeading: "Professional boundaries",
   nonClaims: [
     "Licensed to Practice Law in the Philippines. Not licensed to practice law in the United States.",
-    "This site is a curated professional record. It is not a comprehensive CV.",
+    "This site presents selected professional evidence, not a complete CV.",
     "Consulting work is described at the capability level. No client names or consulting outcomes are published here.",
   ],
 };

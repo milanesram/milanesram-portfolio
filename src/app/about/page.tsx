@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "About",
-  "Rainier (Ram) Milanes — cybersecurity, GRC, privacy, and AI-governance professional with regulator-side leadership and a Northwestern MSIS capstone.",
+  "Privacy and governance background, an earned Northwestern MSIS (Security Specialization), and current cybersecurity, GRC, and privacy work.",
   "/about",
 );
 
@@ -74,7 +74,7 @@ export default async function AboutPage() {
         </ul>
 
         <h2 className="mt-14 font-serif text-2xl font-medium text-ink">
-          What this site does not claim
+          {aboutCopy.boundaryHeading}
         </h2>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-ink-soft">
           {aboutCopy.nonClaims.map((item) => (
