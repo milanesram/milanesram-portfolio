@@ -2,8 +2,16 @@ import { CallToAction } from "@/components/ui/CallToAction";
 import { CareerTrackCard } from "@/components/ui/CareerTrackCard";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
-import { focusPages, siteProfile } from "@/content";
+import { focusPages } from "@/content";
+import { getPublishedSiteProfile } from "@/lib/content/profile";
+import {
+  profileFromPublishedResult,
+  selectPublicContactChannels,
+  visibleWorkAuthorization,
+} from "@/lib/content/site-profile";
 import { createPageMetadata } from "@/lib/metadata";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "Resume",
@@ -11,7 +19,11 @@ export const metadata = createPageMetadata(
   "/resume",
 );
 
-export default function ResumePage() {
+export default async function ResumePage() {
+  const profile = profileFromPublishedResult(await getPublishedSiteProfile());
+  const contact = selectPublicContactChannels(profile);
+  const workAuthorization = visibleWorkAuthorization(profile?.workAuthorization);
+
   return (
     <>
       <PageHero
@@ -26,23 +38,31 @@ export default function ResumePage() {
           ))}
         </div>
         <p className="mt-8 text-sm leading-6 text-ink-soft">
-          Request the relevant packet by email at{" "}
-          <a className="text-accent hover:underline" href={`mailto:${siteProfile.email}`}>
-            {siteProfile.email}
-          </a>{" "}
-          or via{" "}
-          <a
-            className="text-accent hover:underline"
-            href={siteProfile.linkedinUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            LinkedIn
-          </a>
+          Request the relevant packet
+          {contact ? (
+            <>
+              {" "}
+              by email at{" "}
+              <a className="text-accent hover:underline" href={contact.mailtoHref}>
+                {contact.email}
+              </a>{" "}
+              or via{" "}
+              <a
+                className="text-accent hover:underline"
+                href={contact.linkedinUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                LinkedIn
+              </a>
+            </>
+          ) : (
+            " through the contact page"
+          )}
           . The comprehensive CV is private and is not published here.
         </p>
-        {siteProfile.workAuthorization ? (
-          <p className="mt-4 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+        {workAuthorization ? (
+          <p className="mt-4 text-sm text-ink-faint">{workAuthorization}</p>
         ) : null}
         <p className="mt-2 text-sm text-ink-faint">
           Licensed to Practice Law in the Philippines. Not licensed to practice law in

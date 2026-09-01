@@ -11,22 +11,25 @@ import {
   featuredProject,
   focusPages,
   publicCredentials,
-  siteProfile,
   type FocusPage,
   type TrackId,
 } from "@/content";
 import { experiencesForTrack } from "@/content";
 import type { FocusSelectedWriting } from "@/lib/content/focus";
+import { visibleWorkAuthorization } from "@/lib/content/site-profile";
 
 export function FocusView({
   trackId,
   page,
   selectedWriting,
+  workAuthorization = "",
 }: {
   trackId: TrackId;
   page: FocusPage;
   selectedWriting: FocusSelectedWriting | null;
+  workAuthorization?: string;
 }) {
+  const authorization = visibleWorkAuthorization(workAuthorization);
   const other = focusPages.find((item) => item.id !== trackId)!;
   const experiences = experiencesForTrack(trackId).filter(
     (item) => item.kind !== "leadership",
@@ -39,8 +42,8 @@ export function FocusView({
   return (
     <>
       <PageHero kicker="Focus profile" title={page.headline} lede={page.summary}>
-        {siteProfile.workAuthorization ? (
-          <p className="text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+        {authorization ? (
+          <p className="text-sm text-ink-faint">{authorization}</p>
         ) : null}
         <div className="mt-6 flex flex-wrap gap-3">
           <ButtonLink

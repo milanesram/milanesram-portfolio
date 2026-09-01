@@ -7,8 +7,12 @@ import { ExperiencePreview } from "@/components/ui/ExperiencePreview";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/layout/Container";
-import { siteProfile } from "@/content";
 import { getHybridPublicExperiences } from "@/lib/content/experiences";
+import { getPublishedSiteProfile } from "@/lib/content/profile";
+import {
+  profileFromPublishedResult,
+  selectPublicContactChannels,
+} from "@/lib/content/site-profile";
 import {
   getPublishedCredentials,
   toPresentationCredential,
@@ -54,15 +58,18 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [projectsResult, credentialsResult, experiencesResult, portraitResult] =
+  const [projectsResult, credentialsResult, experiencesResult, portraitResult, profileResult] =
     await Promise.all([
       getPublishedProjects(),
       getPublishedCredentials(),
       getHybridPublicExperiences(),
       getPublishedPublicMediaAssetsByPurpose("portrait"),
+      getPublishedSiteProfile(),
     ]);
 
   const portrait = selectPublishedPortrait(portraitResult);
+  const profile = profileFromPublishedResult(profileResult);
+  const contact = selectPublicContactChannels(profile);
 
   const flagship = projectsResult.ok
     ? selectHomeFlagshipProject(projectsResult.projects.map(toPresentationProject))
@@ -78,7 +85,11 @@ export default async function HomePage() {
 
   return (
     <>
-      <HomeHero portrait={portrait} />
+      <HomeHero
+        portrait={portrait}
+        workAuthorization={profile?.workAuthorization}
+        initials={profile?.initials}
+      />
 
       <section className="py-12" aria-label="Current signals">
         <Container>
@@ -238,12 +249,16 @@ export default async function HomePage() {
               <ButtonLink href="/contact" variant="accent">
                 Contact
               </ButtonLink>
-              <ButtonLink href={`mailto:${siteProfile.email}`} variant="secondary" external>
-                {siteProfile.email}
-              </ButtonLink>
-              <ButtonLink href={siteProfile.linkedinUrl} variant="text" external>
-                LinkedIn
-              </ButtonLink>
+              {contact ? (
+                <>
+                  <ButtonLink href={contact.mailtoHref} variant="secondary" external>
+                    {contact.email}
+                  </ButtonLink>
+                  <ButtonLink href={contact.linkedinUrl} variant="text" external>
+                    LinkedIn
+                  </ButtonLink>
+                </>
+              ) : null}
             </div>
           </div>
         </Container>

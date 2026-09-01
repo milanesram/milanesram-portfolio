@@ -7,6 +7,8 @@ import {
   getSelectedFocusWriting,
   toPresentationFocusPage,
 } from "@/lib/content/focus";
+import { getPublishedSiteProfile } from "@/lib/content/profile";
+import { profileFromPublishedResult } from "@/lib/content/site-profile";
 import { createPageMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
@@ -42,13 +44,17 @@ export default async function CyberFocusPage() {
   }
 
   const page = toPresentationFocusPage(result.page, "cyber");
-  const selectedWriting = await getSelectedFocusWriting(page.selectedWritingSlug);
+  const [selectedWriting, profileResult] = await Promise.all([
+    getSelectedFocusWriting(page.selectedWritingSlug),
+    getPublishedSiteProfile(),
+  ]);
 
   return (
     <FocusView
       trackId="cyber"
       page={page}
       selectedWriting={selectedWriting}
+      workAuthorization={profileFromPublishedResult(profileResult)?.workAuthorization}
     />
   );
 }

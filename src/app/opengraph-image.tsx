@@ -1,5 +1,9 @@
 import { ImageResponse } from "next/og";
-import { siteProfile } from "@/content";
+import { getPublishedSiteProfile } from "@/lib/content/profile";
+import {
+  SITE_CHROME_FALLBACK,
+  profileFromPublishedResult,
+} from "@/lib/content/site-profile";
 
 export const size = {
   width: 1200,
@@ -8,7 +12,13 @@ export const size = {
 
 export const contentType = "image/png";
 
-export default function OpenGraphImage() {
+export const dynamic = "force-dynamic";
+
+export default async function OpenGraphImage() {
+  const profile = profileFromPublishedResult(await getPublishedSiteProfile());
+  const displayName = profile?.displayName ?? SITE_CHROME_FALLBACK.displayName;
+  const headline = profile?.headline ?? "";
+
   return new ImageResponse(
     (
       <div
@@ -31,7 +41,7 @@ export default function OpenGraphImage() {
             color: "#7C5340",
           }}
         >
-          {siteProfile.displayName}
+          {displayName}
         </div>
         <div
           style={{
@@ -40,7 +50,7 @@ export default function OpenGraphImage() {
             maxWidth: 920,
           }}
         >
-          {siteProfile.headline}
+          {headline}
         </div>
         <div style={{ fontSize: 24, color: "#3E4B5C" }}>
           Cybersecurity · GRC · IT Risk · Privacy

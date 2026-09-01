@@ -1,15 +1,23 @@
 import Link from "next/link";
-import { focusPages, navPrimary, siteProfile } from "@/content";
+import { focusPages, navPrimary } from "@/content";
+import {
+  selectFooterIdentity,
+  type PublicSiteProfile,
+} from "@/lib/content/site-profile";
 
-export function SiteFooter() {
+export function SiteFooter({ profile }: { profile: PublicSiteProfile | null }) {
+  const identity = selectFooterIdentity(profile);
+
   return (
     <footer className="mt-auto border-t border-line bg-paper-elevated">
       <div className="mx-auto grid max-w-[72rem] gap-10 px-5 py-12 sm:px-8 lg:grid-cols-4">
         <div>
-          <p className="font-serif text-xl text-ink">{siteProfile.displayName}</p>
-          <p className="mt-3 text-sm leading-6 text-ink-soft">{siteProfile.headline}</p>
-          {siteProfile.workAuthorization ? (
-            <p className="mt-4 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+          <p className="font-serif text-xl text-ink">{identity.displayName}</p>
+          {identity.headline ? (
+            <p className="mt-3 text-sm leading-6 text-ink-soft">{identity.headline}</p>
+          ) : null}
+          {identity.workAuthorization ? (
+            <p className="mt-4 text-sm text-ink-faint">{identity.workAuthorization}</p>
           ) : null}
         </div>
 
@@ -55,26 +63,32 @@ export function SiteFooter() {
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
             Contact
           </p>
-          <ul className="mt-3 space-y-2">
-            <li>
-              <a
-                href={`mailto:${siteProfile.email}`}
-                className="text-sm text-ink-soft hover:text-ink"
-              >
-                {siteProfile.email}
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteProfile.linkedinUrl}
-                className="text-sm text-ink-soft hover:text-ink"
-                target="_blank"
-                rel="noreferrer"
-              >
-                LinkedIn
-              </a>
-            </li>
-          </ul>
+          {identity.contact ? (
+            <ul className="mt-3 space-y-2">
+              <li>
+                <a
+                  href={identity.contact.mailtoHref}
+                  className="text-sm text-ink-soft hover:text-ink"
+                >
+                  {identity.contact.email}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={identity.contact.linkedinUrl}
+                  className="text-sm text-ink-soft hover:text-ink"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  LinkedIn
+                </a>
+              </li>
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-ink-soft">
+              Public contact channels are temporarily unavailable.
+            </p>
+          )}
           <p className="mt-6 text-xs leading-5 text-ink-faint">
             Licensed to Practice Law in the Philippines. Not licensed to practice law
             in the United States.

@@ -78,16 +78,3 @@ export type FocusPage = {
   competencies: string[];
   selectedWritingSlug: string;
 };
-
-export type SiteProfile = {
-  displayName: string;
-  shortName: string;
-  initials: string;
-  headline: string;
-  summary: string;
-  workAuthorization: string;
-  linkedinUrl: string;
-  linkedinLabel: string;
-  email: string;
-  emailNote?: string;
-};

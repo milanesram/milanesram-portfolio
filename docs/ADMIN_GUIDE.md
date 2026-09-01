@@ -173,7 +173,7 @@ Saving the focus page does not overwrite competencies. Skill add, edit, reorder,
 4. Edit Website flags (`site_settings`): contact form enabled and site indexable. Save flags. This table has no status column.
 5. There is no `/new` route and no Delete. Each table allows at most one row (`singleton_key = 'default'`).
 
-`public_email` is a public contact address, not the owner Auth email. `linkedin_url` must be `https:`. `site_settings` flags are anonymously readable by design and must never hold secrets. Public pages still use `src/content/` until a later cutover.
+`public_email` is a public contact address, not the owner Auth email. `linkedin_url` must be `https:`. `site_settings` flags are anonymously readable by design and must never hold secrets. Published `site_profile` is the public authority for shared identity, headline, summary, email, and LinkedIn. Home and About editorial copy remain in `src/content/` until later cutovers. Work authorization may be saved blank and is not rendered when empty.
 
 ---
 

@@ -10,9 +10,10 @@ import type { ContentStatus } from "@/lib/supabase/database.types";
  * `/focus/cybersecurity-grc` and `/focus/privacy-ai-governance` read the
  * published focus record through the anonymous publishable client. RLS
  * remains the publication boundary. Supporting lists on FocusView stay on
- * their existing sources. `src/content/site.ts` is retained for Home,
- * Resume, footer, presentation aliases, and the editorial selected-writing
- * slug for each track.
+ * their existing sources. `src/content/site.ts` is retained for Resume
+ * track cards, footer focus links, presentation aliases, and the editorial
+ * selected-writing slug for each track. Shared identity comes from hosted
+ * `site_profile`.
  */
 
 export type FocusSelectedWriting = {

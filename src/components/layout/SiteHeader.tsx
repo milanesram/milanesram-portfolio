@@ -3,22 +3,27 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useId, useState } from "react";
-import { navPrimary, siteProfile } from "@/content";
+import { navPrimary } from "@/content";
+import {
+  selectHeaderIdentity,
+  type PublicSiteProfile,
+} from "@/lib/content/site-profile";
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SiteHeader() {
+export function SiteHeader({ profile }: { profile: PublicSiteProfile | null }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const menuId = useId();
+  const { shortName } = selectHeaderIdentity(profile);
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-paper-elevated/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-[72rem] items-center justify-between gap-4 px-5 sm:px-8">
         <Link href="/" className="font-serif text-lg font-medium tracking-tight text-ink">
-          {siteProfile.shortName}
+          {shortName}
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex">

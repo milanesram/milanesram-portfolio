@@ -71,11 +71,11 @@ Do not reintroduce target-title branding, executive-seeking branding, or work-au
 
 ## 3. Public route inventory
 
-Mutable public content by surface (chrome shared by all routes: header `navPrimary` + `siteProfile.shortName`, footer headline / focus links / email / LinkedIn / bar disclaimer, default OG image from `siteProfile`).
+Mutable public content by surface (chrome shared by all routes: header `navPrimary` + hosted `site_profile` short name, footer headline / focus links / email / LinkedIn / bar disclaimer, default OG image from hosted `site_profile`).
 
 | Route | Mutable content | Current public source |
 |---|---|---|
-| `/` | Hero, chips, CTAs, proof strip, flagship copy, track cards, selected experience bullets, selected credentials, closing CTA, metadata, portrait | Static `home.ts` + `page.tsx` chrome; hosted projects/credentials/experiences/media; static `siteProfile` |
+| `/` | Hero, chips, CTAs, proof strip, flagship copy, track cards, selected experience bullets, selected credentials, closing CTA, metadata, portrait | Static `home.ts` + `page.tsx` chrome; hosted projects/credentials/experiences/media; hosted `site_profile` for shared identity/contact only |
 | `/about` | H1, lede, narrative, education glance, speaking, boundaries, metadata, portrait, journey images/captions | Static `aboutCopy` / `publicCredentials` / `speakingCategories`; hosted media |
 | `/focus/cybersecurity-grc` | Headline, summary, competencies, featured project, experience, credentials, selected writing, CTAs, metadata | Hosted `focus_pages` + publication; static FocusView evidence (`featuredProject`, `experiencesForTrack`, `publicCredentials`, `selectedWritingSlug`) |
 | `/focus/privacy-ai-governance` | Same pattern | Same |
@@ -85,9 +85,9 @@ Mutable public content by surface (chrome shared by all routes: header `navPrima
 | `/writing` | Index copy; publication cards | `WRITING_INDEX_COPY` + hosted publications |
 | `/writing/[slug]` | Title, abstract, PDF/link, metadata | Hosted publications (+ media) |
 | `/credentials` | Page chrome; credential cards | Page chrome static; hosted `credentials` |
-| `/resume` | Hero, track cards, request copy, CTA, metadata | Entirely static (`focusPages`, `siteProfile`, page strings) |
-| `/contact` | Hero, email, LinkedIn, placeholder, metadata | Static `siteProfile` + page strings; hosted `site_settings` only for form gate |
-| Header / footer / OG / sitemap / robots | Names, labels, paths | Static profile/nav; sitemap adds hosted writing slugs; robots static; OG uses `siteProfile` |
+| `/resume` | Hero, track cards, request copy, CTA, metadata | Static `focusPages` + page strings; hosted `site_profile` for email/LinkedIn |
+| `/contact` | Hero, email, LinkedIn, placeholder, metadata | Hosted `site_profile` for channels; page strings static; hosted `site_settings` only for form gate |
+| Header / footer / OG / sitemap / robots | Names, labels, paths | Hosted `site_profile` for identity/contact; `navPrimary`/`focusPages` remain code; sitemap adds hosted writing slugs; robots static |
 
 Writing detail slugs (hosted, published):  
 `privacy-preserving-machine-learning-global-healthcare-ai`, `egov-ph-architectural-fragility-bcdr`, `generative-ai-privacy-compliance-documentation`, `contain-the-rumor-protect-the-people`, `data-breach-to-boardroom-cyber-governance`, `orb-to-oversight-world-app-privacy`, `you-are-easier-to-hack-than-everything`, `before-blocks-build-the-bedrock`, `price-of-ubiquity-gcash-critical-infrastructure`, `philippine-elections-2025-data-privacy`, `ncsp-localization-local-government-units` (link-only).
@@ -100,9 +100,9 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 
 | Surface | Content | Current Source | Duplicate/Mirror | Current Authority | Desired Authority | Action |
 |---|---|---|---|---|---|---|
-| Site chrome | displayName, shortName, headline, summary, email, LinkedIn | `src/content/site.ts` `siteProfile` | Hosted `site_profile` (aligned, unused publicly) | Static | Hosted `site_profile` | CUT OVER TO HOSTED |
-| Site chrome | workAuthorization | Static `""`; hosted `''` | Admin optional field | Empty / not rendered | Hosted empty optional; never public brand | KEEP HOSTED (blank) |
-| Site chrome | initials | `site.ts` | None | Static | KEEP IN CODE or derive | KEEP IN CODE |
+| Site chrome | displayName, shortName, headline, summary, email, LinkedIn | Hosted `site_profile` via `getPublishedSiteProfile()` | Static `siteProfile` retired | Hosted | Hosted `site_profile` | KEEP HOSTED |
+| Site chrome | workAuthorization | Hosted `''` | Admin optional field | Empty / not rendered | Hosted empty optional; never public brand | KEEP HOSTED (blank) |
+| Site chrome | initials | Derived from hosted display name | None | Derived in code | KEEP IN CODE or derive | KEEP IN CODE |
 | Header/footer | nav items | `navPrimary` | Footer appends Resume | Static | KEEP IN CODE | KEEP IN CODE |
 | Footer | Bar disclaimer | Hard-coded `SiteFooter` | `aboutCopy.nonClaims[0]` | Duplicate static | Hosted legal note / site profile | CUT OVER TO HOSTED |
 | Home | Hero H1, lede, chips, CTAs | `homeHeroCopy` | None | Static | Hosted home/page copy | CUT OVER TO HOSTED |
@@ -146,7 +146,7 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Resume | Tracks | Static `focusPages` | Hosted focus summaries (must stay in sync) | Static | Resume-track records | CUT OVER TO HOSTED |
 | Resume | Request model copy | `resume/page.tsx` | None | Static | Resume settings | CUT OVER TO HOSTED |
 | Resume | Files | None | `focus_pages.resume_media_id` unused | Request-only V1.0 | Optional media FK | DEFER — JUSTIFIED (files); architecture ready |
-| Contact | Email, LinkedIn | Static `siteProfile` | Hosted profile unused | Static | Hosted profile | CUT OVER TO HOSTED |
+| Contact | Email, LinkedIn | Hosted `site_profile` | Static `siteProfile` retired | Hosted | Hosted profile | KEEP HOSTED |
 | Contact | Intro copy | `contact/page.tsx` | Placeholder component | Static | Contact settings | CUT OVER TO HOSTED |
 | Contact | Form enabled | `site_settings.contact_form_enabled` + env | Form implementation in code | Flag off | Preserve dual gate | KEEP HOSTED + KEEP IN CODE (security) |
 | SEO | Per-route title/description | Each `page.tsx` / `home.ts` / `metadata.ts` | OG duplicates description | Static | `page_seo` or equivalent | CUT OVER TO HOSTED |
@@ -184,19 +184,23 @@ Public rendering path:
 
 ---
 
-## 6. Site profile cutover plan (do not execute in 51F)
+## 6. Site profile cutover (completed in 52A)
 
-**Today:** Public chrome reads `src/content/site.ts`. `getPublishedSiteProfile()` exists and is unused. Hosted row `7b916af9-2874-44a3-8629-24fb5627b072` already matches static headline/summary; `work_authorization` is `''`.
+**Authoritative source:** published hosted `site_profile` row `7b916af9-2874-44a3-8629-24fb5627b072`, read through `getPublishedSiteProfile()` (`src/lib/content/profile.ts`) and mapped to `PublicSiteProfile` (`src/lib/content/site-profile.ts`).
 
-**Static fields still driving public rendering:** `displayName`, `shortName`, `headline`, `summary`, `email`, `linkedinUrl`, `linkedinLabel`, empty `workAuthorization`.
+**Public consumers:** header short name, footer identity/headline/email/LinkedIn, Contact channels, Resume request channels, shared CTA email/LinkedIn, Home closing contact links only, Focus/Home work-authorization slot, portrait initials, root metadata identity, default Open Graph name/headline.
 
-**Should become hosted-authoritative:** display name, headline, summary, public email, LinkedIn URL. Derive shortName/initials in code if needed. Optional location stays unused publicly unless later approved.
+**Derived in code (no hosted columns):** `shortName` from parenthetical display name, `initials` from short name, `linkedinLabel` from URL (protocol/`www` stripped).
 
-**Remain application config:** `linkedinLabel` can be derived from URL; `initials` derived.
+**Retired:** public `src/content/site.ts` `siteProfile` export and `SiteProfile` type. Tests keep a hosted-row fixture. No silent fallback to the old career copy.
 
-**Cutover rule:** Public pages call `getPublishedSiteProfile()`. If unpublished/missing: structural fallback (generic “Portfolio”) — **not** the full static career `siteProfile` forever. After cutover, retire public use of `siteProfile` career strings. Keep a test fixture if needed.
+**Failure behavior:** `{ ok: false }` is a query/transport failure; `{ ok: true, profile: null }` is missing/unpublished. Chrome uses structural “Portfolio” only. Contact/email/LinkedIn/headline are omitted rather than replaced with stale static prose.
 
-Work authorization: admin already optional; public must not render empty or filled brand-like employment-status text unless a later owner decision reopens it (out of scope).
+**Caching / freshness:** `React.cache()` dedupes one public profile query per request. Most public routes are already `force-dynamic`. Admin `saveSiteProfileAction` calls `revalidatePath("/", "layout")`. Profile edits become visible on the next public request.
+
+**Still deferred:** Home H1/lede/chips/proof/flagship/experience/credential selection (52B); About narrative (52C); per-page SEO titles/descriptions (52G — `createPageMetadata` remains static page copy; only shared identity fields use hosted profile); `location_display` and `hero_cta_primary_label` remain unused publicly.
+
+Work authorization remains hosted blank and unrendered. Admin can save a blank value. No static fallback reintroduces employment-status wording.
 
 ---
 
@@ -436,7 +440,7 @@ Anonymous reads: published (+ credentials not needing verification, media `is_pu
 
 | Export | Classification |
 |---|---|
-| `siteProfile` career fields | MOVE then RETIRE public authority |
+| `siteProfile` career fields | RETIRED — hosted `site_profile` is public authority |
 | `siteProfile.workAuthorization` | KEEP HOSTED blank |
 | `focusPages` | RETIRE after Focus/Resume cutover (keep as TEST FIXTURE briefly) |
 | `navPrimary` | KEEP — presentation/config in code |
@@ -526,12 +530,12 @@ Do not treat design-system labels as CMS content.
 | Empty published set | Honest empty/omission, not stale static |
 | Missing optional relation (no flagship, no portrait) | Omit the block |
 | Missing Journey media on a milestone | Show text milestone without figure |
-| Missing site_profile | Code fallback name/description only |
-| Contact form misconfigured | Direct email/LinkedIn (current State A) |
+| Missing site_profile | Structural “Portfolio” chrome only; omit headline/email/LinkedIn |
+| Contact form misconfigured | Direct email/LinkedIn from hosted profile (current State A) |
 
 Logging: server logs / existing error returns; no new telemetry required for freeze.
 
-**Must eventually remove:** hybrid merge that fails closed if static file drifts; Focus/About static credentials/experiences; `site.ts` as live profile; Home exact-string selectors.
+**Must eventually remove:** hybrid merge that fails closed if static file drifts; Focus/About static credentials/experiences; Home exact-string selectors. Public `site.ts` profile authority is already retired.
 
 ---
 
@@ -539,7 +543,7 @@ Logging: server logs / existing error returns; no new telemetry required for fre
 
 | Page | Pattern | Cutover note |
 |---|---|---|
-| Home | `Promise.all` 4 queries then in-memory select | After junctions, one Home settings query + related IDs; avoid N+1 |
+| Home | `Promise.all` hosted lists + cached `getPublishedSiteProfile()` | After junctions, one Home settings query + related IDs; avoid N+1 |
 | About | `Promise.all` portrait + journey | Milestones query + batched media |
 | Experience | Sequential parent then items | Keep batched `.in(parent_ids)` |
 | Focus | Sequential page then writing | Parallelize; batch evidence by IDs |
@@ -592,11 +596,11 @@ Target: hosted content → typed layer → reusable components → design system
 | Select different Focus Writing | static slug | relationship |
 | Add Resume track | source edit | configurable |
 | Publish/replace Resume file | unavailable | configurable media FK |
-| Change Contact channels | source edit `site.ts` | hosted profile |
+| Change Contact channels | hosted `site_profile` | preserve |
 | Enable contact form | hosted flag + env | preserve dual gate |
 | Change SEO metadata | source edit | CMS/config |
 | Change visual theme | code | remain code |
-| Change site headline in Settings | hosted but **not public** | public cutover |
+| Change site headline in Settings | hosted public chrome | preserve |
 | Hide work authorization | already empty/optional | preserve |
 
 ---
@@ -605,8 +609,8 @@ Target: hosted content → typed layer → reusable components → design system
 
 Do not start these in 51F.
 
-1. **52A — Profile public cutover**  
-   Wire `getPublishedSiteProfile` to header/footer/contact/OG. Empty work-auth stays unrendered. Retire public `siteProfile` career strings.
+1. **52A — Profile public cutover (complete)**
+   Hosted `site_profile` is the public authority for shared identity, headline, email, and LinkedIn. Empty work-auth stays unrendered. Static `siteProfile` career strings are retired. Ready for 52B.
 
 2. **52B — Home relationships + copy**  
    Replace exact-string experience/credential selectors with UUID junctions. Host Home copy/SEO. Stop requiring static ID remap for Home.
@@ -638,3 +642,9 @@ Each phase: versioned migration, assertion counts, no silent static fallback, RL
 No public copy, layout, schema, RLS, hosted rows, media, or Storage. This file is the architecture freeze.
 
 Hosted baseline counts at freeze: experiences 7, experience_items 26, projects 3, project_sections 7, focus_pages 2, media_assets 16, credentials 10, publications 11, engagements 0, inquiries 0, site_profile 1, site_settings 1, Storage objects 16.
+
+---
+
+## 26. Step 52A completion
+
+Site Profile public cutover is complete. Public chrome, Contact, Resume request channels, shared CTA, root identity metadata, and default Open Graph read hosted `site_profile` through the typed content layer. Static `siteProfile` is retired. No schema, RLS, hosted-row, or Home/About editorial change. Next: Step 52B — Home content + stable UUID relationships.

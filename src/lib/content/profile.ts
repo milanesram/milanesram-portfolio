@@ -1,37 +1,29 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { ContentStatus } from "@/lib/supabase/database.types";
+import { cache } from "react";
+import { createPublicSupabaseClient } from "@/lib/supabase/public";
+import {
+  interpretPublishedSiteProfileResponse,
+  type PublicSiteProfile,
+  type PublishedSiteProfileResult,
+} from "@/lib/content/site-profile";
 
 /**
- * Public site-profile reads from Supabase.
+ * Public site-profile reads from hosted `site_profile`.
  *
- * Cutover: do not use this from Home, About, header, or footer until an
- * explicit content step loads a reviewed published row. Public pages still
- * render from `src/content/site.ts`.
+ * Uses the anonymous publishable client. RLS remains the publication
+ * boundary. `{ ok: false }` is a transport/query failure. A missing or
+ * unpublished row is `{ ok: true, profile: null }`.
  *
- * Returns published public chrome only. Omits `singleton_key` and
- * timestamps. Never returns owner Auth email or `user_roles` data.
+ * Wrapped in `React.cache()` so layout chrome, metadata, and page
+ * consumers share one query per request.
  */
 
-export type PublishedSiteProfile = {
-  displayName: string;
-  headline: string;
-  summary: string;
-  workAuthorization: string;
-  locationDisplay: string | null;
-  linkedinUrl: string;
-  publicEmail: string;
-  heroCtaPrimaryLabel: string | null;
-};
-
-function isPublishedStatus(status: ContentStatus): boolean {
-  return status === "published";
-}
+export type { PublicSiteProfile, PublishedSiteProfileResult };
 
 const PROFILE_COLUMNS =
-  "display_name, headline, summary, work_authorization, location_display, linkedin_url, public_email, hero_cta_primary_label, status";
+  "display_name, headline, summary, work_authorization, linkedin_url, public_email, status";
 
-export async function getPublishedSiteProfile(): Promise<PublishedSiteProfile | null> {
-  const supabase = await createSupabaseServerClient();
+async function loadPublishedSiteProfile(): Promise<PublishedSiteProfileResult> {
+  const supabase = createPublicSupabaseClient();
   const { data, error } = await supabase
     .from("site_profile")
     .select(PROFILE_COLUMNS)
@@ -39,18 +31,10 @@ export async function getPublishedSiteProfile(): Promise<PublishedSiteProfile | 
     .eq("status", "published")
     .maybeSingle();
 
-  if (error || !data || !isPublishedStatus(data.status)) {
-    return null;
-  }
-
-  return {
-    displayName: data.display_name,
-    headline: data.headline,
-    summary: data.summary,
-    workAuthorization: data.work_authorization,
-    locationDisplay: data.location_display,
-    linkedinUrl: data.linkedin_url,
-    publicEmail: data.public_email,
-    heroCtaPrimaryLabel: data.hero_cta_primary_label,
-  };
+  return interpretPublishedSiteProfileResponse({
+    error,
+    data,
+  });
 }
+
+export const getPublishedSiteProfile = cache(loadPublishedSiteProfile);

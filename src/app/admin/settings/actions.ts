@@ -40,6 +40,10 @@ function revalidateAdminSettings() {
   revalidatePath("/admin/settings");
 }
 
+function revalidatePublicSiteProfile() {
+  revalidatePath("/", "layout");
+}
+
 export async function saveSiteProfileAction(
   _previous: MutationState,
   formData: FormData,
@@ -90,6 +94,7 @@ export async function saveSiteProfileAction(
     }
 
     revalidateAdminSettings();
+    revalidatePublicSiteProfile();
 
     const messages: Record<typeof input.intent, string> = {
       draft: "Saved as draft.",
@@ -113,6 +118,7 @@ export async function saveSiteProfileAction(
   }
 
   revalidateAdminSettings();
+  revalidatePublicSiteProfile();
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",

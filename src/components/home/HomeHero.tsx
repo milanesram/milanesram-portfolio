@@ -1,15 +1,22 @@
-import { siteProfile } from "@/content";
 import { homeHeroCopy } from "@/lib/content/home";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { HomePortrait } from "@/components/home/HomePortrait";
 import { PortraitSlot } from "@/components/ui/PortraitSlot";
 import type { PublicImageMedia } from "@/lib/content/media";
+import { visibleWorkAuthorization } from "@/lib/content/site-profile";
 
 type HomeHeroProps = {
   portrait?: PublicImageMedia | null;
+  workAuthorization?: string;
+  initials?: string;
 };
 
-export function HomeHero({ portrait = null }: HomeHeroProps) {
+export function HomeHero({
+  portrait = null,
+  workAuthorization = "",
+  initials = "",
+}: HomeHeroProps) {
+  const authorization = visibleWorkAuthorization(workAuthorization);
   return (
     <section className="border-b border-line bg-paper-elevated">
       <div className="mx-auto grid max-w-[72rem] items-start gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,1.2fr)_16rem] lg:py-24">
@@ -41,11 +48,11 @@ export function HomeHero({ portrait = null }: HomeHeroProps) {
               {homeHeroCopy.secondaryCta.label}
             </ButtonLink>
           </div>
-          {siteProfile.workAuthorization ? (
-            <p className="mt-6 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
+          {authorization ? (
+            <p className="mt-6 text-sm text-ink-faint">{authorization}</p>
           ) : null}
         </div>
-        {portrait ? <HomePortrait portrait={portrait} /> : <PortraitSlot />}
+        {portrait ? <HomePortrait portrait={portrait} /> : <PortraitSlot initials={initials} />}
       </div>
     </section>
   );

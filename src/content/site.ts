@@ -1,17 +1,12 @@
-import type { FocusPage, SiteProfile } from "./types";
+import type { FocusPage } from "./types";
 
-export const siteProfile: SiteProfile = {
-  displayName: "Rainier (Ram) Milanes",
-  shortName: "Ram Milanes",
-  initials: "RM",
-  headline: "Cybersecurity, GRC, IT risk, and privacy professional.",
-  summary:
-    "Cybersecurity, GRC, IT-risk, and privacy professional. I earned a Northwestern MSIS (Security Specialization) and combine governance and privacy experience with hands-on technical development through PrivAI Guard, a non-production Shadow AI governance capstone.",
-  workAuthorization: "",
-  linkedinUrl: "https://www.linkedin.com/in/milanesram/",
-  linkedinLabel: "linkedin.com/in/milanesram",
-  email: "milanesram@gmail.com",
-};
+/**
+ * Stable route/presentation config.
+ *
+ * Mutable professional identity now lives in hosted `site_profile` and is
+ * read through `getPublishedSiteProfile()`. This file no longer exports a
+ * public `siteProfile` career-content authority.
+ */
 
 export const focusPages: FocusPage[] = [
   {
