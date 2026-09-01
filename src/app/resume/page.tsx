@@ -7,7 +7,7 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata = createPageMetadata(
   "Resume",
-  "Two emphasis resumes for cybersecurity/GRC and privacy/AI-governance roles. The comprehensive CV is not published.",
+  "Two professional focus packets for the same career record: cybersecurity, GRC, and IT risk; or privacy and AI governance. Resumes are provided on request.",
   "/resume",
 );
 
@@ -16,8 +16,8 @@ export default function ResumePage() {
     <>
       <PageHero
         kicker="Resume"
-        title="One background. Two recruiter packets."
-        lede="Choose the emphasis that matches the role. Public PDF downloads will be added after the site resumes are finalized. The comprehensive CV is private and is not available here."
+        title="One professional record. Two focus lenses."
+        lede="The same career record, presented through two professional emphases: cybersecurity, GRC, and IT risk; and privacy and AI governance. Resumes are provided on request rather than as public downloads."
       />
       <Container className="py-16">
         <div className="grid gap-6 lg:grid-cols-2">
@@ -26,7 +26,7 @@ export default function ResumePage() {
           ))}
         </div>
         <p className="mt-8 text-sm leading-6 text-ink-soft">
-          Until the public PDFs are posted, request the relevant resume by email at{" "}
+          Request the relevant packet by email at{" "}
           <a className="text-accent hover:underline" href={`mailto:${siteProfile.email}`}>
             {siteProfile.email}
           </a>{" "}
@@ -39,7 +39,7 @@ export default function ResumePage() {
           >
             LinkedIn
           </a>
-          .
+          . The comprehensive CV is private and is not published here.
         </p>
         {siteProfile.workAuthorization ? (
           <p className="mt-4 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
@@ -49,7 +49,10 @@ export default function ResumePage() {
           the United States.
         </p>
         <div className="mt-12">
-          <CallToAction title="Request a resume" />
+          <CallToAction
+            title="Request a resume"
+            lede="Email or LinkedIn is the request path. Specify Cybersecurity / GRC or Privacy / AI Governance."
+          />
         </div>
       </Container>
     </>

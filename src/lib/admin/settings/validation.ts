@@ -208,7 +208,7 @@ export function parseSiteProfileFormData(
   const summary = requiredText(formData, "summary", LIMITS.summary, "Summary");
   if (!summary.ok) return summary;
 
-  const workAuthorization = requiredText(
+  const workAuthorization = optionalText(
     formData,
     "work_authorization",
     LIMITS.workAuthorization,
@@ -256,7 +256,7 @@ export function parseSiteProfileFormData(
       displayName: displayName.value,
       headline: headline.value,
       summary: summary.value,
-      workAuthorization: workAuthorization.value,
+      workAuthorization: workAuthorization.value ?? "",
       locationDisplay: locationDisplay.value,
       linkedinUrl: linkedinUrl.value,
       publicEmail: publicEmail.value,

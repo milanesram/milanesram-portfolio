@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "Credentials",
-  "Northwestern MSIS security specialization, CIPM, ISC2 CC, specialized cybersecurity training, and Philippine legal licensure.",
+  "Earned Northwestern MSIS (Security Specialization), CIPM, ISC2 Certified in Cybersecurity, specialized cybersecurity training, and Philippine legal licensure.",
   "/credentials",
 );
 
@@ -30,7 +30,7 @@ export default async function CredentialsPage() {
       <PageHero
         kicker="Credentials"
         title="Education, certifications, and licensure"
-        lede="Philippine legal licensure is listed separately and is not U.S. bar admission."
+        lede="Selected verified credentials that support cybersecurity governance, GRC, privacy, and AI-governance work. Philippine legal licensure is listed separately and is not U.S. bar admission."
       />
       <Container className="space-y-14 py-16">
         {result.ok ? (

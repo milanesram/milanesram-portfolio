@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "Privacy and AI Governance",
-  "Privacy operations and AI-governance work for analyst, specialist, and consultant roles — privacy-risk assessment, data protection, and human review.",
+  "Privacy operations, data protection, and AI governance — privacy-risk assessment, compliance, and human-reviewed Shadow AI work.",
   "/focus/privacy-ai-governance",
 );
 

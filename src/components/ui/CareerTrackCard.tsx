@@ -10,9 +10,9 @@ export function CareerTrackCard({ track }: { track: FocusPage }) {
       <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
         Pathway
       </p>
-      <h3 className="mt-3 font-serif text-2xl font-medium text-ink">
+      <h2 className="mt-3 font-serif text-2xl font-medium text-ink">
         {track.navLabel}
-      </h3>
+      </h2>
       <p className="mt-3 flex-1 text-base leading-7 text-ink-soft">{track.summary}</p>
       <span className="mt-6 text-sm font-medium text-accent group-hover:underline">
         View this profile

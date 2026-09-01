@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "Contact",
-  "Contact Rainier (Ram) Milanes by email or LinkedIn. A secure form will be connected in a later phase.",
+  "Contact Rainier (Ram) Milanes by email or LinkedIn about cybersecurity governance, GRC, technology risk, privacy, or AI governance.",
   "/contact",
 );
 
@@ -22,7 +22,7 @@ export default async function ContactPage() {
       <PageHero
         kicker="Contact"
         title="Start a conversation"
-        lede="Email and LinkedIn are the public channels. A phone number is not published on this site."
+        lede="Email and LinkedIn are the public channels for conversations about cybersecurity governance, GRC, technology risk, privacy, and AI governance. A phone number is not published on this site."
       />
       <Container narrow className="space-y-10 py-16">
         <ul className="space-y-3 text-ink">

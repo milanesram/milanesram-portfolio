@@ -124,12 +124,19 @@ export function SiteProfileForm({ profile }: SiteProfileFormProps) {
         Work authorization
         <input
           name="work_authorization"
-          required
           maxLength={200}
-          defaultValue={profile?.work_authorization}
+          defaultValue={profile?.work_authorization ?? ""}
           disabled={pending}
           className={fieldClass}
+          aria-describedby="work-authorization-hint"
         />
+        <span
+          id="work-authorization-hint"
+          className="mt-1 block text-xs font-normal text-ink-faint"
+        >
+          Optional. Leave blank to keep the public site employment-status
+          neutral.
+        </span>
       </label>
 
       <label className={labelClass}>

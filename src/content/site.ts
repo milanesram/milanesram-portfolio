@@ -20,7 +20,7 @@ export const focusPages: FocusPage[] = [
     navLabel: "Cybersecurity / GRC",
     headline: "Cybersecurity, GRC, and IT risk",
     summary:
-      "This track is for analyst, specialist, and consultant roles in cybersecurity, GRC, and IT risk. It emphasizes security governance, controls, audit readiness, and risk remediation, supported by security education and applied governance work.",
+      "Cybersecurity governance, GRC, and IT-risk work emphasizing security governance, controls, audit readiness, and risk remediation, supported by security education and applied governance work.",
     competencies: [
       "GRC",
       "IT risk assessment",
@@ -37,7 +37,7 @@ export const focusPages: FocusPage[] = [
     navLabel: "Privacy / AI Governance",
     headline: "Privacy and AI governance",
     summary:
-      "This track is for privacy analyst, specialist, and consultant roles, including adjacent AI-governance work. It emphasizes privacy operations, privacy-risk assessment, and data protection, with current applied evidence through human-reviewed Shadow AI review.",
+      "Privacy operations, data protection, and AI-governance work emphasizing privacy-risk assessment, privacy by design, and incident process, with current applied evidence through human-reviewed Shadow AI review.",
     competencies: [
       "Privacy operations",
       "Privacy-risk assessment",
