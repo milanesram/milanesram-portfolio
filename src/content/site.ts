@@ -4,10 +4,9 @@ export const siteProfile: SiteProfile = {
   displayName: "Rainier (Ram) Milanes",
   shortName: "Ram Milanes",
   initials: "RM",
-  headline:
-    "Cybersecurity, GRC, and privacy governance for regulated environments.",
+  headline: "Cybersecurity, GRC, IT risk, and privacy professional.",
   summary:
-    "I help organizations assess technology and privacy risk, implement controls, and make governance visible — drawing on regulator-side leadership, enterprise privacy-program work, and a shipped Shadow AI governance capstone.",
+    "Cybersecurity, GRC, IT-risk, and privacy professional targeting analyst, specialist, and consultant roles. I earned a Northwestern MSIS (Security Specialization) and combine governance and privacy experience with hands-on technical development through PrivAI Guard, a non-production Shadow AI governance capstone.",
   workAuthorization: "Authorized to work in the U.S. without sponsorship",
   linkedinUrl: "https://www.linkedin.com/in/milanesram/",
   linkedinLabel: "linkedin.com/in/milanesram",

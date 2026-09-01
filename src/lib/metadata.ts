@@ -3,9 +3,9 @@ import { siteProfile } from "@/content";
 import { getSiteUrl } from "./site-url";
 
 const defaultTitle =
-  "Rainier (Ram) Milanes — Cybersecurity, GRC, and Privacy Governance";
+  "Rainier (Ram) Milanes — Cybersecurity, GRC, IT Risk & Privacy";
 const defaultDescription =
-  "Cybersecurity, GRC, IT risk, data privacy, and AI-governance professional. Authorized to work in the U.S. without sponsorship.";
+  "Targeting analyst, specialist, and consultant roles in cybersecurity, GRC, and privacy. Northwestern MSIS graduate with applied work through PrivAI Guard.";
 
 export function createPageMetadata(
   title: string,

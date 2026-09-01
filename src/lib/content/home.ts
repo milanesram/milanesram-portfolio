@@ -9,16 +9,16 @@ import type { Credential, Experience, ExperienceBullet, Project } from "@/conten
  */
 
 export const homeAbsoluteTitle =
-  "Rainier (Ram) Milanes — Cybersecurity, GRC, Privacy, and AI Governance";
+  "Rainier (Ram) Milanes — Cybersecurity, GRC, IT Risk & Privacy";
 
 export const homeDescription =
-  "Cybersecurity, GRC, IT-risk, data-privacy, and AI-governance professional targeting analyst, specialist, and consultant roles. Northwestern MSIS Security Specialization, CIPM, ISC2 CC, and PrivAI Guard. Authorized to work in the U.S. without sponsorship.";
+  "I am targeting analyst, specialist, and consultant roles in cybersecurity, GRC, IT risk, privacy, and AI governance. Northwestern MSIS graduate. Applied technical evidence through PrivAI Guard. Authorized to work in the U.S. without sponsorship.";
 
 export const homeHeroCopy = {
   eyebrow: "Rainier (Ram) Milanes",
-  headline: "Cybersecurity, GRC, IT risk, and privacy professional.",
+  headline: "Cybersecurity, risk, and privacy work grounded in technical practice.",
   summary:
-    "Targeting analyst, specialist, and consultant roles across cybersecurity, GRC, IT risk, data privacy, and AI governance. Current signals include a Northwestern MSIS (Security Specialization), CIPM, ISC2 CC, and PrivAI Guard — a Shadow AI governance capstone.",
+    "I am targeting analyst, specialist, and consultant roles in cybersecurity, GRC, and privacy, with AI governance supported by current work. I earned a Northwestern MSIS (Security Specialization) and developed PrivAI Guard as applied technical evidence.",
   chips: [
     "Cybersecurity",
     "GRC",
@@ -28,7 +28,7 @@ export const homeHeroCopy = {
   ] as const,
   primaryCta: {
     href: "/resume",
-    label: "View resume packets",
+    label: "View resume options",
   },
   secondaryCta: {
     href: "/projects/privai-guard",
@@ -48,7 +48,7 @@ export const homeProofStrip = [
   },
   {
     label: "IAPP CIPM",
-    supporting: "Certified Information Privacy Manager",
+    supporting: "Privacy program management",
   },
   {
     label: "ISC2 CC",
@@ -60,13 +60,13 @@ export const homeFlagshipCopy = {
   kicker: "Featured work · 2026",
   heading: "PrivAI Guard",
   problem:
-    "Organizations adopt AI tools faster than they can govern where those tools touch sensitive data.",
+    "Employee use of public AI tools often outpaces the privacy and governance controls around them.",
   whatIBuilt:
-    "A Northwestern MSIS capstone I designed and developed that turns reported Shadow AI use into structured privacy-risk triage, human review, remediation, and audit evidence.",
+    "A non-production Shadow AI governance MVP I designed and developed that turns risky employee AI use into structured privacy-risk triage, human review, and auditable remediation.",
   proofPoints: [
-    "Risk scoring and sensitive-data classification for reported AI use.",
-    "Role-based access, PostgreSQL Row-Level Security, and audit logging.",
-    "Remediation workflow with human governance review — not automated legal or regulatory decisioning.",
+    "Shows that governance requirements can be translated into a working technical system.",
+    "Structured risk review and remediation with a human decision path.",
+    "Not automated legal or regulatory decisioning.",
   ] as const,
   ctaLabel: "Read the PrivAI Guard case study",
   ctaHref: "/projects/privai-guard",
@@ -76,33 +76,26 @@ export const homeTracks = [
   {
     id: "cyber",
     resumeLabel: "Resume A",
-    title: "Cybersecurity / GRC / IT Risk",
+    title: "Cybersecurity / GRC",
     summary:
-      "For cybersecurity, GRC, and IT-risk requisitions — controls, audit readiness, incident readiness, and technology-risk work.",
-    chips: [
-      "IT risk",
-      "GRC",
-      "Security controls",
-      "Audit readiness",
-      "Incident readiness",
-    ] as const,
-    ctaLabel: "Open this track",
+      "For cybersecurity, GRC, and IT-risk roles that need controls, audit readiness, and technology-risk translation.",
+    chips: ["IT risk", "GRC", "Controls", "Audit readiness"] as const,
+    ctaLabel: "View this track",
     href: "/focus/cybersecurity-grc",
   },
   {
     id: "privacy",
     resumeLabel: "Resume B",
-    title: "Data Privacy / AI Governance",
+    title: "Privacy / AI Governance",
     summary:
-      "For privacy and AI-governance requisitions — privacy operations, privacy by design, and Shadow AI risk review.",
+      "For privacy and AI-governance roles that need privacy operations, risk assessment, and responsible human review.",
     chips: [
       "Data privacy",
-      "Privacy by design / default",
+      "Privacy-risk assessment",
       "AI governance",
-      "Audit evidence",
-      "Remediation",
+      "Human review",
     ] as const,
-    ctaLabel: "Open this track",
+    ctaLabel: "View this track",
     href: "/focus/privacy-ai-governance",
   },
 ] as const;

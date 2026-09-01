@@ -43,7 +43,7 @@ export default function OpenGraphImage() {
           {siteProfile.headline}
         </div>
         <div style={{ fontSize: 24, color: "#3E4B5C" }}>
-          Cybersecurity · GRC · Privacy · AI Governance
+          Cybersecurity · GRC · IT Risk · Privacy
         </div>
       </div>
     ),

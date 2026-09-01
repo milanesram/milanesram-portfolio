@@ -3,7 +3,7 @@ import { ButtonLink } from "./ButtonLink";
 
 export function CallToAction({
   title = "Start a conversation",
-  lede = "Recruiters and hiring managers can reach me by email or LinkedIn. A secure contact form will be connected in a later phase.",
+  lede = "Email and LinkedIn are the public contact channels.",
 }: {
   title?: string;
   lede?: string;

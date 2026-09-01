@@ -33,7 +33,7 @@ export function SiteFooter() {
 
         <div>
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
-            Pathways
+            Focus areas
           </p>
           <ul className="mt-3 space-y-2">
             {focusPages.map((track) => (

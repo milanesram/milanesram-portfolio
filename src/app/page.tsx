@@ -35,7 +35,7 @@ import { createPageMetadata } from "@/lib/metadata";
 export const dynamic = "force-dynamic";
 
 const pageMetadata = createPageMetadata(
-  "Cybersecurity, GRC, Privacy, and AI Governance",
+  "Cybersecurity, GRC, IT Risk & Privacy",
   homeDescription,
   "",
 );
@@ -124,7 +124,7 @@ export default async function HomePage() {
           <SectionHeader
             kicker="Two tracks"
             title="One record. Two recruiter packets."
-            lede="Choose the track that matches the requisition. The employers, dates, and evidence are the same."
+            lede="Choose the track that matches the role. The employers, dates, and evidence are the same."
           />
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
             {homeTracks.map((track) => (
@@ -164,7 +164,7 @@ export default async function HomePage() {
           <SectionHeader
             kicker="Experience"
             title="Selected recent work"
-            lede="Risk, controls, implementation, and governance — not a full timeline."
+            lede="Selected examples of transferable risk, controls, and privacy work."
           />
           <div className="mt-10">
             {experiencesResult.ok && homeExperiences.length > 0 ? (
@@ -194,7 +194,7 @@ export default async function HomePage() {
           <SectionHeader
             kicker="Credentials"
             title="Education and certifications"
-            lede="Current graduate work and professional certifications used on both tracks."
+            lede="Formal credentials that support both tracks."
           />
           <div className="mt-10">
             {credentialsResult.ok && homeCredentials.length > 0 ? (
@@ -228,13 +228,12 @@ export default async function HomePage() {
               Request a resume or start a conversation
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-ink-soft">
-              Choose the Resume A or Resume B packet, or contact me directly. Email and
-              LinkedIn are the public channels.
+              Choose the resume track that fits the role, or reach me directly by email
+              or LinkedIn.
             </p>
-            <p className="mt-4 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <ButtonLink href="/resume" variant="primary">
-                View resume packets
+                View resume options
               </ButtonLink>
               <ButtonLink href="/contact" variant="accent">
                 Contact
