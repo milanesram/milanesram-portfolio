@@ -1,3 +1,4 @@
+import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { PUBLIC_MEDIA_BUCKET } from "@/lib/content/media-bucket";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
@@ -11,13 +12,14 @@ import type {
 /**
  * Public media-metadata reads from Supabase.
  *
- * Cutover: do not import this from Home, About, Writing, Projects,
- * Resume, or Focus until an explicit later step. This module establishes
- * the anonymous read contract only.
+ * Home and About may use `getPublishedPublicMediaAssetsByPurpose` for
+ * `portrait` and `journey` images. Writing still resolves publication
+ * PDFs through `getPublishedPublicMediaAssetById`. Do not import this
+ * from Projects, Resume, or Focus for image purposes.
  *
  * Uses the anonymous publishable client. RLS remains the publication
  * boundary (published AND is_public). Does not read cookies, attach an
- * owner session, or use the service role.
+ * owner session, or use the service role. No writes.
  */
 
 const UUID_PATTERN =
@@ -41,6 +43,33 @@ export type PublishedPublicMedia = {
   publicUrl: string;
   sortOrder: number;
 };
+
+export const VISUAL_MEDIA_PURPOSES = ["portrait", "journey"] as const;
+
+export type VisualMediaPurpose = (typeof VISUAL_MEDIA_PURPOSES)[number];
+
+export type PublicImageMedia = {
+  id: string;
+  purpose: VisualMediaPurpose;
+  title: string;
+  altText: string;
+  caption: string | null;
+  yearLabel: string | null;
+  credit: string | null;
+  sortOrder: number;
+  publicUrl: string;
+};
+
+export type PublishedPublicMediaByPurposeResult =
+  | { ok: true; assets: PublicImageMedia[] }
+  | { ok: false };
+
+const SUPPORTED_PUBLIC_IMAGE_MIMES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+] as const;
 
 type PublicClient = SupabaseClient<Database>;
 
@@ -173,4 +202,111 @@ export async function getPublishedPublicMediaAssetById(
   }
 
   return mapMedia(supabase, data);
+}
+
+function isVisualMediaPurpose(purpose: MediaPurpose | null): purpose is VisualMediaPurpose {
+  return purpose === "portrait" || purpose === "journey";
+}
+
+function isSupportedPublicImageMime(mimeType: string | null): boolean {
+  return (
+    mimeType === "image/jpeg" ||
+    mimeType === "image/png" ||
+    mimeType === "image/webp" ||
+    mimeType === "image/avif"
+  );
+}
+
+function mapPublicImage(
+  client: PublicClient,
+  row: MediaRow,
+): PublicImageMedia | null {
+  if (row.kind !== "image" || !isVisualMediaPurpose(row.purpose)) {
+    return null;
+  }
+
+  if (!isSupportedPublicImageMime(row.mime_type)) {
+    return null;
+  }
+
+  const altText = row.alt_text?.trim();
+
+  if (!altText) {
+    return null;
+  }
+
+  const publicUrl = buildPublicMediaObjectUrl(client, row.bucket_path);
+
+  if (!publicUrl) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    purpose: row.purpose,
+    title: row.title,
+    altText,
+    caption: row.caption,
+    yearLabel: row.year_label,
+    credit: row.credit,
+    sortOrder: row.sort_order,
+    publicUrl,
+  };
+}
+
+/**
+ * Purpose-filtered published public images for Home and About.
+ * Queries only the requested purpose. Does not list the full media table.
+ */
+export async function getPublishedPublicMediaAssetsByPurpose(
+  purpose: VisualMediaPurpose,
+): Promise<PublishedPublicMediaByPurposeResult> {
+  if (!isVisualMediaPurpose(purpose)) {
+    return { ok: false };
+  }
+
+  const supabase = createPublicSupabaseClient();
+  const { data, error } = await supabase
+    .from("media_assets")
+    .select(MEDIA_COLUMNS)
+    .eq("status", "published")
+    .eq("is_public", true)
+    .eq("kind", "image")
+    .eq("purpose", purpose)
+    .in("mime_type", [...SUPPORTED_PUBLIC_IMAGE_MIMES])
+    .order("sort_order", { ascending: true });
+
+  if (error || !data) {
+    return { ok: false };
+  }
+
+  return {
+    ok: true,
+    assets: data.flatMap((row) => {
+      if (!isPubliclyReadable(row.status, row.is_public)) {
+        return [];
+      }
+
+      if (row.purpose !== purpose) {
+        return [];
+      }
+
+      const mapped = mapPublicImage(supabase, row);
+      return mapped ? [mapped] : [];
+    }),
+  };
+}
+
+/**
+ * Home and About use the first published portrait after sort_order ASC.
+ * Zero assets or a failed helper both resolve to null.
+ */
+export function selectPublishedPortrait(
+  result: PublishedPublicMediaByPurposeResult,
+): PublicImageMedia | null {
+  if (!result.ok || result.assets.length === 0) {
+    return null;
+  }
+
+  return result.assets[0];
 }

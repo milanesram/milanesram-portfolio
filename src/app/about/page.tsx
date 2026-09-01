@@ -1,8 +1,16 @@
 import { CallToAction } from "@/components/ui/CallToAction";
 import { PageHero } from "@/components/ui/PageHero";
+import { AboutJourney } from "@/components/about/AboutJourney";
+import { AboutPortrait } from "@/components/about/AboutPortrait";
 import { Container } from "@/components/layout/Container";
 import { aboutCopy, publicCredentials, speakingCategories } from "@/content";
+import {
+  getPublishedPublicMediaAssetsByPurpose,
+  selectPublishedPortrait,
+} from "@/lib/content/media";
 import { createPageMetadata } from "@/lib/metadata";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata(
   "About",
@@ -10,7 +18,15 @@ export const metadata = createPageMetadata(
   "/about",
 );
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const [portraitResult, journeyResult] = await Promise.all([
+    getPublishedPublicMediaAssetsByPurpose("portrait"),
+    getPublishedPublicMediaAssetsByPurpose("journey"),
+  ]);
+
+  const portrait = selectPublishedPortrait(portraitResult);
+  const journeyItems = journeyResult.ok ? journeyResult.assets : [];
+
   return (
     <>
       <PageHero
@@ -19,11 +35,19 @@ export default function AboutPage() {
         lede={aboutCopy.lede}
       />
       <Container narrow className="py-16">
+        {portrait ? (
+          <div className="mb-10">
+            <AboutPortrait portrait={portrait} />
+          </div>
+        ) : null}
+
         <div className="space-y-5 text-lg leading-8 text-ink-soft">
           {aboutCopy.paragraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
         </div>
+
+        {journeyItems.length > 0 ? <AboutJourney items={journeyItems} /> : null}
 
         <h2 className="mt-14 font-serif text-2xl font-medium text-ink">
           Education at a glance

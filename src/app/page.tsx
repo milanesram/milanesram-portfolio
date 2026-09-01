@@ -26,6 +26,10 @@ import {
   selectHomeExperiences,
   selectHomeFlagshipProject,
 } from "@/lib/content/home";
+import {
+  getPublishedPublicMediaAssetsByPurpose,
+  selectPublishedPortrait,
+} from "@/lib/content/media";
 import { createPageMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
@@ -50,11 +54,15 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [projectsResult, credentialsResult, experiencesResult] = await Promise.all([
-    getPublishedProjects(),
-    getPublishedCredentials(),
-    getHybridPublicExperiences(),
-  ]);
+  const [projectsResult, credentialsResult, experiencesResult, portraitResult] =
+    await Promise.all([
+      getPublishedProjects(),
+      getPublishedCredentials(),
+      getHybridPublicExperiences(),
+      getPublishedPublicMediaAssetsByPurpose("portrait"),
+    ]);
+
+  const portrait = selectPublishedPortrait(portraitResult);
 
   const flagship = projectsResult.ok
     ? selectHomeFlagshipProject(projectsResult.projects.map(toPresentationProject))
@@ -70,7 +78,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HomeHero />
+      <HomeHero portrait={portrait} />
 
       <section className="py-12" aria-label="Current signals">
         <Container>

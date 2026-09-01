@@ -1,9 +1,15 @@
 import { siteProfile } from "@/content";
 import { homeHeroCopy } from "@/lib/content/home";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { HomePortrait } from "@/components/home/HomePortrait";
 import { PortraitSlot } from "@/components/ui/PortraitSlot";
+import type { PublicImageMedia } from "@/lib/content/media";
 
-export function HomeHero() {
+type HomeHeroProps = {
+  portrait?: PublicImageMedia | null;
+};
+
+export function HomeHero({ portrait = null }: HomeHeroProps) {
   return (
     <section className="border-b border-line bg-paper-elevated">
       <div className="mx-auto grid max-w-[72rem] items-start gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,1.2fr)_16rem] lg:py-24">
@@ -37,7 +43,7 @@ export function HomeHero() {
           </div>
           <p className="mt-6 text-sm text-ink-faint">{siteProfile.workAuthorization}</p>
         </div>
-        <PortraitSlot />
+        {portrait ? <HomePortrait portrait={portrait} /> : <PortraitSlot />}
       </div>
     </section>
   );

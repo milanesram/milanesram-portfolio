@@ -4,11 +4,9 @@
 
 Step 50C local integrity baseline and approved web-derivative freeze for the Professional Journey visual set.
 
-This manifest is the integrity contract for the Professional Journey visual set. Step 50C froze local derivative hashes. Step 50D uploaded those exact WebP bytes to `public-media` and inserted six **draft / non-public** `media_assets` rows.
+This manifest is the integrity contract for the Professional Journey visual set. Step 50C froze local derivative hashes. Step 50D uploaded those exact WebP bytes to `public-media` and inserted six **draft / non-public** `media_assets` rows. Step 50E published those exact six rows and cut over Home (portrait only) and About (portrait + journey timeline).
 
-Database records remain draft/non-public; the Storage bucket is publicly addressable by design.
-
-It does **not** publish the six rows through the portfolio data layer, and it does **not** cut over About or Home.
+Hosted Storage objects are unchanged from Step 50D. Derivative SHA-256 and byte sizes remain the frozen 50C baseline.
 
 ## 2. Frozen architecture
 
@@ -16,9 +14,9 @@ It does **not** publish the six rows through the portfolio data layer, and it do
 |---|---|---|
 | Original | `/Users/mbair_ram/Documents/rainier-portfolio-journey-intake` (outside Git) | Archival source. Hash is provenance only. |
 | Derivative | `/Users/mbair_ram/Documents/rainier-portfolio-journey-derivatives` (outside Git) | Approved sanitized WebP. Hash is the future hosted binary baseline. |
-| Git | `docs/JOURNEY_MEDIA_INGEST_MANIFEST.md` + draft-seed migration | Contract, UUIDs, and integrity record. |
-| Hosted Storage | `public-media` | Exact derivative bytes. Publicly addressable by design. |
-| Hosted DB | six `media_assets` rows | `status = draft`, `is_public = false`. |
+| Git | `docs/JOURNEY_MEDIA_INGEST_MANIFEST.md` + draft-seed + publication migrations | Contract, UUIDs, and integrity record. |
+| Hosted Storage | `public-media` | Exact derivative bytes. Unchanged in Step 50E. |
+| Hosted DB | six `media_assets` rows | `status = published`, `is_public = true`. |
 
 Do not require the hosted object to equal the original source. That distinction is intentional and differs from publication PDFs.
 
@@ -38,14 +36,19 @@ Frozen path shape:
 | Foundation HEAD | `020e22fea413297f8d372f3f9b1aa372c5db55ea` (`feat: tailor focus writing evidence`) |
 | Derivative freeze HEAD | `683a10659f580377e411eb7050efaf448dd9ba45` (`docs: freeze journey media derivatives`) |
 | Draft-seed migration | `supabase/migrations/20260831220000_initial_journey_media_draft_seed.sql` |
+| Publication migration | `supabase/migrations/20260831230000_publish_journey_media.sql` |
+| Step 50E | Professional journey publication and About/Home visual cutover |
 | Rights confirmation | Explicit owner confirmation during Step 50C: all six selected assets **CLEARED FOR REPUBLICATION** |
 | Storage bucket | `public-media` |
-| Upload status | `STORAGE OBJECT UPLOADED` |
+| Upload status | `STORAGE OBJECT UPLOADED` (Step 50D; no Storage mutation in 50E) |
 | Hosted binary | `HOSTED BINARY VERIFIED` / `HOSTED BYTE SIZE VERIFIED` |
-| Media row status | Database row created; DB status `DRAFT`; DB `is_public` `FALSE` |
-| App publication status | `NOT YET PUBLISHED` |
-| About cutover | `NOT YET` |
-| Home cutover | `NOT YET` |
+| Media row status | `MEDIA STATUS: PUBLISHED` / `IS_PUBLIC: TRUE` |
+| Public media helper | `VERIFIED` — portrait 1, journey 5 |
+| Public object | `VERIFIED` |
+| App publication status | `PUBLISHED` |
+| About cutover | `VERIFIED` |
+| Home cutover | `VERIFIED` (portrait only; journey assets `NOT USED`) |
+| UI CUTOVER | `VERIFIED` |
 
 ## 4. Rights statement
 
@@ -84,7 +87,7 @@ Allowed transforms only: orientation normalization, crop, resize, WebP encode, m
 | Credit | `NOT PROVIDED` → future `NULL` | `NOT PROVIDED` → future `NULL` |
 | Rights | `CLEARED` | `CLEARED` |
 | Upload | `STORAGE OBJECT UPLOADED` | `STORAGE OBJECT UPLOADED` |
-| Media row | draft / `is_public` false | draft / `is_public` false |
+| Media row | published / `is_public` true (was draft in 50D) | published / `is_public` true (was draft in 50D) |
 
 ## 7. Selected assets
 
@@ -122,18 +125,26 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1�
 | Media UUID | `08faae9f-c586-4084-9cb0-badbedf75563` |
 | Storage bucket | `public-media` |
 | Bucket path | `portrait/08faae9f-c586-4084-9cb0-badbedf75563/rainier-milanes-portrait.webp` |
-| Database row | created |
-| DB status | `DRAFT` |
-| DB is_public | `FALSE` |
+| Database row | created in Step 50D; published in Step 50E |
+| DB status | `PUBLISHED` (was `DRAFT` in 50D) |
+| DB is_public | `TRUE` (was `FALSE` in 50D) |
 | Hosted binary SHA-256 | `db62540e06b24ea05c4e971258df4f99e3ab2cb65339adb861a4dba70aa3bfb4` |
 | Hosted binary bytes | `34440` |
-| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted binary | `HOSTED BINARY VERIFIED` — unchanged from 50C/50D |
 | Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
 | Upload status | `STORAGE OBJECT UPLOADED` |
-| App publication status | `NOT YET PUBLISHED` |
-| About cutover | `NOT YET` |
-| Home cutover | `NOT YET` |
-| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
+| MEDIA STATUS | `PUBLISHED` |
+| IS_PUBLIC | `TRUE` |
+| PUBLIC MEDIA HELPER | `VERIFIED` |
+| PUBLIC OBJECT | `VERIFIED` |
+| HOME USE | `VERIFIED` |
+| ABOUT USE | `VERIFIED` |
+| UI CUTOVER | `VERIFIED` |
+| Publication migration | `20260831230000_publish_journey_media` |
+| App publication status | `PUBLISHED` |
+| About cutover | `VERIFIED` |
+| Home cutover | `VERIFIED` |
+| Storage note | Storage object unchanged in 50E. |
 | Intended public surfaces | Home portrait slot; About portrait |
 
 ### Journey 1 — ANU cybersecurity study
@@ -168,18 +179,26 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1�
 | Media UUID | `21cc6ca2-a169-4d81-9e9f-c2b28142926f` |
 | Storage bucket | `public-media` |
 | Bucket path | `journey/21cc6ca2-a169-4d81-9e9f-c2b28142926f/anu-cybersecurity-study.webp` |
-| Database row | created |
-| DB status | `DRAFT` |
-| DB is_public | `FALSE` |
+| Database row | created in Step 50D; published in Step 50E |
+| DB status | `PUBLISHED` (was `DRAFT` in 50D) |
+| DB is_public | `TRUE` (was `FALSE` in 50D) |
 | Hosted binary SHA-256 | `25cf2d1994ff4afc3a01e793292a717cdb8d126261aff60bc369796c6b32014f` |
 | Hosted binary bytes | `83854` |
-| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted binary | `HOSTED BINARY VERIFIED` — unchanged from 50C/50D |
 | Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
 | Upload status | `STORAGE OBJECT UPLOADED` |
-| App publication status | `NOT YET PUBLISHED` |
-| About cutover | `NOT YET` |
-| Home cutover | `NOT YET` |
-| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
+| MEDIA STATUS | `PUBLISHED` |
+| IS_PUBLIC | `TRUE` |
+| PUBLIC MEDIA HELPER | `VERIFIED` |
+| PUBLIC OBJECT | `VERIFIED` |
+| HOME USE | `NOT USED` |
+| ABOUT USE | `VERIFIED` |
+| UI CUTOVER | `VERIFIED` |
+| Publication migration | `20260831230000_publish_journey_media` |
+| App publication status | `PUBLISHED` (was draft/non-public in 50D) |
+| About cutover | `VERIFIED` |
+| Home cutover | `NOT USED` |
+| Storage note | Storage object unchanged in 50E. |
 | Intended public surfaces | About Journey timeline, position 1 |
 
 ### Journey 2 — Decode 2024 media interview
@@ -214,18 +233,26 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1�
 | Media UUID | `a9c3d301-8e83-490f-97f2-077b16f98844` |
 | Storage bucket | `public-media` |
 | Bucket path | `journey/a9c3d301-8e83-490f-97f2-077b16f98844/decode-2024-media-interview.webp` |
-| Database row | created |
-| DB status | `DRAFT` |
-| DB is_public | `FALSE` |
+| Database row | created in Step 50D; published in Step 50E |
+| DB status | `PUBLISHED` (was `DRAFT` in 50D) |
+| DB is_public | `TRUE` (was `FALSE` in 50D) |
 | Hosted binary SHA-256 | `cf57f1c618513c9dc5d906c0ac0762811f715dbac50ebea955b90f3b2a4b9943` |
 | Hosted binary bytes | `251292` |
-| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted binary | `HOSTED BINARY VERIFIED` — unchanged from 50C/50D |
 | Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
 | Upload status | `STORAGE OBJECT UPLOADED` |
-| App publication status | `NOT YET PUBLISHED` |
-| About cutover | `NOT YET` |
-| Home cutover | `NOT YET` |
-| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
+| MEDIA STATUS | `PUBLISHED` |
+| IS_PUBLIC | `TRUE` |
+| PUBLIC MEDIA HELPER | `VERIFIED` |
+| PUBLIC OBJECT | `VERIFIED` |
+| HOME USE | `NOT USED` |
+| ABOUT USE | `VERIFIED` |
+| UI CUTOVER | `VERIFIED` |
+| Publication migration | `20260831230000_publish_journey_media` |
+| App publication status | `PUBLISHED` (was draft/non-public in 50D) |
+| About cutover | `VERIFIED` |
+| Home cutover | `NOT USED` |
+| Storage note | Storage object unchanged in 50E. |
 | Intended public surfaces | About Journey timeline, position 2 |
 
 ### Journey 3 — Global privacy assembly session
@@ -260,18 +287,26 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1�
 | Media UUID | `d2f89c64-e6de-42bc-b697-952ad6791d36` |
 | Storage bucket | `public-media` |
 | Bucket path | `journey/d2f89c64-e6de-42bc-b697-952ad6791d36/global-privacy-assembly-session.webp` |
-| Database row | created |
-| DB status | `DRAFT` |
-| DB is_public | `FALSE` |
+| Database row | created in Step 50D; published in Step 50E |
+| DB status | `PUBLISHED` (was `DRAFT` in 50D) |
+| DB is_public | `TRUE` (was `FALSE` in 50D) |
 | Hosted binary SHA-256 | `94e9d91ebcbce02dcfa4cd243e07fd225d18a6fb64cb4ac73307ff449144e80b` |
 | Hosted binary bytes | `210906` |
-| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted binary | `HOSTED BINARY VERIFIED` — unchanged from 50C/50D |
 | Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
 | Upload status | `STORAGE OBJECT UPLOADED` |
-| App publication status | `NOT YET PUBLISHED` |
-| About cutover | `NOT YET` |
-| Home cutover | `NOT YET` |
-| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
+| MEDIA STATUS | `PUBLISHED` |
+| IS_PUBLIC | `TRUE` |
+| PUBLIC MEDIA HELPER | `VERIFIED` |
+| PUBLIC OBJECT | `VERIFIED` |
+| HOME USE | `NOT USED` |
+| ABOUT USE | `VERIFIED` |
+| UI CUTOVER | `VERIFIED` |
+| Publication migration | `20260831230000_publish_journey_media` |
+| App publication status | `PUBLISHED` (was draft/non-public in 50D) |
+| About cutover | `VERIFIED` |
+| Home cutover | `NOT USED` |
+| Storage note | Storage object unchanged in 50E. |
 | Intended public surfaces | About Journey timeline, position 3 |
 
 ### Journey 4 — APEC Peru digital economy meeting
@@ -306,18 +341,26 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1�
 | Media UUID | `7e8a240a-d83f-47e5-9986-7882509b5a63` |
 | Storage bucket | `public-media` |
 | Bucket path | `journey/7e8a240a-d83f-47e5-9986-7882509b5a63/apec-peru-digital-economy.webp` |
-| Database row | created |
-| DB status | `DRAFT` |
-| DB is_public | `FALSE` |
+| Database row | created in Step 50D; published in Step 50E |
+| DB status | `PUBLISHED` (was `DRAFT` in 50D) |
+| DB is_public | `TRUE` (was `FALSE` in 50D) |
 | Hosted binary SHA-256 | `fa1afb1e3ad736e626106937636ba56127248d1dd55bdb3b913543b640cacb54` |
 | Hosted binary bytes | `164764` |
-| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted binary | `HOSTED BINARY VERIFIED` — unchanged from 50C/50D |
 | Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
 | Upload status | `STORAGE OBJECT UPLOADED` |
-| App publication status | `NOT YET PUBLISHED` |
-| About cutover | `NOT YET` |
-| Home cutover | `NOT YET` |
-| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
+| MEDIA STATUS | `PUBLISHED` |
+| IS_PUBLIC | `TRUE` |
+| PUBLIC MEDIA HELPER | `VERIFIED` |
+| PUBLIC OBJECT | `VERIFIED` |
+| HOME USE | `NOT USED` |
+| ABOUT USE | `VERIFIED` |
+| UI CUTOVER | `VERIFIED` |
+| Publication migration | `20260831230000_publish_journey_media` |
+| App publication status | `PUBLISHED` (was draft/non-public in 50D) |
+| About cutover | `VERIFIED` |
+| Home cutover | `NOT USED` |
+| Storage note | Storage object unchanged in 50E. |
 | Intended public surfaces | About Journey timeline, position 4 |
 
 ### Journey 5 — GSMA Ministerial Programme 2023
@@ -352,18 +395,26 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1�
 | Media UUID | `c524fb45-e73e-4a1d-917c-a0287f07fedb` |
 | Storage bucket | `public-media` |
 | Bucket path | `journey/c524fb45-e73e-4a1d-917c-a0287f07fedb/gsma-ministerial-programme-2023.webp` |
-| Database row | created |
-| DB status | `DRAFT` |
-| DB is_public | `FALSE` |
+| Database row | created in Step 50D; published in Step 50E |
+| DB status | `PUBLISHED` (was `DRAFT` in 50D) |
+| DB is_public | `TRUE` (was `FALSE` in 50D) |
 | Hosted binary SHA-256 | `36c165dc2552dc76f1e7b53f78889575e60bff57b85699d4e9f8107652f28b88` |
 | Hosted binary bytes | `69486` |
-| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted binary | `HOSTED BINARY VERIFIED` — unchanged from 50C/50D |
 | Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
 | Upload status | `STORAGE OBJECT UPLOADED` |
-| App publication status | `NOT YET PUBLISHED` |
-| About cutover | `NOT YET` |
-| Home cutover | `NOT YET` |
-| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
+| MEDIA STATUS | `PUBLISHED` |
+| IS_PUBLIC | `TRUE` |
+| PUBLIC MEDIA HELPER | `VERIFIED` |
+| PUBLIC OBJECT | `VERIFIED` |
+| HOME USE | `NOT USED` |
+| ABOUT USE | `VERIFIED` |
+| UI CUTOVER | `VERIFIED` |
+| Publication migration | `20260831230000_publish_journey_media` |
+| App publication status | `PUBLISHED` (was draft/non-public in 50D) |
+| About cutover | `VERIFIED` |
+| Home cutover | `NOT USED` |
+| Storage note | Storage object unchanged in 50E. |
 | Intended public surfaces | About Journey timeline, position 5 |
 
 ## 8. Integrity model
@@ -407,19 +458,24 @@ The other 16 intake candidates were not touched.
 
 ## 12. Hosted / UI freeze
 
-After Step 50D:
+After Step 50D the six rows were draft/non-public and About/Home were unchanged.
+
+After Step 50E:
 
 | Check | Result |
 |---|---|
 | `media_assets` | 16 total |
 | Publication media | 10 published/public documents |
-| Portrait rows | 1 image, draft, `is_public` false |
-| Journey rows | 5 images, draft, `is_public` false |
-| Storage objects | 16 (10 publication PDFs + 6 WebPs) |
-| Public helper portrait | 0 |
-| Public helper journey | 0 |
-| About / Home / Writing / Focus | unchanged |
+| Portrait rows | 1 image, published, `is_public` true |
+| Journey rows | 5 images, published, `is_public` true |
+| Draft portrait/journey rows | 0 |
+| Storage objects | 16 (10 publication PDFs + 6 WebPs) — no Storage mutation |
+| Public helper portrait | 1 |
+| Public helper journey | 5 |
+| Home | portrait `VERIFIED`; journey assets `NOT USED` |
+| About | portrait `VERIFIED`; journey `VERIFIED` (5 images) |
+| Writing / Focus / Experience / Projects / Credentials / Resume / Contact | unchanged |
+| Publication migration | `20260831230000_publish_journey_media` |
+| Binary hashes | unchanged from Step 50C/50D |
 
-Direct Storage object URLs may return HTTP 200 because `public-media` is a public bucket. That is **STORAGE OBJECT PUBLICLY ADDRESSABLE BY DESIGN** and is not the same as `media_assets.is_public`.
-
-Step 50E may publish these six rows and cut over About/Home. Do not do that in this step.
+Direct Storage object URLs may return HTTP 200 because `public-media` is a public bucket. Application exposure is gated by `status = published` AND `is_public = true` through the anonymous purpose-filtered helper.
