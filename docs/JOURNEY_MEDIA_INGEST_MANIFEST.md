@@ -4,9 +4,11 @@
 
 Step 50C local integrity baseline and approved web-derivative freeze for the Professional Journey visual set.
 
-This manifest is the only Git artifact from Step 50C. It records provenance hashes, approved derivative hashes, rights, captions, and transform notes so a later hosted upload can place **exact derivative bytes** into `public-media`.
+This manifest is the integrity contract for the Professional Journey visual set. Step 50C froze local derivative hashes. Step 50D uploaded those exact WebP bytes to `public-media` and inserted six **draft / non-public** `media_assets` rows.
 
-It does **not** create media rows, Storage objects, or About/Home cutover.
+Database records remain draft/non-public; the Storage bucket is publicly addressable by design.
+
+It does **not** publish the six rows through the portfolio data layer, and it does **not** cut over About or Home.
 
 ## 2. Frozen architecture
 
@@ -14,32 +16,36 @@ It does **not** create media rows, Storage objects, or About/Home cutover.
 |---|---|---|
 | Original | `/Users/mbair_ram/Documents/rainier-portfolio-journey-intake` (outside Git) | Archival source. Hash is provenance only. |
 | Derivative | `/Users/mbair_ram/Documents/rainier-portfolio-journey-derivatives` (outside Git) | Approved sanitized WebP. Hash is the future hosted binary baseline. |
-| Git | `docs/JOURNEY_MEDIA_INGEST_MANIFEST.md` only | Contract and integrity record. |
-| Hosted (later) | `public-media` | Must equal the derivative SHA-256 and byte size exactly. |
+| Git | `docs/JOURNEY_MEDIA_INGEST_MANIFEST.md` + draft-seed migration | Contract, UUIDs, and integrity record. |
+| Hosted Storage | `public-media` | Exact derivative bytes. Publicly addressable by design. |
+| Hosted DB | six `media_assets` rows | `status = draft`, `is_public = false`. |
 
 Do not require the hosted object to equal the original source. That distinction is intentional and differs from publication PDFs.
 
-Intended later Storage path shape (UUIDs not assigned in this step):
+Frozen path shape:
 
 `{purpose}/{media_uuid}/{normalized_filename}`
-
-with `purpose` of `portrait` or `journey`.
-
-Do not invent UUIDs or `bucket_path` values here.
 
 ## 3. Workflow metadata
 
 | Field | Value |
 |---|---|
 | Date | 2026-08-31 |
-| Step | 50C â€” Local image integrity and web derivative preparation |
+| Step 50C | Local image integrity and web derivative preparation |
+| Step 50D | Journey media draft seed and exact Storage upload |
 | Repository | `/Users/mbair_ram/Documents/rainier-portfolio` |
 | Branch | `main` |
 | Foundation HEAD | `020e22fea413297f8d372f3f9b1aa372c5db55ea` (`feat: tailor focus writing evidence`) |
+| Derivative freeze HEAD | `683a10659f580377e411eb7050efaf448dd9ba45` (`docs: freeze journey media derivatives`) |
+| Draft-seed migration | `supabase/migrations/20260831220000_initial_journey_media_draft_seed.sql` |
 | Rights confirmation | Explicit owner confirmation during Step 50C: all six selected assets **CLEARED FOR REPUBLICATION** |
-| Upload status | `NOT YET UPLOADED` |
-| Media row status | `NOT YET CREATED` |
-| About / Home | Unchanged |
+| Storage bucket | `public-media` |
+| Upload status | `STORAGE OBJECT UPLOADED` |
+| Hosted binary | `HOSTED BINARY VERIFIED` / `HOSTED BYTE SIZE VERIFIED` |
+| Media row status | Database row created; DB status `DRAFT`; DB `is_public` `FALSE` |
+| App publication status | `NOT YET PUBLISHED` |
+| About cutover | `NOT YET` |
+| Home cutover | `NOT YET` |
 
 ## 4. Rights statement
 
@@ -77,8 +83,8 @@ Allowed transforms only: orientation normalization, crop, resize, WebP encode, m
 | Public metadata | stripped | stripped |
 | Credit | `NOT PROVIDED` â†’ future `NULL` | `NOT PROVIDED` â†’ future `NULL` |
 | Rights | `CLEARED` | `CLEARED` |
-| Upload | `NOT YET UPLOADED` | `NOT YET UPLOADED` |
-| Media row | `NOT YET CREATED` | `NOT YET CREATED` |
+| Upload | `STORAGE OBJECT UPLOADED` | `STORAGE OBJECT UPLOADED` |
+| Media row | draft / `is_public` false | draft / `is_public` false |
 
 ## 7. Selected assets
 
@@ -113,8 +119,21 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1â€
 | Derivative MIME | `image/webp` |
 | Metadata sanitized | PASS |
 | Visual QA | PASS |
-| Upload status | `NOT YET UPLOADED` |
-| Media row status | `NOT YET CREATED` |
+| Media UUID | `08faae9f-c586-4084-9cb0-badbedf75563` |
+| Storage bucket | `public-media` |
+| Bucket path | `portrait/08faae9f-c586-4084-9cb0-badbedf75563/rainier-milanes-portrait.webp` |
+| Database row | created |
+| DB status | `DRAFT` |
+| DB is_public | `FALSE` |
+| Hosted binary SHA-256 | `db62540e06b24ea05c4e971258df4f99e3ab2cb65339adb861a4dba70aa3bfb4` |
+| Hosted binary bytes | `34440` |
+| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
+| Upload status | `STORAGE OBJECT UPLOADED` |
+| App publication status | `NOT YET PUBLISHED` |
+| About cutover | `NOT YET` |
+| Home cutover | `NOT YET` |
+| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
 | Intended public surfaces | Home portrait slot; About portrait |
 
 ### Journey 1 â€” ANU cybersecurity study
@@ -146,8 +165,21 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1â€
 | Derivative MIME | `image/webp` |
 | Metadata sanitized | PASS |
 | Visual QA | PASS |
-| Upload status | `NOT YET UPLOADED` |
-| Media row status | `NOT YET CREATED` |
+| Media UUID | `21cc6ca2-a169-4d81-9e9f-c2b28142926f` |
+| Storage bucket | `public-media` |
+| Bucket path | `journey/21cc6ca2-a169-4d81-9e9f-c2b28142926f/anu-cybersecurity-study.webp` |
+| Database row | created |
+| DB status | `DRAFT` |
+| DB is_public | `FALSE` |
+| Hosted binary SHA-256 | `25cf2d1994ff4afc3a01e793292a717cdb8d126261aff60bc369796c6b32014f` |
+| Hosted binary bytes | `83854` |
+| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
+| Upload status | `STORAGE OBJECT UPLOADED` |
+| App publication status | `NOT YET PUBLISHED` |
+| About cutover | `NOT YET` |
+| Home cutover | `NOT YET` |
+| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
 | Intended public surfaces | About Journey timeline, position 1 |
 
 ### Journey 2 â€” Decode 2024 media interview
@@ -179,8 +211,21 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1â€
 | Derivative MIME | `image/webp` |
 | Metadata sanitized | PASS |
 | Visual QA | PASS |
-| Upload status | `NOT YET UPLOADED` |
-| Media row status | `NOT YET CREATED` |
+| Media UUID | `a9c3d301-8e83-490f-97f2-077b16f98844` |
+| Storage bucket | `public-media` |
+| Bucket path | `journey/a9c3d301-8e83-490f-97f2-077b16f98844/decode-2024-media-interview.webp` |
+| Database row | created |
+| DB status | `DRAFT` |
+| DB is_public | `FALSE` |
+| Hosted binary SHA-256 | `cf57f1c618513c9dc5d906c0ac0762811f715dbac50ebea955b90f3b2a4b9943` |
+| Hosted binary bytes | `251292` |
+| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
+| Upload status | `STORAGE OBJECT UPLOADED` |
+| App publication status | `NOT YET PUBLISHED` |
+| About cutover | `NOT YET` |
+| Home cutover | `NOT YET` |
+| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
 | Intended public surfaces | About Journey timeline, position 2 |
 
 ### Journey 3 â€” Global privacy assembly session
@@ -212,8 +257,21 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1â€
 | Derivative MIME | `image/webp` |
 | Metadata sanitized | PASS |
 | Visual QA | PASS |
-| Upload status | `NOT YET UPLOADED` |
-| Media row status | `NOT YET CREATED` |
+| Media UUID | `d2f89c64-e6de-42bc-b697-952ad6791d36` |
+| Storage bucket | `public-media` |
+| Bucket path | `journey/d2f89c64-e6de-42bc-b697-952ad6791d36/global-privacy-assembly-session.webp` |
+| Database row | created |
+| DB status | `DRAFT` |
+| DB is_public | `FALSE` |
+| Hosted binary SHA-256 | `94e9d91ebcbce02dcfa4cd243e07fd225d18a6fb64cb4ac73307ff449144e80b` |
+| Hosted binary bytes | `210906` |
+| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
+| Upload status | `STORAGE OBJECT UPLOADED` |
+| App publication status | `NOT YET PUBLISHED` |
+| About cutover | `NOT YET` |
+| Home cutover | `NOT YET` |
+| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
 | Intended public surfaces | About Journey timeline, position 3 |
 
 ### Journey 4 â€” APEC Peru digital economy meeting
@@ -245,8 +303,21 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1â€
 | Derivative MIME | `image/webp` |
 | Metadata sanitized | PASS |
 | Visual QA | PASS â€” no readable network credentials in the derivative (OCR + close-up inspection). Credential values are not recorded in this manifest. |
-| Upload status | `NOT YET UPLOADED` |
-| Media row status | `NOT YET CREATED` |
+| Media UUID | `7e8a240a-d83f-47e5-9986-7882509b5a63` |
+| Storage bucket | `public-media` |
+| Bucket path | `journey/7e8a240a-d83f-47e5-9986-7882509b5a63/apec-peru-digital-economy.webp` |
+| Database row | created |
+| DB status | `DRAFT` |
+| DB is_public | `FALSE` |
+| Hosted binary SHA-256 | `fa1afb1e3ad736e626106937636ba56127248d1dd55bdb3b913543b640cacb54` |
+| Hosted binary bytes | `164764` |
+| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
+| Upload status | `STORAGE OBJECT UPLOADED` |
+| App publication status | `NOT YET PUBLISHED` |
+| About cutover | `NOT YET` |
+| Home cutover | `NOT YET` |
+| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
 | Intended public surfaces | About Journey timeline, position 4 |
 
 ### Journey 5 â€” GSMA Ministerial Programme 2023
@@ -278,8 +349,21 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1â€
 | Derivative MIME | `image/webp` |
 | Metadata sanitized | PASS |
 | Visual QA | PASS |
-| Upload status | `NOT YET UPLOADED` |
-| Media row status | `NOT YET CREATED` |
+| Media UUID | `c524fb45-e73e-4a1d-917c-a0287f07fedb` |
+| Storage bucket | `public-media` |
+| Bucket path | `journey/c524fb45-e73e-4a1d-917c-a0287f07fedb/gsma-ministerial-programme-2023.webp` |
+| Database row | created |
+| DB status | `DRAFT` |
+| DB is_public | `FALSE` |
+| Hosted binary SHA-256 | `36c165dc2552dc76f1e7b53f78889575e60bff57b85699d4e9f8107652f28b88` |
+| Hosted binary bytes | `69486` |
+| Hosted binary | `HOSTED BINARY VERIFIED` |
+| Hosted byte size | `HOSTED BYTE SIZE VERIFIED` |
+| Upload status | `STORAGE OBJECT UPLOADED` |
+| App publication status | `NOT YET PUBLISHED` |
+| About cutover | `NOT YET` |
+| Home cutover | `NOT YET` |
+| Storage note | Database record remains draft/non-public; Storage bucket is publicly addressable by design. |
 | Intended public surfaces | About Journey timeline, position 5 |
 
 ## 8. Integrity model
@@ -287,8 +371,8 @@ Display / timeline order follows the Step 50B freeze: portrait, then Journey 1â€
 | Artifact | Hash meaning |
 |---|---|
 | Original SHA-256 | Provenance of the untouched intake file. Recomputed after derivation: 6/6 unchanged. |
-| Derivative SHA-256 | Approved public binary. Future Storage upload must match this hash and byte size. |
-| Hosted object (later) | Must equal the derivative, not the original. |
+| Derivative SHA-256 | Approved public binary. Hosted Storage object matches this hash and byte size. |
+| Hosted object | Equals the derivative, not the original. |
 
 ## 9. Credit / year handling
 
@@ -323,14 +407,19 @@ The other 16 intake candidates were not touched.
 
 ## 12. Hosted / UI freeze
 
-After Step 50C:
+After Step 50D:
 
-| Check | Expected |
+| Check | Result |
 |---|---|
-| `media_assets` | 10 publication documents |
-| Portrait rows | 0 |
-| Journey rows | 0 |
-| Storage objects | 10 |
+| `media_assets` | 16 total |
+| Publication media | 10 published/public documents |
+| Portrait rows | 1 image, draft, `is_public` false |
+| Journey rows | 5 images, draft, `is_public` false |
+| Storage objects | 16 (10 publication PDFs + 6 WebPs) |
+| Public helper portrait | 0 |
+| Public helper journey | 0 |
 | About / Home / Writing / Focus | unchanged |
 
-Step 50D may draft media rows and upload these exact six WebP files. It must not publish them or cut About/Home in the same step.
+Direct Storage object URLs may return HTTP 200 because `public-media` is a public bucket. That is **STORAGE OBJECT PUBLICLY ADDRESSABLE BY DESIGN** and is not the same as `media_assets.is_public`.
+
+Step 50E may publish these six rows and cut over About/Home. Do not do that in this step.
