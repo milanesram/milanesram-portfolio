@@ -35,6 +35,7 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin/skills` | List focus pages and their competency counts |
 | `/admin/skills/new` | Create a focus page (empty competencies) |
 | `/admin/skills/[id]` | Edit a focus page and its competencies |
+| `/admin/home` | Edit the Home singleton, chips, proof strip, and featured evidence |
 | `/admin/settings` | Edit the `site_profile` and `site_settings` singletons |
 | `/admin/media` | List existing media metadata |
 | `/admin/media/[id]` | Edit existing media metadata |
@@ -173,11 +174,26 @@ Saving the focus page does not overwrite competencies. Skill add, edit, reorder,
 4. Edit Website flags (`site_settings`): contact form enabled and site indexable. Save flags. This table has no status column.
 5. There is no `/new` route and no Delete. Each table allows at most one row (`singleton_key = 'default'`).
 
-`public_email` is a public contact address, not the owner Auth email. `linkedin_url` must be `https:`. `site_settings` flags are anonymously readable by design and must never hold secrets. Published `site_profile` is the public authority for shared identity, headline, summary, email, and LinkedIn. Home and About editorial copy remain in `src/content/` until later cutovers. Work authorization may be saved blank and is not rendered when empty.
+`public_email` is a public contact address, not the owner Auth email. `linkedin_url` must be `https:`. `site_settings` flags are anonymously readable by design and must never hold secrets. Published `site_profile` is the public authority for shared identity, headline, summary, email, and LinkedIn. Published `home_page` is the public authority for Home editorial content. About editorial copy remains in `src/content/` until a later cutover. Work authorization may be saved blank and is not rendered when empty.
 
 ---
 
-## 12. Media CMS workflow
+## 12. Home CMS workflow
+
+1. Open **Home** from the dashboard (`/admin/home`).
+2. Edit the Home singleton (`home_page`): headline, lede, CTA labels/URLs, featured-project overlay, section framing, closing CTA, and Home SEO title/description.
+3. Reorder domain chips by label + sort order. Empty chip rows are ignored.
+4. Edit proof-strip items (label, supporting text, optional URL). Relate an item to a credential or a project, not both.
+5. Select featured Experience evidence by checking experience items. The visible label is organization, role, and bullet excerpt. Home stores the item UUID, so later bullet edits do not drop the selection.
+6. Select featured Credentials by name/issuer. Draft or `needs_verification` credentials are not shown on the public Home even if selected.
+7. Choose the featured Project by title. Core project facts stay on the project record; Home overlay copy is separate.
+8. **Save as draft**, **Publish**, **Unpublish**, or **Archive**. Public Home renders only a published singleton. Unpublished related evidence is omitted, not replaced with old static copy.
+
+Focus/Resume track cards on Home remain code until a later Focus step. `show_on_home` on experience items is not the Home selector.
+
+---
+
+## 13. Media CMS workflow
 
 1. Open **Media** from the dashboard.
 2. Inspect existing `media_assets` metadata: title, alt text, kind, public flag, and status.
@@ -189,7 +205,7 @@ There is no `/new` route and no upload. `bucket_path` is owner-visible immutable
 
 ---
 
-## 13. Inquiries CMS workflow
+## 14. Inquiries CMS workflow
 
 1. Open **Inquiries** from the dashboard.
 2. Review owner-only `inquiries` rows: received time, sender name/email, context, track, and a short message preview.
@@ -203,7 +219,7 @@ Public `/contact` stays email, LinkedIn, and a disabled placeholder unless both 
 
 ---
 
-## 14. Draft / publish behavior
+## 15. Draft / publish behavior
 
 | Status | Admin | Public adapter | Current public pages |
 |---|---|---|---|
@@ -215,7 +231,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 15. Project sections
+## 16. Project sections
 
 - Heading, body, track, status, and sort order
 - Move up / move down (only among sections of that project)
@@ -224,7 +240,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 16. Experience items
+## 17. Experience items
 
 - Body, track, status, sort order, `is_metric`, `metric_context`, and `show_on_home`
 - Move up / move down (only among items of that experience)
@@ -234,7 +250,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 17. Focus-page competencies
+## 18. Focus-page competencies
 
 - Plain text values on `focus_pages.competencies`
 - Move up / move down (only within that page’s array)
@@ -244,13 +260,13 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 18. Logout
+## 19. Logout
 
 Use **Log out**. The session cookies are cleared and the browser returns to `/admin/login`.
 
 ---
 
-## 19. Troubleshooting authentication
+## 20. Troubleshooting authentication
 
 1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Public intake also requires server-only `CONTACT_INTAKE_ENABLED`, `CONTACT_RATE_LIMIT_SECRET`, and `SUPABASE_SERVICE_ROLE_KEY` (never commit values).
 2. The hosted project has `public.is_admin()` and the owner `user_roles` row.
@@ -259,7 +275,7 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ---
 
-## 20. Proposed content script
+## 21. Proposed content script
 
 `supabase/content/privai_guard_project.sql` inserts the approved public PrivAI Guard project and seven sections if they are absent.
 
@@ -267,6 +283,6 @@ It is not a schema migration and is not run by `supabase db push`, `supabase sta
 
 ---
 
-## 21. Still out of scope
+## 22. Still out of scope
 
 Publications, Storage upload, resume uploads, CAPTCHA, email notifications, registration, password reset, role management, public project/experience/education/certification/training/license/skills/settings/media cutover, real employment, education-history, certification, training, license, skills, site-profile, media, or inquiry load, hosted intake activation, and deploy.

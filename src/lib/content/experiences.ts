@@ -10,10 +10,11 @@ import type {
 /**
  * Public experience reads from Supabase, plus the static Scionetrade hold.
  *
- * `/experience` and Home read published parents and children through the
+ * `/experience` reads published parents and children through the
  * anonymous publishable client, then merge only the existing static
- * Scionetrade record. RLS remains the publication boundary. FocusView
- * still reads `src/content/experiences.ts`.
+ * Scionetrade record. Home selected evidence now uses
+ * `home_experience_items` UUIDs. RLS remains the publication boundary.
+ * FocusView still reads `src/content/experiences.ts`.
  */
 
 const MONTH_LABELS = [

@@ -370,6 +370,241 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["credentials"]["Insert"]>;
         Relationships: [];
       };
+      home_page: {
+        Row: Row & {
+          id: string;
+          singleton_key: "default";
+          status: ContentStatus;
+          featured_project_id: string | null;
+          headline: string;
+          lede: string;
+          primary_cta_label: string;
+          primary_cta_href: string;
+          secondary_cta_label: string;
+          secondary_cta_href: string;
+          project_kicker: string;
+          project_heading: string;
+          project_problem: string;
+          project_body: string;
+          project_cta_label: string;
+          project_cta_href: string;
+          project_proof_points: string[];
+          experience_kicker: string;
+          experience_heading: string;
+          experience_lede: string;
+          experience_cta_label: string;
+          experience_cta_href: string;
+          credentials_kicker: string;
+          credentials_heading: string;
+          credentials_lede: string;
+          credentials_cta_label: string;
+          credentials_cta_href: string;
+          focus_kicker: string;
+          focus_heading: string;
+          focus_lede: string;
+          closing_heading: string;
+          closing_body: string;
+          closing_primary_cta_label: string;
+          closing_primary_cta_href: string;
+          closing_secondary_cta_label: string;
+          closing_secondary_cta_href: string;
+          seo_title: string;
+          seo_description: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["home_page"]["Row"]> & {
+          headline: string;
+          lede: string;
+          primary_cta_label: string;
+          primary_cta_href: string;
+          secondary_cta_label: string;
+          secondary_cta_href: string;
+          project_kicker: string;
+          project_heading: string;
+          project_problem: string;
+          project_body: string;
+          project_cta_label: string;
+          project_cta_href: string;
+          experience_kicker: string;
+          experience_heading: string;
+          experience_lede: string;
+          experience_cta_label: string;
+          experience_cta_href: string;
+          credentials_kicker: string;
+          credentials_heading: string;
+          credentials_lede: string;
+          credentials_cta_label: string;
+          credentials_cta_href: string;
+          focus_kicker: string;
+          focus_heading: string;
+          focus_lede: string;
+          closing_heading: string;
+          closing_body: string;
+          closing_primary_cta_label: string;
+          closing_primary_cta_href: string;
+          closing_secondary_cta_label: string;
+          closing_secondary_cta_href: string;
+          seo_title: string;
+          seo_description: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["home_page"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "home_page_featured_project_id_fkey";
+            columns: ["featured_project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      home_page_chips: {
+        Row: Row & {
+          id: string;
+          home_page_id: string;
+          label: string;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          home_page_id: string;
+          label: string;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["home_page_chips"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "home_page_chips_home_page_id_fkey";
+            columns: ["home_page_id"];
+            isOneToOne: false;
+            referencedRelation: "home_page";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      home_proof_items: {
+        Row: Row & {
+          id: string;
+          home_page_id: string;
+          label: string;
+          supporting: string;
+          href: string | null;
+          credential_id: string | null;
+          project_id: string | null;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          home_page_id: string;
+          label: string;
+          supporting: string;
+          href?: string | null;
+          credential_id?: string | null;
+          project_id?: string | null;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["home_proof_items"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "home_proof_items_home_page_id_fkey";
+            columns: ["home_page_id"];
+            isOneToOne: false;
+            referencedRelation: "home_page";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "home_proof_items_credential_id_fkey";
+            columns: ["credential_id"];
+            isOneToOne: false;
+            referencedRelation: "credentials";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "home_proof_items_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      home_experience_items: {
+        Row: Row & {
+          id: string;
+          home_page_id: string;
+          experience_item_id: string;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          home_page_id: string;
+          experience_item_id: string;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["home_experience_items"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "home_experience_items_home_page_id_fkey";
+            columns: ["home_page_id"];
+            isOneToOne: false;
+            referencedRelation: "home_page";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "home_experience_items_experience_item_id_fkey";
+            columns: ["experience_item_id"];
+            isOneToOne: false;
+            referencedRelation: "experience_items";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      home_credentials: {
+        Row: Row & {
+          id: string;
+          home_page_id: string;
+          credential_id: string;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          home_page_id: string;
+          credential_id: string;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["home_credentials"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "home_credentials_home_page_id_fkey";
+            columns: ["home_page_id"];
+            isOneToOne: false;
+            referencedRelation: "home_page";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "home_credentials_credential_id_fkey";
+            columns: ["credential_id"];
+            isOneToOne: false;
+            referencedRelation: "credentials";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       engagements: {
         Row: Row & {
           id: string;

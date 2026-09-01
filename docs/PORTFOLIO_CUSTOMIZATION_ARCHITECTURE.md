@@ -75,7 +75,7 @@ Mutable public content by surface (chrome shared by all routes: header `navPrima
 
 | Route | Mutable content | Current public source |
 |---|---|---|
-| `/` | Hero, chips, CTAs, proof strip, flagship copy, track cards, selected experience bullets, selected credentials, closing CTA, metadata, portrait | Static `home.ts` + `page.tsx` chrome; hosted projects/credentials/experiences/media; hosted `site_profile` for shared identity/contact only |
+| `/` | Hero, chips, CTAs, proof strip, flagship copy, track cards, selected experience bullets, selected credentials, closing CTA, metadata, portrait | Hosted `home_page` + UUID relationships; track cards still static `homeTracks` until 52D; hosted `site_profile` for shared identity/contact; hosted portrait |
 | `/about` | H1, lede, narrative, education glance, speaking, boundaries, metadata, portrait, journey images/captions | Static `aboutCopy` / `publicCredentials` / `speakingCategories`; hosted media |
 | `/focus/cybersecurity-grc` | Headline, summary, competencies, featured project, experience, credentials, selected writing, CTAs, metadata | Hosted `focus_pages` + publication; static FocusView evidence (`featuredProject`, `experiencesForTrack`, `publicCredentials`, `selectedWritingSlug`) |
 | `/focus/privacy-ai-governance` | Same pattern | Same |
@@ -105,16 +105,16 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Site chrome | initials | Derived from hosted display name | None | Derived in code | KEEP IN CODE or derive | KEEP IN CODE |
 | Header/footer | nav items | `navPrimary` | Footer appends Resume | Static | KEEP IN CODE | KEEP IN CODE |
 | Footer | Bar disclaimer | Hard-coded `SiteFooter` | `aboutCopy.nonClaims[0]` | Duplicate static | Hosted legal note / site profile | CUT OVER TO HOSTED |
-| Home | Hero H1, lede, chips, CTAs | `homeHeroCopy` | None | Static | Hosted home/page copy | CUT OVER TO HOSTED |
-| Home | Proof strip | `homeProofStrip` | Overlaps credentials | Static | Hosted copy or credential relationships | CUT OVER TO HOSTED / HOSTED RELATIONSHIP |
-| Home | Flagship copy | `homeFlagshipCopy` | Project row + Focus | Static overlay | Project row + optional home overlay fields | CUT OVER TO HOSTED |
-| Home | Flagship selection | `HOME_FLAGSHIP_SLUG` + `featured` | `projects.is_featured` | Static slug AND featured | Hosted project UUID relationship | HOSTED RELATIONSHIP |
-| Home | Track cards | `homeTracks` | `focusPages` / hosted focus summaries (drift) | Static | Resume/Focus config | CUT OVER TO HOSTED |
-| Home | Selected experience | `HOME_EXPERIENCE_SELECTION` **exact bullet strings** + remapped static IDs | Hosted `experiences` / `experience_items`; unused `show_on_home` (3 rows, not 6 bullets) | Static selector over hosted facts | Ordered item UUID relationships | HOSTED RELATIONSHIP |
-| Home | Selected credentials | `HOME_CREDENTIAL_NAMES` exact name match | Hosted `credentials.highlight` | Static names | Credential UUID + sort | HOSTED RELATIONSHIP |
+| Home | Hero H1, lede, chips, CTAs | Hosted `home_page` / `home_page_chips` | Static `home.ts` retired | Hosted | Hosted home/page copy | KEEP HOSTED |
+| Home | Proof strip | Hosted `home_proof_items` editorial labels + optional credential/project FKs | Official names stay on source records | Hosted hybrid | Hosted copy + relationships | KEEP HOSTED |
+| Home | Flagship copy | Hosted `home_page` overlay fields | Project row facts | Hosted overlay | Project row + Home overlay | KEEP HOSTED |
+| Home | Flagship selection | `home_page.featured_project_id` | `projects.is_featured` unused by Home | Hosted UUID | Hosted project UUID relationship | KEEP HOSTED |
+| Home | Track cards | `homeTracks` | `focusPages` / hosted focus summaries | Static temporary | Resume/Focus config | TEMPORARY — 52D |
+| Home | Selected experience | `home_experience_items` UUIDs | `show_on_home` leftover (3 metrics, unused) | Hosted relationships | Ordered item UUID relationships | KEEP HOSTED |
+| Home | Selected credentials | `home_credentials` UUIDs | `credentials.highlight` unused by Home | Hosted relationships | Credential UUID + sort | KEEP HOSTED |
 | Home | Portrait | Hosted `media_assets` purpose=portrait | None | Hosted | Hosted | KEEP HOSTED |
-| Home | Metadata | `homeAbsoluteTitle`, `homeDescription` | `lib/metadata.ts` defaults | Static | Page SEO record | CUT OVER TO HOSTED |
-| Home | Closing CTA | `page.tsx` strings | `CallToAction` defaults | JSX editorial | Page/CTA copy records | CUT OVER TO HOSTED |
+| Home | Metadata | `home_page.seo_title` / `seo_description` | Sitewide SEO still code | Hosted Home-only | Page SEO record in 52G | KEEP HOSTED (Home only) |
+| Home | Closing CTA | Hosted `home_page` closing fields | Email/LinkedIn from profile | Hosted | Page/CTA copy records | KEEP HOSTED |
 | About | H1, lede, paragraphs, speaking, boundaries | `aboutCopy` | None | Static | Hosted about document | CUT OVER TO HOSTED |
 | About | Education glance | Static `publicCredentials` degrees | Hosted credentials | Static duplicate | Hosted credentials | RETIRE STATIC MIRROR |
 | About | Speaking categories | `speakingCategories` | Empty `engagements` table | Static | Hosted engagements or about fields | CUT OVER TO HOSTED |
@@ -198,30 +198,25 @@ Public rendering path:
 
 **Caching / freshness:** `React.cache()` dedupes one public profile query per request. Most public routes are already `force-dynamic`. Admin `saveSiteProfileAction` calls `revalidatePath("/", "layout")`. Profile edits become visible on the next public request.
 
-**Still deferred:** Home H1/lede/chips/proof/flagship/experience/credential selection (52B); About narrative (52C); per-page SEO titles/descriptions (52G — `createPageMetadata` remains static page copy; only shared identity fields use hosted profile); `location_display` and `hero_cta_primary_label` remain unused publicly.
+**Still deferred:** About narrative (52C); Focus/Resume track cards (`homeTracks`, 52D); remaining per-page SEO outside Home (52G); `location_display` and `hero_cta_primary_label` remain unused publicly.
 
 Work authorization remains hosted blank and unrendered. Admin can save a blank value. No static fallback reintroduces employment-status wording.
 
 ---
 
-## 7. Home exact-string dependency (production defect)
+## 7. Home CMS and stable UUID relationships (completed in 52B)
 
-`selectHomeExperiences` in `src/lib/content/home.ts`:
+**Authoritative store:** published `home_page` singleton `c52b0001-0000-4000-8000-000000000001`, plus `home_page_chips`, `home_proof_items`, `home_experience_items`, and `home_credentials`. Featured project is `home_page.featured_project_id` → PrivAI Guard `0002fb1b-5c40-41ea-98a9-e62de9dac37e`.
 
-1. Looks up parents by **static slug IDs** (`ram-privacy-security`, `npc-consultant-cito`, `npc-cmd-chief`), which exist only because `toPresentationExperience` remaps hosted UUIDs by **organization+title** against `src/content/experiences.ts`.
-2. Selects bullets by **exact `bullet.body` string equality**.
+**Public path:** `getPublishedHomePage()` in `src/lib/content/home.ts` maps to `PublicHomePage`. Failure is `{ ok: false }`; missing/unpublished is `{ ok: true, page: null }`. Related unpublished or `needs_verification` records are omitted, not replaced with static copy.
 
-Any hosted copy edit that does not byte-match `HOME_EXPERIENCE_SELECTION.bulletBodies` silently drops the bullet from Home. Renaming a title breaks ID remapping. This is a customization defect.
+**Experience:** six current Home bullets are selected by `experience_item_id`. Exact-string matching and static slug remapping are retired for Home. `experience_items.show_on_home` remains on the schema as unused leftover (three NPC metric items) and is **not** a public Home authority.
 
-**Replacement (frozen):**
+**Credentials:** MSIS, CIPM, and ISC2 CC by UUID. Google AI remains unpublished and unselected.
 
-> Home Experience curation must use stable IDs/relationships, never bullet-text equality.
+**Admin:** `/admin/home`. Saves revalidate `/` and `/admin/home`.
 
-Use ordered `home_experience_items` (or equivalent) rows: `experience_item_id` UUID + `sort_order`. Do not rely on `experience_items.show_on_home` alone: that flag currently marks **3** items, while Home displays **6** curated bullets (2 per 3 parents).
-
-Home credentials must similarly stop matching on official name strings; use credential UUIDs.
-
-Home flagship: `project_id` (or reuse `is_featured` only if a single featured project is the product rule). Today both `featured` and slug `privai-guard` are required.
+**Temporary:** `homeTracks` focus/resume cards stay in code until Step 52D.
 
 ---
 
@@ -543,7 +538,7 @@ Logging: server logs / existing error returns; no new telemetry required for fre
 
 | Page | Pattern | Cutover note |
 |---|---|---|
-| Home | `Promise.all` hosted lists + cached `getPublishedSiteProfile()` | After junctions, one Home settings query + related IDs; avoid N+1 |
+| Home | Cached `getPublishedHomePage()` (singleton + related IDs) + profile + portrait | Focus track cards remain static until 52D |
 | About | `Promise.all` portrait + journey | Milestones query + batched media |
 | Experience | Sequential parent then items | Keep batched `.in(parent_ids)` |
 | Focus | Sequential page then writing | Parallelize; batch evidence by IDs |
@@ -581,7 +576,7 @@ Target: hosted content → typed layer → reusable components → design system
 
 | Scenario | Current | Future requirement |
 |---|---|---|
-| Change Home brand headline | source edit (`home.ts`) | CMS |
+| Change Home brand headline | hosted `home_page` | preserve |
 | Change About narrative | source edit (`copy.ts`) | CMS |
 | Add Journey milestone | media-oriented admin + code crop | CMS milestone |
 | Add Northwestern graduation | not present | CMS + approved media |
@@ -612,8 +607,8 @@ Do not start these in 51F.
 1. **52A — Profile public cutover (complete)**
    Hosted `site_profile` is the public authority for shared identity, headline, email, and LinkedIn. Empty work-auth stays unrendered. Static `siteProfile` career strings are retired. Ready for 52B.
 
-2. **52B — Home relationships + copy**  
-   Replace exact-string experience/credential selectors with UUID junctions. Host Home copy/SEO. Stop requiring static ID remap for Home.
+2. **52B — Home relationships + copy (complete)**
+   Hosted `home_page` is public Home authority. Experience and credential selections use UUIDs. Exact-string matching is retired. Ready for 52C.
 
 3. **52C — About + Journey milestones**  
    Host About document. Introduce `journey_milestones`. Do **not** publish Northwestern graduation without approved media.
@@ -647,4 +642,10 @@ Hosted baseline counts at freeze: experiences 7, experience_items 26, projects 3
 
 ## 26. Step 52A completion
 
-Site Profile public cutover is complete. Public chrome, Contact, Resume request channels, shared CTA, root identity metadata, and default Open Graph read hosted `site_profile` through the typed content layer. Static `siteProfile` is retired. No schema, RLS, hosted-row, or Home/About editorial change. Next: Step 52B — Home content + stable UUID relationships.
+Site Profile public cutover is complete. Public chrome, Contact, Resume request channels, shared CTA, root identity metadata, and default Open Graph read hosted `site_profile` through the typed content layer. Static `siteProfile` is retired.
+
+---
+
+## 27. Step 52B completion
+
+Home CMS cutover is complete. Mutable Home editorial content and featured evidence live in `home_page` and UUID relationship tables. Exact-string Experience matching is gone. `show_on_home` is unused leftover. Focus/Resume track cards remain a documented 52D dependency. Next: Step 52C — About content + Journey milestone model.

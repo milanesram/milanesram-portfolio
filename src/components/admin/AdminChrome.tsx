@@ -31,6 +31,12 @@ export function AdminChrome({ email, title, children }: AdminChromeProps) {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Link
+              href="/admin/home"
+              className="text-sm font-medium text-ink-soft hover:text-ink"
+            >
+              Home
+            </Link>
+            <Link
               href="/admin/projects"
               className="text-sm font-medium text-ink-soft hover:text-ink"
             >

@@ -7,29 +7,13 @@ import { ExperiencePreview } from "@/components/ui/ExperiencePreview";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/layout/Container";
-import { getHybridPublicExperiences } from "@/lib/content/experiences";
+import { PageHero } from "@/components/ui/PageHero";
+import { getPublishedHomePage, homeTracks } from "@/lib/content/home";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import {
   profileFromPublishedResult,
   selectPublicContactChannels,
 } from "@/lib/content/site-profile";
-import {
-  getPublishedCredentials,
-  toPresentationCredential,
-} from "@/lib/content/credentials";
-import {
-  getPublishedProjects,
-  toPresentationProject,
-} from "@/lib/content/projects";
-import {
-  homeAbsoluteTitle,
-  homeDescription,
-  homeProofStrip,
-  homeTracks,
-  selectHomeCredentials,
-  selectHomeExperiences,
-  selectHomeFlagshipProject,
-} from "@/lib/content/home";
 import {
   getPublishedPublicMediaAssetsByPurpose,
   selectPublishedPortrait,
@@ -38,54 +22,91 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
-const pageMetadata = createPageMetadata(
-  "Cybersecurity, GRC, IT Risk & Privacy",
-  homeDescription,
-  "",
-);
+export async function generateMetadata(): Promise<Metadata> {
+  const result = await getPublishedHomePage();
+  const page = result.ok ? result.page : null;
+  const title = page?.seoTitle ?? "Portfolio";
+  const description =
+    page?.seoDescription ??
+    "Cybersecurity governance, GRC, technology risk, privacy, and AI governance.";
+  const metadata = createPageMetadata(
+    "Cybersecurity, GRC, IT Risk & Privacy",
+    description,
+    "",
+  );
 
-export const metadata: Metadata = {
-  ...pageMetadata,
-  title: { absolute: homeAbsoluteTitle },
-  openGraph: {
-    ...pageMetadata.openGraph,
-    title: homeAbsoluteTitle,
-  },
-  twitter: {
-    ...pageMetadata.twitter,
-    title: homeAbsoluteTitle,
-  },
-};
+  return {
+    ...metadata,
+    title: { absolute: title },
+    openGraph: {
+      ...metadata.openGraph,
+      title,
+      description,
+    },
+    twitter: {
+      ...metadata.twitter,
+      title,
+      description,
+    },
+  };
+}
 
 export default async function HomePage() {
-  const [projectsResult, credentialsResult, experiencesResult, portraitResult, profileResult] =
-    await Promise.all([
-      getPublishedProjects(),
-      getPublishedCredentials(),
-      getHybridPublicExperiences(),
-      getPublishedPublicMediaAssetsByPurpose("portrait"),
-      getPublishedSiteProfile(),
-    ]);
+  const [homeResult, portraitResult, profileResult] = await Promise.all([
+    getPublishedHomePage(),
+    getPublishedPublicMediaAssetsByPurpose("portrait"),
+    getPublishedSiteProfile(),
+  ]);
 
   const portrait = selectPublishedPortrait(portraitResult);
   const profile = profileFromPublishedResult(profileResult);
   const contact = selectPublicContactChannels(profile);
 
-  const flagship = projectsResult.ok
-    ? selectHomeFlagshipProject(projectsResult.projects.map(toPresentationProject))
-    : null;
+  if (!homeResult.ok) {
+    return (
+      <>
+        <PageHero
+          kicker="Home"
+          title="Home"
+          lede="This page is temporarily unavailable."
+        />
+        <Container className="py-16">
+          <p className="text-base leading-7 text-ink-soft">
+            Home content is temporarily unavailable.
+          </p>
+        </Container>
+      </>
+    );
+  }
 
-  const homeCredentials = credentialsResult.ok
-    ? selectHomeCredentials(credentialsResult.credentials.map(toPresentationCredential))
-    : [];
+  if (!homeResult.page) {
+    return (
+      <>
+        <PageHero
+          kicker="Home"
+          title="Home"
+          lede="This page is not published."
+        />
+        <Container className="py-16">
+          <p className="text-base leading-7 text-ink-soft">
+            Home content is not published.
+          </p>
+        </Container>
+      </>
+    );
+  }
 
-  const homeExperiences = experiencesResult.ok
-    ? selectHomeExperiences(experiencesResult.experiences)
-    : [];
+  const home = homeResult.page;
 
   return (
     <>
       <HomeHero
+        eyebrow={profile?.displayName}
+        headline={home.headline}
+        lede={home.lede}
+        chips={home.chips}
+        primaryCta={home.primaryCta}
+        secondaryCta={home.secondaryCta}
         portrait={portrait}
         workAuthorization={profile?.workAuthorization}
         initials={profile?.initials}
@@ -94,7 +115,7 @@ export default async function HomePage() {
       <section className="py-12" aria-label="Current signals">
         <Container>
           <ul className="grid grid-cols-2 gap-x-6 gap-y-6 lg:grid-cols-4">
-            {homeProofStrip.map((item) => {
+            {home.proofItems.map((item) => {
               const content = (
                 <>
                   <p className="text-sm font-medium text-ink">{item.label}</p>
@@ -103,8 +124,8 @@ export default async function HomePage() {
               );
 
               return (
-                <li key={item.label} className="min-w-0 border-l border-line pl-4">
-                  {"href" in item && item.href ? (
+                <li key={item.id} className="min-w-0 border-l border-line pl-4">
+                  {item.href ? (
                     <Link href={item.href} className="block hover:text-ink">
                       {content}
                     </Link>
@@ -120,8 +141,8 @@ export default async function HomePage() {
 
       <section className="border-y border-line py-20">
         <Container>
-          {flagship ? (
-            <HomeFlagshipProject project={flagship} />
+          {home.featuredProject ? (
+            <HomeFlagshipProject flagship={home.featuredProject} />
           ) : (
             <p className="text-base leading-7 text-ink-soft">
               Featured work is temporarily unavailable.
@@ -133,9 +154,9 @@ export default async function HomePage() {
       <section className="py-20">
         <Container>
           <SectionHeader
-            kicker="Two tracks"
-            title="One record. Two recruiter packets."
-            lede="Choose the track that matches the role. The employers, dates, and evidence are the same."
+            kicker={home.focusSection.kicker}
+            title={home.focusSection.title}
+            lede={home.focusSection.lede}
           />
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
             {homeTracks.map((track) => (
@@ -173,13 +194,13 @@ export default async function HomePage() {
       <section className="border-y border-line py-20">
         <Container>
           <SectionHeader
-            kicker="Experience"
-            title="Selected recent work"
-            lede="Selected examples of transferable risk, controls, and privacy work."
+            kicker={home.experienceSection.kicker}
+            title={home.experienceSection.title}
+            lede={home.experienceSection.lede}
           />
           <div className="mt-10">
-            {experiencesResult.ok && homeExperiences.length > 0 ? (
-              homeExperiences.map((experience) => (
+            {home.experiences.length > 0 ? (
+              home.experiences.map((experience) => (
                 <ExperiencePreview
                   key={experience.id}
                   experience={experience}
@@ -193,8 +214,8 @@ export default async function HomePage() {
             )}
           </div>
           <div className="mt-8">
-            <ButtonLink href="/experience" variant="text">
-              View full experience
+            <ButtonLink href={home.experienceSection.cta.href} variant="text">
+              {home.experienceSection.cta.label}
             </ButtonLink>
           </div>
         </Container>
@@ -203,14 +224,14 @@ export default async function HomePage() {
       <section className="py-20">
         <Container>
           <SectionHeader
-            kicker="Credentials"
-            title="Education and certifications"
-            lede="Formal credentials that support both tracks."
+            kicker={home.credentialsSection.kicker}
+            title={home.credentialsSection.title}
+            lede={home.credentialsSection.lede}
           />
           <div className="mt-10">
-            {credentialsResult.ok && homeCredentials.length > 0 ? (
+            {home.credentials.length > 0 ? (
               <div className="grid gap-5 md:grid-cols-3">
-                {homeCredentials.map((credential) => (
+                {home.credentials.map((credential) => (
                   <CredentialCard
                     key={credential.id}
                     credential={credential}
@@ -225,8 +246,8 @@ export default async function HomePage() {
             )}
           </div>
           <div className="mt-8">
-            <ButtonLink href="/credentials" variant="text">
-              View credentials
+            <ButtonLink href={home.credentialsSection.cta.href} variant="text">
+              {home.credentialsSection.cta.label}
             </ButtonLink>
           </div>
         </Container>
@@ -236,18 +257,17 @@ export default async function HomePage() {
         <Container>
           <div className="rounded-2xl border border-line bg-paper-elevated px-6 py-10 sm:px-10">
             <h2 className="font-serif text-3xl font-medium text-ink">
-              Review the work or start a conversation
+              {home.closing.heading}
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-ink-soft">
-              Explore experience, projects, and credentials, or reach me by email or
-              LinkedIn.
+              {home.closing.body}
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <ButtonLink href="/resume" variant="primary">
-                View resume options
+              <ButtonLink href={home.closing.primaryCta.href} variant="primary">
+                {home.closing.primaryCta.label}
               </ButtonLink>
-              <ButtonLink href="/contact" variant="accent">
-                Contact
+              <ButtonLink href={home.closing.secondaryCta.href} variant="accent">
+                {home.closing.secondaryCta.label}
               </ButtonLink>
               {contact ? (
                 <>
