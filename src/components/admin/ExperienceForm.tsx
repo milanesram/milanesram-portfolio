@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import {
   deleteExperienceAction,
   saveExperienceAction,
@@ -24,6 +24,9 @@ export function ExperienceForm({ experience }: ExperienceFormProps) {
     initialState,
   );
   const dirtyRef = useRef(false);
+  const [precision, setPrecision] = useState(
+    experience?.date_precision ?? "month",
+  );
 
   useEffect(() => {
     function onBeforeUnload(event: BeforeUnloadEvent) {
@@ -153,29 +156,94 @@ export function ExperienceForm({ experience }: ExperienceFormProps) {
         </label>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <label className={labelClass}>
-          Start date
-          <input
-            name="start_date"
-            type="date"
-            required
-            defaultValue={experience?.start_date}
-            disabled={pending}
-            className={fieldClass}
-          />
-        </label>
-        <label className={labelClass}>
-          End date
-          <input
-            name="end_date"
-            type="date"
-            defaultValue={experience?.end_date ?? ""}
-            disabled={pending}
-            className={fieldClass}
-          />
-        </label>
-      </div>
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium text-ink">Date precision</legend>
+        <p id="date-precision-hint" className="text-xs font-normal text-ink-faint">
+          Use month and year when that evidence exists. Use year only when the
+          approved record is year-level, such as Scionetrade 2018–2020. Do not
+          invent a month or day.
+        </p>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <label className={labelClass}>
+            Precision
+            <select
+              name="date_precision"
+              required
+              value={precision}
+              onChange={(event) => {
+                dirtyRef.current = true;
+                setPrecision(event.target.value as "month" | "year");
+              }}
+              disabled={pending}
+              className={fieldClass}
+              aria-describedby="date-precision-hint"
+            >
+              <option value="month">Month and year</option>
+              <option value="year">Year only</option>
+            </select>
+          </label>
+        </div>
+        {precision === "year" ? (
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className={labelClass}>
+              Start year
+              <input
+                name="start_year"
+                type="number"
+                required
+                min={1900}
+                max={2100}
+                defaultValue={experience?.start_year ?? ""}
+                disabled={pending}
+                className={fieldClass}
+              />
+            </label>
+            <label className={labelClass}>
+              End year
+              <input
+                name="end_year"
+                type="number"
+                min={1900}
+                max={2100}
+                defaultValue={experience?.end_year ?? ""}
+                disabled={pending}
+                className={fieldClass}
+                aria-describedby="end-year-hint"
+              />
+              <span
+                id="end-year-hint"
+                className="mt-1 block text-xs font-normal text-ink-faint"
+              >
+                Leave blank only for a current year-only role.
+              </span>
+            </label>
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className={labelClass}>
+              Start date
+              <input
+                name="start_date"
+                type="date"
+                required
+                defaultValue={experience?.start_date ?? ""}
+                disabled={pending}
+                className={fieldClass}
+              />
+            </label>
+            <label className={labelClass}>
+              End date
+              <input
+                name="end_date"
+                type="date"
+                defaultValue={experience?.end_date ?? ""}
+                disabled={pending}
+                className={fieldClass}
+              />
+            </label>
+          </div>
+        )}
+      </fieldset>
 
       <label className={labelClass}>
         Summary

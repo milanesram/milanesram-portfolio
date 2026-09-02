@@ -62,7 +62,7 @@ Do not reintroduce target-title branding, executive-seeking branding, or work-au
 | Work authorization | Hosted optional field, **never public brand** | Column retained; empty string is the public-neutral value; do not render when blank. |
 | PrivAI Guard boundary copy | KEEP HOSTED project/section text; do not “flex” the boundary in CMS without editorial review | Honesty constraint, not a marketing dial. |
 | Philippine / U.S. bar disclaimer | Hosted site-level legal note (eventually); not employment authorization | Factual licensure, must stay accurate. |
-| Scionetrade dates | Remain static **until months are authorized** | DQ-02: year-only `2018`–`2020`. Do not invent months. |
+| Scionetrade dates | Hosted year-only `2018`–`2020` | DQ-02 resolved without inventing months. |
 | Google AI certificate | Remain unpublished | `needs_verification = true`, `status = draft`. |
 | Image crop positions | KEEP IN CODE keyed by media UUID | Presentation, not career data. |
 | Contact form enablement | Hosted flag **and** server env | Security stays in code; flag is not sufficient alone. |
@@ -79,7 +79,7 @@ Mutable public content by surface (chrome shared by all routes: header `navPrima
 | `/about` | H1, lede, narrative, education glance, speaking, boundaries, metadata, portrait, Journey milestones | Hosted `about_page` + `journey_milestones`; education glance still static `publicCredentials` until 52F; hosted portrait |
 | `/focus/cybersecurity-grc` | Headline, summary, competencies, featured project, experience, credentials, selected writing, CTAs, metadata | Hosted `focus_pages` + UUID relationships (`focus_experience_items`, `focus_credentials`, `featured_project_id`, `featured_publication_id`) |
 | `/focus/privacy-ai-governance` | Same pattern | Same |
-| `/experience` | Page chrome; role list including Scionetrade | Static `experienceCopy`; hybrid hosted experiences + static Scionetrade |
+| `/experience` | Page chrome; role list including Scionetrade | Static `experienceCopy`; hosted `experiences` + `experience_items` only |
 | `/projects` | Page chrome; project cards | Static `projectsCopy`; hosted `projects` |
 | `/projects/privai-guard` | Case-study kicker; sections; CTA | Hosted project + sections; kicker hard-coded in page |
 | `/writing` | Index copy; publication cards | `WRITING_INDEX_COPY` + hosted publications |
@@ -129,10 +129,10 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Focus | credentials | `focus_credentials` | Static `publicCredentials` retired | Hosted UUID | Credential UUID + eligibility | KEEP HOSTED |
 | Focus | track CTA labels | `FocusView` JSX | Resume tracks | JSX | Focus/Resume config | CUT OVER TO HOSTED |
 | Focus | metadata | Focus `page.tsx` | None | Static | SEO record | CUT OVER TO HOSTED |
-| Experience | Role facts + bullets | Hosted 7 parents / 26 items | Static `experiences.ts` (IDs, merge order, Focus) | Hybrid | Hosted only | KEEP HOSTED; RETIRE STATIC MIRROR |
-| Experience | Scionetrade | Static only | Intentionally absent hosted | Static hold | Hosted **after** authorized months | DEFER — JUSTIFIED |
-| Experience | Public IDs | Remap hosted UUID → static slug via org+title | Hosted UUID unused publicly | Fragile | Use hosted UUID | CUT OVER TO HOSTED |
-| Experience | Page chrome | `experienceCopy` | None | Static | Page copy record | CUT OVER TO HOSTED |
+| Experience | Role facts + bullets | Hosted 8 parents / 27 items | Static `experiences.ts` retired | Hosted | Hosted only | KEEP HOSTED |
+| Experience | Scionetrade | Hosted year-only `2018`–`2020` | Static hold retired | Hosted | Hosted year precision | KEEP HOSTED |
+| Experience | Public IDs | Hosted Experience / item UUIDs | Org/title remap retired | Hosted UUID | Hosted UUID | KEEP HOSTED |
+| Experience | Page chrome | `experienceCopy` | None | Static | Page copy record | CUT OVER TO HOSTED — later |
 | Projects | Project + sections | Hosted | Static `projects.ts` / unused `privaiGuardSections` | Hosted public | Hosted | KEEP HOSTED; RETIRE STATIC MIRROR |
 | Projects | featured flag | Hosted `is_featured` | Static `featured` | Dual for Focus | Hosted + relationships | KEEP HOSTED |
 | Projects | Index chrome | `projectsCopy` | None | Static | Page copy | CUT OVER TO HOSTED |
@@ -280,13 +280,17 @@ Resume track cards temporarily consume hosted Focus until Step 52G creates `resu
 
 Admin `/admin/skills` edits core copy, competencies, and evidence relationships. Saves revalidate both Focus routes, `/`, `/resume`, and `/admin/skills`.
 
-Static Experience/Credential datasets remain for other surfaces until 52E/52F. Scionetrade is not selected as Focus evidence. Google AI is not selected.
+Static Credential datasets remain for About until 52F. Scionetrade is not selected as Home or Focus evidence. Google AI is not selected.
 
 ### Experience
 
-Public `/experience` and Home facts: hosted 7 roles. Focus: static. Presentation IDs remapped. Merge requires every hosted org+title to exist in static file or the hybrid helper returns `{ ok: false }`.
+**Completed in 52E.** Public `/experience` uses hosted `experiences` + `experience_items` only. Accessor: `getPublishedExperiences()` in `src/lib/content/experiences.ts`. Hosted UUIDs are the public identity. Hybrid Scionetrade merge and org/title remapping are retired.
 
-**Scionetrade:** Static id `scionetrade`, Legal Consultant — Cybersecurity & Data Privacy Advisory, Philippines, kind `additional`, **year-only 2018–2020**, one bullet. Blocked from Wave 1 as DQ-02. Evidence needed to host: **authoritative start and end months** (or an explicit owner decision to publish year-only in `start_date`/`end_date` display labels without inventing days). Do not invent dates. Recommended production path until then: keep hybrid static hold, not deletion.
+**Date precision:** `date_precision` is `month` or `year`. Month records keep `start_date` / `end_date` and render as before. Year-only records store `start_year` / `end_year` and leave date columns null. Scionetrade is the first year-only record: `2018`–`2020`, no fabricated month/day.
+
+**Page chrome:** `experienceCopy` (H1, lede, overlap disclosure, additional-experience heading) remains static until a later page-copy/SEO step.
+
+Home’s six `home_experience_items` and Focus’s 10 + 10 `focus_experience_items` are unchanged UUID relationships.
 
 ### Projects
 
@@ -458,10 +462,11 @@ Anonymous reads: published (+ credentials not needing verification, media `is_pu
 
 | Export | Classification |
 |---|---|
-| `experiences` hosted roles | RETIRE public authority after UUID cutover |
-| `scionetrade` entry | DEFER — JUSTIFIED static hold |
-| `homeExperiences` | LEGACY unused |
-| `experiencesForTrack` / `bulletsForTrack` | RETIRED for public Focus; KEEP until 52E if Experience still uses track helpers |
+| `experiences` career dataset | RETIRED — hosted Experience is public authority |
+| `scionetrade` entry | RETIRED — hosted year-only parent/item |
+| `homeExperiences` | RETIRED |
+| `experiencesForTrack` | RETIRED |
+| `bulletsForTrack` | KEEP — presentation filter for `/experience` `all`-track bullets |
 
 ### `src/content/projects.ts`
 
@@ -534,7 +539,7 @@ Do not treat design-system labels as CMS content.
 
 Logging: server logs / existing error returns; no new telemetry required for freeze.
 
-**Must eventually remove:** hybrid merge that fails closed if static file drifts; Focus/About static credentials/experiences; Home exact-string selectors. Public `site.ts` profile authority is already retired.
+**Must eventually remove:** Focus/About static credentials; remaining page-chrome static copy. Experience hybrid merge and Home exact-string selectors are already retired.
 
 ---
 
@@ -542,10 +547,10 @@ Logging: server logs / existing error returns; no new telemetry required for fre
 
 | Page | Pattern | Cutover note |
 |---|---|---|
-| Home | Cached `getPublishedHomePage()` (singleton + related IDs) + profile + portrait | Focus track cards remain static until 52D |
+| Home | Cached `getPublishedHomePage()` (singleton + related IDs) + profile + portrait + cached Focus cards | Experience join includes date precision; no N+1 |
 | About | `Promise.all` portrait + journey | Milestones query + batched media |
-| Experience | Sequential parent then items | Keep batched `.in(parent_ids)` |
-| Focus | Sequential page then writing | Parallelize; batch evidence by IDs |
+| Experience | Cached `getPublishedExperiences()`: published parents, then batched items | Hosted-only; no static merge |
+| Focus | Cached page + parallel evidence | Experience join includes date precision |
 | Writing index | Publications then per-row media `Promise.all` | Prefer join/`media_id` in one query at cutover |
 | Credentials / Projects | Single list query | Keep |
 | Contact | Settings then maybe token | Keep |
@@ -586,9 +591,9 @@ Target: hosted content → typed layer → reusable components → design system
 | Add Northwestern graduation | not present | CMS + approved media |
 | Add certification | CMS | preserve |
 | Reorder credentials | CMS `sort_order` | preserve |
-| Add Experience | CMS (except Scionetrade) | full CMS including Scionetrade when dates authorized |
-| Feature different Home Experience | brittle exact strings | stable relationship |
-| Feature different Focus evidence | static `experiences.ts` | CMS relationship |
+| Add Experience | CMS, including year-only records | preserve |
+| Feature different Home Experience | Home CMS UUID relationships | preserve |
+| Feature different Focus evidence | Focus CMS UUID relationships | preserve |
 | Add project | CMS | preserve |
 | Feature another project | partial (`is_featured` + static Focus + Home slug) | configurable relationship |
 | Add Writing publication | hosted (no admin UI) | preserve model + add admin |
@@ -620,8 +625,8 @@ Do not start these in 51F.
 4. **52D — Focus evidence relationships (complete)**
    Hosted Focus is the public authority. Experience, credentials, project, and writing use stable UUIDs. `focusPages` / `homeTracks` public career-content authority retired. Resume temporarily consumes hosted Focus. Ready for 52E.
 
-5. **52E — Experience UUID public IDs + static retirement**  
-   Public layer uses hosted UUIDs. Keep Scionetrade static hold until months authorized. Focus/Home no longer import `experiences.ts` except the hold.
+5. **52E — Experience hosted-only + Scionetrade year precision (complete)**
+   Public Experience uses hosted records only. Scionetrade is hosted as year-only 2018–2020. Static Experience authority and hybrid merge are retired. Home/Focus UUID relationships remain intact. Ready for 52F.
 
 6. **52F — Credentials dual-source retirement**  
    About/Focus read hosted credentials. Optional verification URL column if still justified.

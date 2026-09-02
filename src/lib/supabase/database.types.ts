@@ -16,6 +16,7 @@ export type ExperienceKind =
   | "consulting"
   | "additional"
   | "leadership";
+export type ExperienceDatePrecision = "month" | "year";
 export type CredentialKind = "degree" | "certification" | "training" | "license";
 export type EngagementKind =
   | "speaking"
@@ -250,8 +251,11 @@ export type Database = {
           title_secondary: string | null;
           location_display: string;
           kind: ExperienceKind;
-          start_date: string;
+          start_date: string | null;
           end_date: string | null;
+          date_precision: ExperienceDatePrecision;
+          start_year: number | null;
+          end_year: number | null;
           is_current: boolean;
           is_featured: boolean;
           summary: string | null;
@@ -265,8 +269,11 @@ export type Database = {
           title_secondary?: string | null;
           location_display: string;
           kind: ExperienceKind;
-          start_date: string;
+          start_date?: string | null;
           end_date?: string | null;
+          date_precision?: ExperienceDatePrecision;
+          start_year?: number | null;
+          end_year?: number | null;
           is_current?: boolean;
           is_featured?: boolean;
           summary?: string | null;
@@ -959,6 +966,7 @@ export type Database = {
       content_status: ContentStatus;
       track_tag: TrackTag;
       experience_kind: ExperienceKind;
+      experience_date_precision: ExperienceDatePrecision;
       credential_kind: CredentialKind;
       engagement_kind: EngagementKind;
       inquiry_context: InquiryContext;

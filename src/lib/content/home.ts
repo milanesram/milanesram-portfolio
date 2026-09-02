@@ -75,7 +75,7 @@ async function loadPublishedHomePage(): Promise<PublishedHomePageResult> {
       ? supabase
           .from("experience_items")
           .select(
-            "id, experience_id, body, status, track, parent:experiences(id, organization, title, title_secondary, location_display, kind, start_date, end_date, is_current, status)",
+            "id, experience_id, body, status, track, parent:experiences(id, organization, title, title_secondary, location_display, kind, start_date, end_date, date_precision, start_year, end_year, is_current, status)",
           )
           .in("id", experienceItemIds)
           .eq("status", "published")

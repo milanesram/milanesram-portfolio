@@ -1,6 +1,7 @@
 import type { AdminClient } from "@/lib/admin/authorization";
 import type {
   ContentStatus,
+  ExperienceDatePrecision,
   ExperienceKind,
   TrackTag,
 } from "@/lib/supabase/database.types";
@@ -12,8 +13,11 @@ export type AdminExperience = {
   title_secondary: string | null;
   location_display: string;
   kind: ExperienceKind;
-  start_date: string;
+  start_date: string | null;
   end_date: string | null;
+  date_precision: ExperienceDatePrecision;
+  start_year: number | null;
+  end_year: number | null;
   is_current: boolean;
   is_featured: boolean;
   summary: string | null;
@@ -35,7 +39,7 @@ export type AdminExperienceItem = {
 };
 
 const EXPERIENCE_COLUMNS =
-  "id, organization, title, title_secondary, location_display, kind, start_date, end_date, is_current, is_featured, summary, status, sort_order, updated_at";
+  "id, organization, title, title_secondary, location_display, kind, start_date, end_date, date_precision, start_year, end_year, is_current, is_featured, summary, status, sort_order, updated_at";
 
 const ITEM_COLUMNS =
   "id, experience_id, body, track, is_metric, metric_context, show_on_home, status, sort_order";

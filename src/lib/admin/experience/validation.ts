@@ -1,5 +1,6 @@
 import type {
   ContentStatus,
+  ExperienceDatePrecision,
   ExperienceKind,
   TrackTag,
 } from "@/lib/supabase/database.types";
@@ -15,6 +16,9 @@ const KINDS = new Set<ExperienceKind>([
 ]);
 const INTENTS = new Set(["draft", "publish", "unpublish", "archive", "keep"]);
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const PRECISIONS = new Set<ExperienceDatePrecision>(["month", "year"]);
+const YEAR_MIN = 1900;
+const YEAR_MAX = 2100;
 
 const LIMITS = {
   organization: 160,
@@ -41,8 +45,11 @@ export type ParsedExperienceInput = {
   titleSecondary: string | null;
   locationDisplay: string;
   kind: ExperienceKind;
-  startDate: string;
+  datePrecision: ExperienceDatePrecision;
+  startDate: string | null;
   endDate: string | null;
+  startYear: number | null;
+  endYear: number | null;
   isCurrent: boolean;
   isFeatured: boolean;
   summary: string | null;
@@ -159,6 +166,33 @@ function parseDate(
   return { ok: true, value: raw };
 }
 
+function parseYear(
+  formData: FormData,
+  name: string,
+  label: string,
+  required: boolean,
+): ParseResult<number | null> {
+  const raw = (readString(formData, name) ?? "").trim();
+
+  if (!raw) {
+    return required
+      ? { ok: false, error: `${label} is required.` }
+      : { ok: true, value: null };
+  }
+
+  const value = Number.parseInt(raw, 10);
+
+  if (!Number.isInteger(value) || String(value) !== raw) {
+    return { ok: false, error: `${label} must be a whole year.` };
+  }
+
+  if (value < YEAR_MIN || value > YEAR_MAX) {
+    return { ok: false, error: `${label} is out of range.` };
+  }
+
+  return { ok: true, value };
+}
+
 function parseIntent(formData: FormData): ParseResult<ExperienceIntent> {
   const raw = (readString(formData, "intent") ?? "keep").trim();
 
@@ -231,18 +265,69 @@ export function parseExperienceFormData(
     return { ok: false, error: "Choose a valid experience type." };
   }
 
-  const startDate = parseDate(formData, "start_date", "Start date", true);
-  if (!startDate.ok) return startDate;
+  const precisionRaw = (readString(formData, "date_precision") ?? "month").trim();
 
-  const endDate = parseDate(formData, "end_date", "End date", false);
-  if (!endDate.ok) return endDate;
+  if (!PRECISIONS.has(precisionRaw as ExperienceDatePrecision)) {
+    return { ok: false, error: "Choose a valid date precision." };
+  }
 
-  if (
-    startDate.value &&
-    endDate.value &&
-    endDate.value < startDate.value
-  ) {
-    return { ok: false, error: "End date cannot be earlier than start date." };
+  const datePrecision = precisionRaw as ExperienceDatePrecision;
+  const isCurrent = readString(formData, "is_current") === "on";
+
+  let startDate: string | null = null;
+  let endDate: string | null = null;
+  let startYear: number | null = null;
+  let endYear: number | null = null;
+
+  if (datePrecision === "year") {
+    const startDatePresent = (readString(formData, "start_date") ?? "").trim();
+    const endDatePresent = (readString(formData, "end_date") ?? "").trim();
+
+    if (startDatePresent || endDatePresent) {
+      return {
+        ok: false,
+        error: "Year-only records cannot store a month or day.",
+      };
+    }
+
+    const parsedStartYear = parseYear(formData, "start_year", "Start year", true);
+    if (!parsedStartYear.ok) return parsedStartYear;
+
+    const parsedEndYear = parseYear(
+      formData,
+      "end_year",
+      "End year",
+      !isCurrent,
+    );
+    if (!parsedEndYear.ok) return parsedEndYear;
+
+    if (
+      parsedStartYear.value != null &&
+      parsedEndYear.value != null &&
+      parsedEndYear.value < parsedStartYear.value
+    ) {
+      return { ok: false, error: "End year cannot be earlier than start year." };
+    }
+
+    startYear = parsedStartYear.value;
+    endYear = parsedEndYear.value;
+  } else {
+    const parsedStartDate = parseDate(formData, "start_date", "Start date", true);
+    if (!parsedStartDate.ok) return parsedStartDate;
+
+    const parsedEndDate = parseDate(formData, "end_date", "End date", false);
+    if (!parsedEndDate.ok) return parsedEndDate;
+
+    if (
+      parsedStartDate.value &&
+      parsedEndDate.value &&
+      parsedEndDate.value < parsedStartDate.value
+    ) {
+      return { ok: false, error: "End date cannot be earlier than start date." };
+    }
+
+    startDate = parsedStartDate.value;
+    endDate = parsedEndDate.value;
   }
 
   const summary = optionalText(formData, "summary", LIMITS.summary, "Summary");
@@ -263,9 +348,12 @@ export function parseExperienceFormData(
       titleSecondary: titleSecondary.value,
       locationDisplay: locationDisplay.value,
       kind: kindRaw as ExperienceKind,
-      startDate: startDate.value as string,
-      endDate: endDate.value,
-      isCurrent: readString(formData, "is_current") === "on",
+      datePrecision,
+      startDate,
+      endDate,
+      startYear,
+      endYear,
+      isCurrent,
       isFeatured: readString(formData, "is_featured") === "on",
       summary: summary.value,
       sortOrder: sortOrder.value,

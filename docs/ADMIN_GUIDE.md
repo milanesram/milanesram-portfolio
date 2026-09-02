@@ -92,12 +92,13 @@ The schema has no project-level career track, external URL, or SEO title/descrip
 
 1. Open **Experience** from the dashboard.
 2. Create a record or open an existing row.
-3. Edit organization, title, secondary title, location display, kind, dates, current/featured flags, summary, and sort order.
-4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
-5. Add, edit, reorder, or delete items on the same experience.
-6. Delete an experience from its edit page after confirmation. Items cascade with the experience row.
+3. Edit organization, title, secondary title, location display, kind, date precision, dates or years, current/featured flags, summary, and sort order.
+4. Choose **Month and year** when month-level evidence exists. Choose **Year only** when the approved evidence is year-level. Year-only records store `start_year` / `end_year` and must not include a month or day. Scionetrade is the current year-only example: 2018–2020.
+5. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
+6. Add, edit, reorder, or delete items on the same experience. Values are item UUIDs. Home and Focus keep their own selected item relationships; editing bullet text does not drop those selections.
+7. Delete an experience from its edit page after confirmation. Items cascade with the experience row. Home/Focus relationship rows that pointed at those items are also removed.
 
-Supported schema fields only. There is no company URL, logo, employment type, or experience-level career track. Track tagging lives on each item (`all`, `cybersecurity_grc`, `privacy_ai`). Metric items require `metric_context`.
+Supported schema fields only. There is no company URL, logo, employment type, or experience-level career track. Track tagging lives on each item (`all`, `cybersecurity_grc`, `privacy_ai`). Metric items require `metric_context`. Public `/experience` shows published parents and published `all`-track items. Saves revalidate `/experience`, `/`, both Focus routes, and `/admin/experience`.
 
 ---
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { requireAdminMutation } from "@/lib/admin/authorization";
 import { listAdminExperiences } from "@/lib/admin/experience/queries";
+import { formatExperienceDateRange } from "@/lib/content/experience-page";
 import { redirect } from "next/navigation";
 
 const KIND_LABELS = {
@@ -11,20 +12,11 @@ const KIND_LABELS = {
   leadership: "Leadership",
 } as const;
 
-function formatRange(
-  startDate: string,
-  endDate: string | null,
-  isCurrent: boolean,
+function formatAdminRange(
+  experience: Parameters<typeof formatExperienceDateRange>[0],
 ) {
-  if (isCurrent) {
-    return `${startDate} – current`;
-  }
-
-  if (endDate) {
-    return `${startDate} – ${endDate}`;
-  }
-
-  return startDate;
+  const range = formatExperienceDateRange(experience);
+  return `${range.startLabel} – ${range.endLabel}`;
 }
 
 export default async function AdminExperiencePage() {
@@ -43,8 +35,8 @@ export default async function AdminExperiencePage() {
         <div>
           <h2 className="font-serif text-2xl text-ink">All experience</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
-            Drafts stay in the admin. Public pages still use local content until
-            a later step switches them to the Supabase adapter.
+            Drafts stay in the admin. Published roles, including year-only
+            records such as Scionetrade, are the public Experience authority.
           </p>
         </div>
         <Link
@@ -63,8 +55,7 @@ export default async function AdminExperiencePage() {
 
       {experiences.length === 0 && !error ? (
         <p className="mt-8 rounded-xl border border-dashed border-line bg-paper-elevated p-6 text-sm text-ink-soft">
-          No experience records in Supabase yet. Create one here. Do not load
-          real employment history in this step.
+          No experience records in Supabase yet. Create one here.
         </p>
       ) : (
         <div className="mt-8 overflow-x-auto rounded-xl border border-line bg-paper-elevated">
@@ -106,11 +97,7 @@ export default async function AdminExperiencePage() {
                     {KIND_LABELS[experience.kind]}
                   </td>
                   <td className="px-4 py-3 text-ink-soft">
-                    {formatRange(
-                      experience.start_date,
-                      experience.end_date,
-                      experience.is_current,
-                    )}
+                    {formatAdminRange(experience)}
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={experience.status} />

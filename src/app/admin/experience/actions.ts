@@ -34,6 +34,10 @@ function mapWriteError(code: string | undefined): string {
 
 function revalidateAdminExperience(id?: string) {
   revalidatePath("/admin/experience");
+  revalidatePath("/experience");
+  revalidatePath("/");
+  revalidatePath("/focus/cybersecurity-grc");
+  revalidatePath("/focus/privacy-ai-governance");
 
   if (id) {
     revalidatePath(`/admin/experience/${id}`);
@@ -77,6 +81,9 @@ export async function saveExperienceAction(
     kind: input.kind,
     start_date: input.startDate,
     end_date: input.endDate,
+    date_precision: input.datePrecision,
+    start_year: input.startYear,
+    end_year: input.endYear,
     is_current: input.isCurrent,
     is_featured: input.isFeatured,
     summary: input.summary,

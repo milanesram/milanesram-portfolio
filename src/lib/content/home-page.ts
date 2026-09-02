@@ -2,9 +2,11 @@ import type { Credential, Experience, ExperienceBullet, Project } from "@/conten
 import type {
   ContentStatus,
   CredentialKind,
+  ExperienceDatePrecision,
   ExperienceKind,
   TrackTag,
 } from "@/lib/supabase/database.types";
+import { formatExperienceDateRange } from "@/lib/content/experience-page";
 
 export type HomeCta = {
   label: string;
@@ -152,8 +154,11 @@ export type HomeExperienceParentRecord = {
   title_secondary: string | null;
   location_display: string;
   kind: ExperienceKind;
-  start_date: string;
+  start_date: string | null;
   end_date: string | null;
+  date_precision?: ExperienceDatePrecision | null;
+  start_year?: number | null;
+  end_year?: number | null;
   is_current: boolean;
   status: ContentStatus;
 };
@@ -189,21 +194,6 @@ export type HomeProjectRecord = {
   is_featured: boolean;
   status: ContentStatus;
 };
-
-const MONTH_LABELS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-] as const;
 
 export function isPublishedStatus(status: ContentStatus): boolean {
   return status === "published";
@@ -246,22 +236,6 @@ export function mapHomeProofItems(rows: HomeProofRow[]): HomeProofItem[] {
     supporting: row.supporting,
     ...(row.href ? { href: row.href } : {}),
   }));
-}
-
-function formatMonthYear(isoDate: string): string {
-  const match = /^(\d{4})-(\d{2})-\d{2}/.exec(isoDate);
-
-  if (!match) {
-    return isoDate;
-  }
-
-  const month = MONTH_LABELS[Number(match[2]) - 1];
-
-  if (!month) {
-    return isoDate;
-  }
-
-  return `${month} ${match[1]}`;
 }
 
 function mapTrack(track: TrackTag): Array<"cyber" | "privacy" | "all"> {
@@ -311,6 +285,8 @@ export function mapHomeExperiences(args: {
       continue;
     }
 
+    const dates = formatExperienceDateRange(parent);
+
     groups.set(parent.id, {
       id: parent.id,
       organization: parent.organization,
@@ -318,11 +294,8 @@ export function mapHomeExperiences(args: {
       ...(parent.title_secondary ? { titleSecondary: parent.title_secondary } : {}),
       location: parent.location_display,
       kind: parent.kind,
-      startLabel: formatMonthYear(parent.start_date),
-      endLabel:
-        parent.is_current || !parent.end_date
-          ? "Present"
-          : formatMonthYear(parent.end_date),
+      startLabel: dates.startLabel,
+      endLabel: dates.endLabel,
       ...(parent.is_current ? { isCurrent: true } : {}),
       bullets: [bullet],
       tracks: ["all"],

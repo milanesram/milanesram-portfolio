@@ -3,7 +3,7 @@ import { ExperienceEntry } from "@/components/ui/ExperienceEntry";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
 import { experienceCopy } from "@/content";
-import { getHybridPublicExperiences } from "@/lib/content/experiences";
+import { getPublishedExperiences } from "@/lib/content/experiences";
 import { createPageMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ export const metadata = createPageMetadata(
 );
 
 export default async function ExperiencePage() {
-  const result = await getHybridPublicExperiences();
+  const result = await getPublishedExperiences();
 
   return (
     <>
@@ -32,6 +32,7 @@ export default async function ExperiencePage() {
             </p>
           ) : (
             <>
+              <h2 className="sr-only">Selected roles</h2>
               {result.experiences
                 .filter((item) => item.kind !== "leadership")
                 .map((experience) => (
