@@ -94,7 +94,7 @@ The approved `docs/INITIAL_DATA_MODEL.md` is leaner than a one-table-per-noun li
 | experiences | `experiences` | Shared timeline |
 | achievements | `experience_items` | Bullets and contextual metrics |
 | projects | `projects` | |
-| project_media | `media_assets` (`kind`) | One media table |
+| project_media | `project_media` → `media_assets` | Relationship table; binaries stay in `media_assets` |
 | publications | `publications` | |
 | credentials | `credentials` | |
 | education | `credentials.kind = degree` | Same object type |
@@ -113,7 +113,7 @@ No table stores the comprehensive CV or private-source documents.
 
 ## 4. Tables
 
-`user_roles`, `site_profile`, `site_settings`, `focus_pages`, `experiences`, `experience_items`, `projects`, `project_sections`, `publications`, `credentials`, `engagements`, `media_assets`, `inquiries`, `inquiry_submission_events`
+`user_roles`, `site_profile`, `site_settings`, `focus_pages`, `experiences`, `experience_items`, `projects`, `project_sections`, `project_media`, `publications`, `credentials`, `engagements`, `media_assets`, `inquiries`, `inquiry_submission_events`
 
 `inquiry_submission_events` is Data-API private: hash-only rate-limit rows, no `anon` / `authenticated` grants, FORCE RLS, and no public policies. Retention is opportunistic deletion of events older than 24 hours inside `submit_public_inquiry`.
 

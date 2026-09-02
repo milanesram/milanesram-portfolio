@@ -1,10 +1,19 @@
-import type { ContentStatus, TrackTag } from "@/lib/supabase/database.types";
+import type {
+  ContentStatus,
+  ProjectMediaDisplayRole,
+  TrackTag,
+} from "@/lib/supabase/database.types";
 import { readUuid } from "@/lib/admin/ids";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const STATUSES = new Set<ContentStatus>(["draft", "published", "archived"]);
 const TRACKS = new Set<TrackTag>(["all", "cybersecurity_grc", "privacy_ai"]);
 const INTENTS = new Set(["draft", "publish", "unpublish", "archive", "keep"]);
+const DISPLAY_ROLES = new Set<ProjectMediaDisplayRole>([
+  "hero",
+  "workflow",
+  "gallery",
+]);
 
 const LIMITS = {
   slug: 80,
@@ -18,6 +27,7 @@ const LIMITS = {
   stackCount: 20,
   heading: 160,
   body: 8000,
+  caption: 400,
   sortOrder: { min: 0, max: 9999 },
 } as const;
 
@@ -287,4 +297,83 @@ export function parseOwnedSectionRef(
   }
 
   return { ok: true, value: { projectId, sectionId } };
+}
+
+export type ParsedProjectMediaInput = {
+  id: string | null;
+  projectId: string;
+  mediaAssetId: string;
+  displayRole: ProjectMediaDisplayRole;
+  caption: string;
+  status: ContentStatus;
+  sortOrder: number;
+};
+
+export function parseProjectMediaFormData(
+  formData: FormData,
+): ParseResult<ParsedProjectMediaInput> {
+  const projectId = readUuid(readString(formData, "project_id"));
+
+  if (!projectId) {
+    return { ok: false, error: "That screenshot could not be saved." };
+  }
+
+  const idRaw = readString(formData, "id");
+  const id = idRaw && idRaw.length > 0 ? readUuid(idRaw) : null;
+
+  if (idRaw && idRaw.length > 0 && !id) {
+    return { ok: false, error: "That screenshot could not be saved." };
+  }
+
+  const mediaAssetId = readUuid(readString(formData, "media_asset_id"));
+
+  if (!mediaAssetId) {
+    return { ok: false, error: "Choose a screenshot media file." };
+  }
+
+  const caption = requiredText(formData, "caption", LIMITS.caption, "Caption");
+  if (!caption.ok) return caption;
+
+  const roleRaw = (readString(formData, "display_role") ?? "workflow").trim();
+
+  if (!DISPLAY_ROLES.has(roleRaw as ProjectMediaDisplayRole)) {
+    return { ok: false, error: "Choose a valid display role." };
+  }
+
+  const statusRaw = (readString(formData, "status") ?? "draft").trim();
+
+  if (!STATUSES.has(statusRaw as ContentStatus)) {
+    return { ok: false, error: "Choose a valid screenshot status." };
+  }
+
+  const sortOrder = parseSortOrder(formData);
+  if (!sortOrder.ok) return sortOrder;
+
+  return {
+    ok: true,
+    value: {
+      id,
+      projectId,
+      mediaAssetId,
+      displayRole: roleRaw as ProjectMediaDisplayRole,
+      caption: caption.value,
+      status: statusRaw as ContentStatus,
+      sortOrder: sortOrder.value,
+    },
+  };
+}
+
+export function parseOwnedProjectMediaRef(
+  formData: FormData,
+): ParseResult<{ projectId: string; relationshipId: string }> {
+  const projectId = readUuid(readString(formData, "project_id"));
+  const relationshipId = readUuid(
+    readString(formData, "relationship_id") ?? readString(formData, "id"),
+  );
+
+  if (!projectId || !relationshipId) {
+    return { ok: false, error: "That screenshot could not be updated." };
+  }
+
+  return { ok: true, value: { projectId, relationshipId } };
 }

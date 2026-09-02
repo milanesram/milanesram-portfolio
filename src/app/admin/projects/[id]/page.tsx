@@ -1,12 +1,15 @@
 import { notFound } from "next/navigation";
 import { redirect } from "next/navigation";
 import { DeleteProjectButton, ProjectForm } from "@/components/admin/ProjectForm";
+import { ProjectMediaEditor } from "@/components/admin/ProjectMediaEditor";
 import { ProjectSectionEditor } from "@/components/admin/ProjectSectionEditor";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { requireAdminMutation } from "@/lib/admin/authorization";
 import { isUuid } from "@/lib/admin/ids";
 import {
   getAdminProject,
+  listAdminProjectMedia,
+  listAdminProjectMediaChoices,
   listAdminProjectSections,
 } from "@/lib/admin/projects/queries";
 
@@ -35,6 +38,12 @@ export default async function EditProjectPage({
 
   const sectionsResult = await listAdminProjectSections(auth.supabase, id);
   const sections = sectionsResult.error ? [] : (sectionsResult.data ?? []);
+  const mediaResult = await listAdminProjectMedia(auth.supabase, id);
+  const mediaItems = mediaResult.error ? [] : (mediaResult.data ?? []);
+  const mediaChoicesResult = await listAdminProjectMediaChoices(auth.supabase);
+  const mediaChoices = mediaChoicesResult.error
+    ? []
+    : (mediaChoicesResult.data ?? []);
 
   return (
     <div className="space-y-10">
@@ -50,6 +59,21 @@ export default async function EditProjectPage({
           <DeleteProjectButton
             projectId={projectResult.data.id}
             name={projectResult.data.name}
+          />
+        </div>
+      </section>
+
+      <section>
+        <h3 className="font-serif text-xl text-ink">Screenshots</h3>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
+          Ordered project media. Captions and roles live on the relationship.
+          Removing a screenshot here keeps the underlying media file.
+        </p>
+        <div className="mt-6">
+          <ProjectMediaEditor
+            projectId={projectResult.data.id}
+            items={mediaItems}
+            choices={mediaChoices}
           />
         </div>
       </section>

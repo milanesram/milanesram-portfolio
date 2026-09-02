@@ -16,7 +16,7 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin` | Administration dashboard |
 | `/admin/projects` | List all project statuses |
 | `/admin/projects/new` | Create a project |
-| `/admin/projects/[id]` | Edit a project and its sections |
+| `/admin/projects/[id]` | Edit a project, its sections, and screenshot relationships |
 | `/admin/experience` | List all experience statuses |
 | `/admin/experience/new` | Create an experience record |
 | `/admin/experience/[id]` | Edit an experience record and its items |
@@ -85,9 +85,20 @@ There is no role-management UI.
 3. Edit name, slug, tagline, year, role, summary, limits, stack, featured flag, and sort order.
 4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
 5. Add, edit, reorder, or delete sections on the same project.
-6. Delete a project from its edit page after confirmation. Sections cascade with the project row.
+6. Attach, caption, reorder, publish/unpublish, or remove **screenshots** on the same project. Screenshots are existing `media_assets` with purpose `project`. Removing a relationship does not delete the media file.
+7. Delete a project from its edit page after confirmation. Sections cascade with the project row. Screenshot relationships cascade; media files remain.
 
-The schema has no project-level career track, external URL, or SEO title/description. Career-track tagging lives on each section (`all`, `cybersecurity_grc`, `privacy_ai`).
+The schema has no project-level career track, external URL, or SEO title/description. Career-track tagging lives on each section (`all`, `cybersecurity_grc`, `privacy_ai`). Screenshot captions and display roles (`hero`, `workflow`, `gallery`) live on `project_media`, not on the binary.
+
+### Managing Project screenshots
+
+1. Ingest approved original screenshot binaries into `public-media` using the existing media pipeline (`project/{media_uuid}/{filename}`). Do not hotlink another deployment. Do not generate, redraw, or crop confidential information out of a screenshot.
+2. Publish the `media_assets` row (`kind = image`, `purpose = project`, `is_public = true`) with descriptive title and alt text. Leave media-object captions/years blank unless they describe the file itself.
+3. On the Project edit page, attach that media, set the **relationship caption**, display role, sort order, and publication status.
+4. Public pages show a screenshot only when the Project, the relationship, and the media asset are all publicly eligible.
+5. Safe screenshot requirements: synthetic/demo content only; no credentials, secrets, tokens, personal data, private emails, or real customer records. Preserve visible demo/synthetic notices.
+
+Saves revalidate `/projects`, `/projects/[slug]`, Home, both Focus routes, and `/admin/projects`.
 
 ---
 

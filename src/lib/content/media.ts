@@ -17,9 +17,10 @@ export type { PublicJourneyMedia };
  *
  * Home and About may use `getPublishedPublicMediaAssetsByPurpose` for
  * `portrait` images. About Journey attaches images through milestone
- * UUID relationships. Writing still resolves publication PDFs through
- * `getPublishedPublicMediaAssetById`. Do not import this from Projects,
- * Resume, or Focus for image purposes.
+ * UUID relationships. Projects attach screenshots through `project_media`.
+ * Writing still resolves publication PDFs through
+ * `getPublishedPublicMediaAssetById`. Do not import this from Resume or
+ * Focus for image purposes.
  *
  * Uses the anonymous publishable client. RLS remains the publication
  * boundary (published AND is_public). Does not read cookies, attach an

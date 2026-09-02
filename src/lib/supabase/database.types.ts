@@ -34,6 +34,7 @@ export type MediaPurpose =
   | "project"
   | "publication"
   | "resume";
+export type ProjectMediaDisplayRole = "hero" | "workflow" | "gallery";
 export type DocumentKind =
   | "publication"
   | "white_paper"
@@ -387,6 +388,47 @@ export type Database = {
             columns: ["project_id"];
             isOneToOne: false;
             referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      project_media: {
+        Row: Row & {
+          id: string;
+          project_id: string;
+          media_asset_id: string;
+          display_role: ProjectMediaDisplayRole;
+          caption: string;
+          status: ContentStatus;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          project_id: string;
+          media_asset_id: string;
+          display_role?: ProjectMediaDisplayRole;
+          caption: string;
+          status?: ContentStatus;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["project_media"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "project_media_project_id_fkey";
+            columns: ["project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "project_media_media_asset_id_fkey";
+            columns: ["media_asset_id"];
+            isOneToOne: false;
+            referencedRelation: "media_assets";
             referencedColumns: ["id"];
           },
         ];
@@ -1035,6 +1077,7 @@ export type Database = {
       inquiry_track: InquiryTrack;
       media_kind: MediaKind;
       media_purpose: MediaPurpose;
+      project_media_display_role: ProjectMediaDisplayRole;
       document_kind: DocumentKind;
       publication_rights_status: PublicationRightsStatus;
       admin_role: AdminRole;

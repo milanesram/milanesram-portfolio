@@ -25,3 +25,25 @@
  */
 
 export const PUBLIC_MEDIA_BUCKET = "public-media";
+
+export function publicMediaObjectUrl(
+  bucketPath: string,
+  supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL,
+): string | null {
+  const trimmed = bucketPath.trim();
+
+  if (!trimmed || trimmed.startsWith("/") || trimmed.includes("..")) {
+    return null;
+  }
+
+  if (!supabaseUrl) {
+    return null;
+  }
+
+  try {
+    const origin = new URL(supabaseUrl).origin;
+    return `${origin}/storage/v1/object/public/${PUBLIC_MEDIA_BUCKET}/${trimmed}`;
+  } catch {
+    return null;
+  }
+}

@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import { CallToAction } from "@/components/ui/CallToAction";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
+import { ProjectWorkflowGallery } from "@/components/projects/ProjectWorkflowGallery";
 import {
   getPublishedProjectBySlug,
   toPresentationProject,
@@ -10,6 +12,8 @@ import {
 import { createPageMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
+
+const MICROSITE_URL = "https://priv-ai-guard-audience-microsite.vercel.app/";
 
 export const metadata = createPageMetadata(
   "PrivAI Guard",
@@ -42,13 +46,24 @@ export default async function PrivaiGuardPage() {
         <p className="text-sm text-ink-faint">Role: {view.role}</p>
 
         {sections.map((section) => (
-          <section key={section.id} className="mt-12">
-            <h2 className="font-serif text-2xl font-medium text-ink">
-              {section.heading}
-            </h2>
-            <p className="mt-4 leading-8 text-ink-soft">{section.body}</p>
-          </section>
+          <div key={section.id}>
+            <section className="mt-12">
+              <h2 className="font-serif text-2xl font-medium text-ink">
+                {section.heading}
+              </h2>
+              <p className="mt-4 whitespace-pre-line leading-8 text-ink-soft">
+                {section.body}
+              </p>
+            </section>
+            {section.id === "workflow" ? (
+              <ProjectWorkflowGallery items={project.media} />
+            ) : null}
+          </div>
         ))}
+
+        {sections.every((section) => section.id !== "workflow") ? (
+          <ProjectWorkflowGallery items={project.media} />
+        ) : null}
 
         <section className="mt-12">
           <h2 className="font-serif text-2xl font-medium text-ink">Stack</h2>
@@ -64,7 +79,10 @@ export default async function PrivaiGuardPage() {
           </ul>
         </section>
 
-        <div className="mt-16">
+        <div className="mt-16 space-y-6">
+          <ButtonLink href={MICROSITE_URL} variant="secondary" external>
+            Explore the PrivAI Guard capstone microsite
+          </ButtonLink>
           <CallToAction title="Discuss this work" />
         </div>
       </Container>

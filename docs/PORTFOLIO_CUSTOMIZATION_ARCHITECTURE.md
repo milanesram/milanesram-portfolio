@@ -1,10 +1,10 @@
 # Portfolio Customization Architecture
 
-**Status:** Frozen at Step 51F  
-**Controlling reference for:** Steps 52+  
-**Git freeze parent:** `fb4ec4ed15d8a62bdd7dfc3c1a6cf9a1179d383b` (`feat: finalize public career surfaces`)  
-**Hosted project:** `rainier-portfolio` (`itoctveqrtozdehoofoq`)  
-**Schema in this step:** none. This document freezes architecture only.
+**Status:** Updated at Step 52G
+**Controlling reference for:** Steps 52H+
+**Git freeze parent:** `fb4ec4ed15d8a62bdd7dfc3c1a6cf9a1179d383b` (`feat: finalize public career surfaces`)
+**Hosted project:** `rainier-portfolio` (`itoctveqrtozdehoofoq`)
+**Schema in this step:** `project_media` + PrivAI visual case-study seed.
 
 ---
 
@@ -80,8 +80,8 @@ Mutable public content by surface (chrome shared by all routes: header `navPrima
 | `/focus/cybersecurity-grc` | Headline, summary, competencies, featured project, experience, credentials, selected writing, CTAs, metadata | Hosted `focus_pages` + UUID relationships (`focus_experience_items`, `focus_credentials`, `featured_project_id`, `featured_publication_id`) |
 | `/focus/privacy-ai-governance` | Same pattern | Same |
 | `/experience` | Page chrome; role list including Scionetrade | Static `experienceCopy`; hosted `experiences` + `experience_items` only |
-| `/projects` | Page chrome; project cards | Static `projectsCopy`; hosted `projects` |
-| `/projects/privai-guard` | Case-study kicker; sections; CTA | Hosted project + sections; kicker hard-coded in page |
+| `/projects` | Page chrome; project cards | Static `projectsCopy`; hosted `projects`. Index cards remain text-first; no screenshot thumbnail in 52G. |
+| `/projects/privai-guard` | Case-study kicker; sections; ordered screenshots; microsite CTA | Hosted project + sections + `project_media`; kicker hard-coded in page |
 | `/writing` | Index copy; publication cards | `WRITING_INDEX_COPY` + hosted publications |
 | `/writing/[slug]` | Title, abstract, PDF/link, metadata | Hosted publications (+ media) |
 | `/credentials` | Page chrome; credential cards | Hosted `credentials_page` + hosted `credentials` |
@@ -145,7 +145,7 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Credentials | Page chrome | Hosted `credentials_page` | Static page strings retired | Hosted | Hosted page singleton | KEEP HOSTED |
 | Credentials | Verification URL | `credentials.verification_url` | None seeded | Optional HTTPS | Optional HTTPS only | KEEP HOSTED |
 | Credentials | Expiration | `credentials.expires_on` | None seeded | Optional date | Optional; does not auto-unpublish | KEEP HOSTED |
-| Resume | Tracks | Temporary hosted Focus via `getPublishedFocusPages()` | Dedicated `resume_tracks` later | Temporary hosted Focus | Resume-track records | TEMPORARY — 52G |
+| Resume | Tracks | Temporary hosted Focus via `getPublishedFocusPages()` | Dedicated `resume_tracks` later | Temporary hosted Focus | Resume-track records | TEMPORARY — 52H |
 | Resume | Request model copy | `resume/page.tsx` | None | Static | Resume settings | CUT OVER TO HOSTED |
 | Resume | Files | None | `focus_pages.resume_media_id` unused | Request-only V1.0 | Optional media FK | DEFER — JUSTIFIED (files); architecture ready |
 | Contact | Email, LinkedIn | Hosted `site_profile` | Static `siteProfile` retired | Hosted | Hosted profile | KEEP HOSTED |
@@ -275,9 +275,9 @@ Home-specific card copy lives on `focus_pages.card_summary` / `card_chips` so Ho
 
 Footer Focus links use code-owned `FOCUS_PUBLIC_ROUTES` labels (`Cybersecurity / GRC`, `Privacy / AI Governance`). Those labels are stable route labels; the layout already has profile data and does not add a Focus query solely for footer chrome.
 
-Resume track cards temporarily consume hosted Focus until Step 52G creates `resume_tracks`. Request-based Version 1.0 is unchanged. No public PDFs.
+Resume track cards temporarily consume hosted Focus until Step 52H creates `resume_tracks`. Request-based Version 1.0 is unchanged. No public PDFs.
 
-`resume_media_id` remains unused: **KEEP FOR 52G**. Do not activate public resume files here.
+`resume_media_id` remains unused: **KEEP FOR 52H**. Do not activate public resume files here.
 
 Admin `/admin/skills` edits core copy, competencies, and evidence relationships. Saves revalidate both Focus routes, `/`, `/resume`, and `/admin/skills`.
 
@@ -295,7 +295,15 @@ Home’s six `home_experience_items` and Focus’s 10 + 10 `focus_experience_ite
 
 ### Projects
 
-`/projects` and PrivAI case study: hosted. Focus featured card: static `featuredProject`. `privaiGuardSections` unused. PrivAI limits/MVP/non-production/synthetic/human-review remain hosted project truth.
+`/projects` and PrivAI case study: hosted. Focus featured card remains the existing hosted project relationship. `privaiGuardSections` unused. PrivAI limits/MVP/non-production/synthetic/human-review remain hosted project truth.
+
+**Completed in 52G.** Project screenshots are CMS-managed through `project_media` → `media_assets` in the `public-media` bucket. Storage path remains `{purpose}/{media_uuid}/{filename}` with `purpose = project`. Captions and display roles (`hero`, `workflow`, `gallery`) live on the relationship, not the binary. Public `/projects/privai-guard` renders ordered screenshot evidence after the Workflow section. DBNMS and NPCRS have no screenshot relationships.
+
+`/projects` index cards and Home flagship remain text-first. Adding a thumbnail would require a Project-card / Home-layout change; deferred.
+
+External microsite CTA: `https://priv-ai-guard-audience-microsite.vercel.app/`. Direct live-MVP application URL is not published on the portfolio.
+
+Admin `/admin/projects/[id]` manages screenshot relationships (attach existing project media, caption, role, order, publish/unpublish, remove). Remove does not delete the media asset. Initial binaries were ingested through the established Storage pipeline, not a new DAM.
 
 ### Writing
 
@@ -305,7 +313,7 @@ Already the customization model to copy: hosted publications, PDFs in Storage, o
 
 **Completed in 52F.** All public credential facts come from hosted `credentials`. Public eligibility is `status = published` AND `needs_verification = false` on `/credentials`, Home, Focus, and About. Google AI remains draft + `needs_verification = true` and is unpublished.
 
-`/credentials` page headline, lede, and page-local SEO live in `credentials_page`. Section group labels (Education / Certifications / Specialized training / Legal licensure) stay in code. Sitewide SEO remains Step 52G.
+`/credentials` page headline, lede, and page-local SEO live in `credentials_page`. Section group labels (Education / Certifications / Specialized training / Legal licensure) stay in code. Sitewide SEO remains Step 52H.
 
 About Education is an ordered curated selection via `about_education_credentials`, not “every degree.” Current selection and order: MSIS, JD, BSBA.
 
@@ -641,11 +649,11 @@ Do not start these in 51F.
 6. **52F — Credentials hosted-only authority + admin completion (complete)**
    All public credential facts and selections are hosted and UUID-driven. Static `credentials.ts` is retired. About Education uses `about_education_credentials`. Optional verification URL and expiry are supported and unseeded. Owner admin can manage credentials and About Education selection. Ready for 52G.
 
-7. **52G — Resume tracks + Contact copy + page SEO**
-   Request-based model unchanged. Form remains unpublished until operational requirements met.
+7. **52G — PrivAI visual case study + project media CMS (complete)**
+   `project_media` relates published Projects to `media_assets`. PrivAI Guard has five authentic capstone screenshots in portfolio Storage. Public case study communicates problem, solution, six-stage workflow, visual evidence, architecture, professional capability, and MVP boundary. Ready for 52H.
 
-8. **52H — Admin screens + publications CMS + mirror deletion**  
-   Build missing editors. Remove dead exports (`metrics`, `privaiGuardSections`, etc.) only after public cutover.
+8. **52H — Resume tracks + Contact copy + page SEO**
+   Request-based model unchanged. Form remains unpublished until operational requirements met.
 
 Each phase: versioned migration, assertion counts, no silent static fallback, RLS on new tables, local commit, no push/deploy until the owner requests it.
 
@@ -681,8 +689,23 @@ About CMS cutover is complete. Mutable About editorial content lives in `about_p
 
 Credentials are hosted-only across `/credentials`, Home, Focus, and About Education. Static `src/content/credentials.ts` / `publicCredentials` is retired. About Education uses `about_education_credentials` with the current MSIS → JD → BSBA order. Home still selects MSIS, CIPM, and ISC2 CC. Cyber Focus still selects 6 credentials; Privacy Focus still selects 4. Google AI remains draft + `needs_verification = true` and is unselected.
 
-Optional `verification_url` (HTTPS only) and `expires_on` exist and are unseeded. No membership or certificate numbers were added. `highlight` remains the only featured-style flag; Home/Focus ignore it. `credentials_page` hosts headline, lede, and page-local SEO. Sitewide SEO remains Step 52G.
+Optional `verification_url` (HTTPS only) and `expires_on` exist and are unseeded. No membership or certificate numbers were added. `highlight` remains the only featured-style flag; Home/Focus ignore it. `credentials_page` hosts headline, lede, and page-local SEO. Sitewide SEO remains Step 52H.
 
 Admin `/admin/credentials` can create and edit all credential fields. About admin selects Education credentials by UUID. Publishing About requires selected Education credentials to be publicly eligible. Public accessors omit ineligible related credentials without static fallback.
 
-Next: Step 52G — Resume tracks + Contact configuration + sitewide SEO.
+---
+
+## 30. Step 52G completion
+
+Project media is a generic CMS relationship, not a PrivAI-only page builder.
+
+- Table: `project_media` (`project_id`, `media_asset_id`, `display_role`, `caption`, `sort_order`, `status`)
+- Binaries remain `media_assets` + `public-media` Storage
+- PrivAI Guard UUID unchanged: `0002fb1b-5c40-41ea-98a9-e62de9dac37e`
+- Five authentic microsite screenshots ingested at `project/{media_uuid}/...`
+- Display roles: one `hero` (Safe Prompt Check) and four `workflow` records
+- Home and `/projects` index: no screenshot slot added
+- External microsite linked; direct MVP application URL not added
+- DBNMS and NPCRS unchanged
+
+Next: Step 52H — Resume tracks + Contact configuration + sitewide SEO.
