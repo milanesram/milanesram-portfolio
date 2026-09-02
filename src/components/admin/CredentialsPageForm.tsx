@@ -114,14 +114,8 @@ export function CredentialsPageForm({
         <Link href="/admin/seo" className="text-accent hover:underline">
           SEO
         </Link>
-        . Leftover Credentials SEO columns are no longer public.
+        .
       </p>
-      <input type="hidden" name="seo_title" value={page?.seo_title ?? ""} />
-      <input
-        type="hidden"
-        name="seo_description"
-        value={page?.seo_description ?? ""}
-      />
 
       <div className="flex flex-wrap gap-3 pt-2">
         <button

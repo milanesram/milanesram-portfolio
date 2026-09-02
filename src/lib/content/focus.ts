@@ -24,8 +24,7 @@ import type {
  *
  * Routes stay code-owned. Supporting evidence is selected by UUID, not
  * static arrays, slugs, or body-string matching. Home consumes the cached
- * list helper. `resume_media_id` remains unused leftover; Resume files
- * belong to `resume_tracks`.
+ * list helper. Resume files belong to `resume_tracks`.
  */
 
 export type {
@@ -40,16 +39,7 @@ const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export { FOCUS_PUBLIC_ROUTES };
 
-export const HOME_FOCUS_CARD_PRESENTATION = {
-  "cybersecurity-grc": {
-    resumeLabel: "Resume A",
-    ctaLabel: "View this track",
-  },
-  "privacy-ai-governance": {
-    resumeLabel: "Resume B",
-    ctaLabel: "View this track",
-  },
-} as const;
+export const HOME_FOCUS_CARD_CTA_LABEL = "View this track";
 
 const FOCUS_COLUMNS =
   "id, slug, nav_label, headline, summary, competencies, featured_project_id, featured_publication_id, featured_project_lede, card_summary, card_chips, status, sort_order";

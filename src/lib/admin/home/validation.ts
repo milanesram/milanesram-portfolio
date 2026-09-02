@@ -12,8 +12,6 @@ const LIMITS = {
   sectionLede: 500,
   proof: 200,
   chip: 40,
-  seoTitle: 160,
-  seoDescription: 300,
   proofPoint: 240,
   maxChips: 8,
   maxProofItems: 6,
@@ -84,8 +82,6 @@ export type ParsedHomePageInput = {
   closingPrimaryCtaHref: string;
   closingSecondaryCtaLabel: string;
   closingSecondaryCtaHref: string;
-  seoTitle: string;
-  seoDescription: string;
   featuredProjectId: string | null;
   chips: ParsedHomeChip[];
   proofItems: ParsedHomeProofItem[];
@@ -316,13 +312,6 @@ export function parseHomePageFormData(
       "closing_secondary_cta_label",
       LIMITS.ctaLabel,
       "Closing secondary CTA label",
-    ),
-    seoTitle: requiredText(formData, "seo_title", LIMITS.seoTitle, "SEO title"),
-    seoDescription: requiredText(
-      formData,
-      "seo_description",
-      LIMITS.seoDescription,
-      "SEO description",
     ),
   };
 
@@ -618,8 +607,6 @@ export function parseHomePageFormData(
       closingSecondaryCtaHref: hrefs.closingSecondaryCtaHref.ok
         ? hrefs.closingSecondaryCtaHref.value
         : "",
-      seoTitle: fields.seoTitle.ok ? fields.seoTitle.value : "",
-      seoDescription: fields.seoDescription.ok ? fields.seoDescription.value : "",
       featuredProjectId: featuredProjectId.value,
       chips,
       proofItems,

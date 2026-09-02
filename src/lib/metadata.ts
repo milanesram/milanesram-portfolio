@@ -11,6 +11,7 @@ import {
 import type { PageSeoKey } from "@/lib/supabase/database.types";
 import { PAGE_SEO_PATHS } from "@/lib/content/page-seo";
 import { getSiteUrl } from "./site-url";
+import { isVercelPreviewDeployment } from "./vercel-env";
 
 const seoTitleSuffix = "Cybersecurity, GRC, IT Risk & Privacy";
 const defaultDescription =
@@ -56,6 +57,10 @@ export function createPageMetadata(
 export async function resolvePublicIndexability(
   pageIndexable = true,
 ): Promise<boolean> {
+  if (isVercelPreviewDeployment()) {
+    return false;
+  }
+
   const global = await getPublicSiteIndexability();
   const globallyIndexable = global !== false;
   return globallyIndexable && pageIndexable;
@@ -68,7 +73,9 @@ export async function generateRouteMetadata(
     getPublishedPageSeoByKey(pageKey),
     getPublicSiteIndexability(),
   ]);
-  const globallyIndexable = indexable !== false;
+  const globallyIndexable = isVercelPreviewDeployment()
+    ? false
+    : indexable !== false;
   const metadata = createPageMetadata(
     seo.title,
     seo.description,

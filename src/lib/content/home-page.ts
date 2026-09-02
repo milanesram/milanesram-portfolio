@@ -70,8 +70,6 @@ export type PublicHomePage = {
   credentialsSection: HomeSectionCopy;
   focusSection: HomeFocusSection;
   closing: HomeClosing;
-  seoTitle: string;
-  seoDescription: string;
 };
 
 export type PublishedHomePageResult =
@@ -115,8 +113,6 @@ export type HomePageRow = {
   closing_primary_cta_href: string;
   closing_secondary_cta_label: string;
   closing_secondary_cta_href: string;
-  seo_title: string;
-  seo_description: string;
 };
 
 export type HomeChipRow = {
@@ -443,7 +439,5 @@ export function toPublicHomePage(args: {
         href: args.row.closing_secondary_cta_href,
       },
     },
-    seoTitle: args.row.seo_title,
-    seoDescription: args.row.seo_description,
   };
 }

@@ -7,6 +7,7 @@ export function revalidateResumeSurfaces() {
 
 export function revalidateResumeTrackSurfaces(id?: string) {
   revalidateResumeSurfaces();
+  revalidatePath("/");
 
   if (id) {
     revalidatePath(`/admin/resume/${id}`);

@@ -49,8 +49,6 @@ const HOME_ROW: HomePageRow = {
   closing_primary_cta_href: "/resume",
   closing_secondary_cta_label: "Contact",
   closing_secondary_cta_href: "/contact",
-  seo_title: "Rainier (Ram) Milanes — Cybersecurity, GRC, IT Risk & Privacy",
-  seo_description: "Cybersecurity governance, GRC, technology risk, privacy, and AI governance.",
 };
 
 const PARENT: HomeExperienceParentRecord = {

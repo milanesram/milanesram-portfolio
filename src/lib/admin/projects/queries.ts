@@ -160,3 +160,20 @@ export async function listAdminProjectMediaChoices(supabase: AdminClient) {
     .eq("purpose", "project")
     .order("title", { ascending: true });
 }
+
+export type AdminProjectsPage = {
+  id: string;
+  status: ContentStatus;
+  kicker: string;
+  headline: string;
+  lede: string;
+  updated_at: string;
+};
+
+export async function getAdminProjectsPage(supabase: AdminClient) {
+  return supabase
+    .from("projects_page")
+    .select("id, status, kicker, headline, lede, updated_at")
+    .eq("singleton_key", "default")
+    .maybeSingle();
+}

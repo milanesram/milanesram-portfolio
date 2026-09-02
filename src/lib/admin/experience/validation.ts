@@ -64,7 +64,6 @@ export type ParsedExperienceItemInput = {
   track: TrackTag;
   isMetric: boolean;
   metricContext: string | null;
-  showOnHome: boolean;
   status: ContentStatus;
   sortOrder: number;
 };
@@ -418,7 +417,6 @@ export function parseExperienceItemFormData(
       track: trackRaw as TrackTag,
       isMetric,
       metricContext: isMetric ? metricContext.value : null,
-      showOnHome: readString(formData, "show_on_home") === "on",
       status: statusRaw as ContentStatus,
       sortOrder: sortOrder.value,
     },

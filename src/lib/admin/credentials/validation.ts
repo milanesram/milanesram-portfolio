@@ -24,8 +24,6 @@ const PAGE_LIMITS = {
   kicker: 40,
   headline: 200,
   lede: 2000,
-  seoTitle: 160,
-  seoDescription: 300,
 } as const;
 
 export type CredentialIntent = ProfileIntent;
@@ -51,8 +49,6 @@ export type ParsedCredentialsPageInput = {
   kicker: string;
   headline: string;
   lede: string;
-  seoTitle: string;
-  seoDescription: string;
   intent: CredentialIntent;
 };
 
@@ -255,22 +251,6 @@ export function parseCredentialsPageFormData(
   const lede = requiredText(formData, "lede", PAGE_LIMITS.lede, "Lede");
   if (!lede.ok) return lede;
 
-  const seoTitle = requiredText(
-    formData,
-    "seo_title",
-    PAGE_LIMITS.seoTitle,
-    "SEO title",
-  );
-  if (!seoTitle.ok) return seoTitle;
-
-  const seoDescription = requiredText(
-    formData,
-    "seo_description",
-    PAGE_LIMITS.seoDescription,
-    "SEO description",
-  );
-  if (!seoDescription.ok) return seoDescription;
-
   const intent = parseIntent(formData);
   if (!intent.ok) return intent;
 
@@ -281,8 +261,6 @@ export function parseCredentialsPageFormData(
       kicker: kicker.value,
       headline: headline.value,
       lede: lede.value,
-      seoTitle: seoTitle.value,
-      seoDescription: seoDescription.value,
       intent: intent.value,
     },
   };

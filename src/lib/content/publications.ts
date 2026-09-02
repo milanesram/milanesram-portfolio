@@ -37,12 +37,6 @@ const DOCUMENT_KIND_LABELS: Record<DocumentKind, string> = {
 
 const DEFAULT_PUBLICATION_BYLINE = "Rainier (Ram) Milanes";
 
-export const WRITING_INDEX_COPY = {
-  eyebrow: "Writing",
-  title: "Selected Writing & Professional Publications",
-  lede: "Curated professional writing in cybersecurity, privacy, GRC, and AI governance — analysis, policy, and research already on the record. This is a selected library, not a blog or news feed.",
-} as const;
-
 export type PublicationAvailability = "pdf" | "external" | "html_only";
 
 export type RelatedFocus = {

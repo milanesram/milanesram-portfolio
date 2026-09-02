@@ -175,8 +175,6 @@ export async function saveCredentialsPageAction(
     kicker: input.kicker,
     headline: input.headline,
     lede: input.lede,
-    seo_title: input.seoTitle,
-    seo_description: input.seoDescription,
     status: statusFromIntent(input.intent, existing.data?.status ?? null),
   };
 

@@ -29,6 +29,8 @@ export type PublicResumeTrack = {
   ctaLabel: string;
   deliveryMode: ResumeDeliveryMode;
   media: PublicResumeMedia | null;
+  homeKicker: string | null;
+  focusSlug: string | null;
 };
 
 export type ResumePageRow = {
@@ -60,6 +62,7 @@ export type ResumeTrackRow = {
   summary: string;
   delivery_mode: ResumeDeliveryMode;
   request_cta_label: string;
+  home_kicker: string | null;
   sort_order: number;
   status: ContentStatus;
   focus_pages:
@@ -168,5 +171,10 @@ export function mapResumeTrack(
     ctaLabel: downloadable ? "Download resume" : row.request_cta_label.trim(),
     deliveryMode,
     media: downloadable ? media : null,
+    homeKicker: row.home_kicker?.trim() || null,
+    focusSlug:
+      focus && isPublishedStatus(focus.status) && focus.slug.trim()
+        ? focus.slug.trim()
+        : null,
   };
 }

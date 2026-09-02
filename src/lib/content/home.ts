@@ -22,7 +22,7 @@ export type { PublishedHomePageResult };
 export const HOME_PAGE_SINGLETON_KEY = "default" as const;
 
 const HOME_COLUMNS =
-  "id, status, featured_project_id, headline, lede, primary_cta_label, primary_cta_href, secondary_cta_label, secondary_cta_href, project_kicker, project_heading, project_problem, project_body, project_cta_label, project_cta_href, project_proof_points, experience_kicker, experience_heading, experience_lede, experience_cta_label, experience_cta_href, credentials_kicker, credentials_heading, credentials_lede, credentials_cta_label, credentials_cta_href, focus_kicker, focus_heading, focus_lede, closing_heading, closing_body, closing_primary_cta_label, closing_primary_cta_href, closing_secondary_cta_label, closing_secondary_cta_href, seo_title, seo_description";
+  "id, status, featured_project_id, headline, lede, primary_cta_label, primary_cta_href, secondary_cta_label, secondary_cta_href, project_kicker, project_heading, project_problem, project_body, project_cta_label, project_cta_href, project_proof_points, experience_kicker, experience_heading, experience_lede, experience_cta_label, experience_cta_href, credentials_kicker, credentials_heading, credentials_lede, credentials_cta_label, credentials_cta_href, focus_kicker, focus_heading, focus_lede, closing_heading, closing_body, closing_primary_cta_label, closing_primary_cta_href, closing_secondary_cta_label, closing_secondary_cta_href";
 
 async function loadPublishedHomePage(): Promise<PublishedHomePageResult> {
   const supabase = createPublicSupabaseClient();

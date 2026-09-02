@@ -241,7 +241,7 @@ Skills mutations:
 - Status comes from closed intents (`draft`, `publish`, `unpublish`, `archive`, `keep`)
 - Slugs must match `^[a-z0-9]+(?:-[a-z0-9]+)*$`
 - IDs must be UUIDs
-- Focus-page updates do not write `competencies` or `resume_media_id`
+- Focus-page updates do not write `competencies`
 - Competency add, edit, reorder, and delete pre-read the page by UUID and rewrite only that row’s array
 - Public adapter functions filter `status = published` in addition to RLS
 - After-save redirects use server-known UUIDs only
@@ -265,8 +265,9 @@ Media mutations:
 - Anonymous row eligibility remains `status = published` and `is_public = true`
 - Anonymous column privileges are only `id`, `kind`, `title`, `alt_text`, `is_public`, and `status`
 - Direct anonymous `bucket_path` access is denied. Public adapters also omit `bucket_path` and timestamps
-- Delete removes metadata only. `focus_pages.resume_media_id` is ON DELETE SET NULL. Storage objects are not deleted
-- There is no `/new` route and no upload
+- Delete is blocked while Journey, Project, Resume, or Writing references exist (`ON DELETE RESTRICT`)
+- Owner upload is session-authenticated, allowlisted MIME/size, UUID-pathed, draft-by-default
+- Failed metadata insert removes the uploaded Storage object
 
 Inquiry mutations:
 
@@ -290,12 +291,9 @@ Forward corrections (not applied hosted):
 
 ## 11. What remains out of scope
 
-- Publications and other remaining CMS modules
-- Storage / uploads
-- Direct anon/authenticated inquiry INSERT or public RPC EXECUTE
+- Hosted contact-form enablement
+- Public Resume file delivery
 - CAPTCHA, SMTP, and notification providers
-- Switching public pages to Supabase before reviewed content is applied
-- Loading real professional-experience, education, certification, training, license, skills, site-profile, media, or inquiry content into Supabase
 - User registration or password-reset UI
 - Role-management UI
 - Deploy

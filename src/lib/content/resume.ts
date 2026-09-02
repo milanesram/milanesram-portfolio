@@ -29,7 +29,7 @@ const PAGE_COLUMNS =
   "status, kicker, headline, lede, request_intro, request_footnote, closing_heading, closing_lede";
 
 const TRACK_COLUMNS =
-  "id, slug, title, summary, delivery_mode, request_cta_label, sort_order, status, focus_pages(slug, status), media_assets(id, kind, purpose, title, mime_type, bucket_path, status, is_public)";
+  "id, slug, title, summary, delivery_mode, request_cta_label, home_kicker, sort_order, status, focus_pages(slug, status), media_assets(id, kind, purpose, title, mime_type, bucket_path, status, is_public)";
 
 async function loadPublishedResumePage(): Promise<PublishedResumePageResult> {
   const supabase = createPublicSupabaseClient();

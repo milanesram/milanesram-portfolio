@@ -13,7 +13,6 @@ export type PublishedExperienceItemRow = {
   track: TrackTag;
   is_metric: boolean;
   metric_context: string | null;
-  show_on_home: boolean;
   status: ContentStatus;
   sort_order: number;
 };

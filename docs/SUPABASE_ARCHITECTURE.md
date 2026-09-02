@@ -1,8 +1,10 @@
 # Supabase Architecture
 
-**Step:** 16 foundation + 18 hardening + 23 admin shell + 26 Projects CMS + 27 Experience CMS + 28 Education CMS + 29 Certifications CMS + 30 Training + License CMS + 31 Skills CMS + 32 Settings CMS + 33 Media CMS + 34 Inquiries CMS + 35 public inquiry intake
+**Step:** 52I residual content operations
 
-**Status:** Hosted schema is applied. Public pages still render from `src/content/` except the `/contact` form-activation flag. Admin CMS writes use the authenticated server client and RLS. Public inquiry intake, when both gates are on, uses a server-only privileged client to call `submit_public_inquiry`. The Step 35 migration is local-only.
+**Status:** Hosted schema includes page-chrome singletons, Resume/Contact/SEO, publications, media upload through the owner session, and leftover-column cleanup. Public pages read published rows through the typed content layer. Admin writes use the authenticated server client and RLS. Public inquiry intake remains disabled.
+
+Controlling operational docs: this file, `docs/ADMIN_GUIDE.md`, `docs/PORTFOLIO_CUSTOMIZATION_ARCHITECTURE.md`, and `docs/PRODUCTION_DEPLOYMENT_RUNBOOK.md`. Historical reports remain historical.
 
 ---
 
@@ -46,13 +48,13 @@ Admin authentication:
 | `src/lib/content/licenses.ts` | Public published-only license reads (not wired to pages yet) |
 | `src/lib/admin/skills/` | Skills validation and admin queries (`focus_pages` + `competencies`) |
 | `src/app/admin/skills/actions.ts` | Focus-page and competency Server Actions |
-| `src/lib/content/skills.ts` | Public published-only focus-page reads (not wired to pages yet) |
+| `src/lib/content/focus.ts` | Public published Focus reads |
 | `src/lib/admin/settings/` | Settings validation and admin queries (`site_profile` + `site_settings` singletons) |
 | `src/app/admin/settings/actions.ts` | Site profile and site settings Server Actions |
 | `src/lib/content/profile.ts` | Public published-only site-profile reads (not wired to pages yet) |
 | `src/lib/content/settings.ts` | Public site-settings flag reads (`contactFormEnabled` may gate `/contact` only) |
-| `src/lib/admin/media/` | Media metadata validation and admin queries (`media_assets`) |
-| `src/app/admin/media/actions.ts` | Media metadata Server Actions (no Storage mutations) |
+| `src/lib/admin/media/` | Media metadata, upload validation, relationship usage |
+| `src/app/admin/media/actions.ts` | Metadata save plus owner-session Storage upload |
 | `src/lib/content/media.ts` | Public published+public media-metadata reads (not wired to pages yet) |
 | `src/lib/admin/inquiries/` | Inquiry inbox validation and admin queries (`inquiries`) |
 | `src/app/admin/inquiries/actions.ts` | Inquiry read-state and delete Server Actions (no INSERT) |
@@ -114,7 +116,9 @@ No table stores the comprehensive CV or private-source documents.
 
 ## 4. Tables
 
-`user_roles`, `site_profile`, `site_settings`, `focus_pages`, `experiences`, `experience_items`, `projects`, `project_sections`, `project_media`, `publications`, `credentials`, `engagements`, `media_assets`, `inquiries`, `inquiry_submission_events`, `home_page`, `about_page`, `journey_milestones`, `credentials_page`, `resume_page`, `resume_tracks`, `contact_page`, `page_seo`
+`user_roles`, `site_profile`, `site_settings`, `focus_pages`, `experiences`, `experience_items`, `experience_page`, `projects`, `project_sections`, `project_media`, `projects_page`, `publications`, `writing_page`, `credentials`, `engagements`, `media_assets`, `inquiries`, `inquiry_submission_events`, `home_page`, `about_page`, `journey_milestones`, `credentials_page`, `resume_page`, `resume_tracks`, `contact_page`, `page_seo`
+
+Dropped leftover columns (52I): `home_page.seo_*`, `about_page.seo_*`, `credentials_page.seo_*`, `focus_pages.resume_media_id`, `experience_items.show_on_home`. Public SEO is `page_seo` only. Resume files belong to `resume_tracks.media_asset_id`. Home selected experience is `home_experience_items`.
 
 `inquiry_submission_events` is Data-API private: hash-only rate-limit rows, no `anon` / `authenticated` grants, FORCE RLS, and no public policies. Retention is opportunistic deletion of events older than 24 hours inside `submit_public_inquiry`.
 
@@ -145,24 +149,22 @@ No table stores the comprehensive CV or private-source documents.
 2. `/admin/login` uses password sign-in. `/admin`, `/admin/projects*`, `/admin/experience*`, `/admin/education*`, `/admin/certifications*`, `/admin/training*`, `/admin/licenses*`, `/admin/skills*`, `/admin/settings`, `/admin/media*`, and `/admin/inquiries*` render only after `getUser()` and `is_admin()` succeed on the server.
 3. Projects, Experience, Education, Certifications, Training, License, Skills, Settings, Media, and Inquiries CMS writes go through Server Actions, the authenticated server client, `is_admin()`, and RLS. Inquiry owner writes remain `read_at` or delete only; there is no owner INSERT action. Public inquiry creation uses a server-only service-role client to call `submit_public_inquiry` only.
 4. Authenticated visitors who are not in `user_roles` can read published public content only and are denied the admin shell.
-5. Public project, experience, education, certification, training, license, focus, identity, and media pages stay on `src/content/`. After reviewed content is applied, switch them to `src/lib/content/projects.ts`, `src/lib/content/experiences.ts`, `src/lib/content/education.ts`, `src/lib/content/certifications.ts`, `src/lib/content/training.ts`, `src/lib/content/licenses.ts`, `src/lib/content/skills.ts`, `src/lib/content/profile.ts`, `src/lib/content/settings.ts`, and `src/lib/content/media.ts`.
+5. Public pages read hosted published content through `src/lib/content/*`. There is no stale static career fallback.
 6. Future role management remains out of scope for the MVP.
 
 See `docs/ADMIN_GUIDE.md`.
 
 ---
 
-## 7. Future Storage model
+## 7. Storage model
 
-`media_assets` holds metadata and a `bucket_path`. Buckets are **not** created. Step 33 is metadata and reference management only; Storage upload is deferred.
+`media_assets` holds metadata and a `bucket_path`. Bucket: `public-media`. Object path: `{purpose}/{media_uuid}/{safe_filename}`.
 
-`bucket_path` is owner-visible internal Storage identity. RLS still limits anonymous rows to `status = published` AND `is_public = true`. Column privileges then limit `anon` to `id`, `kind`, `title`, `alt_text`, `is_public`, and `status`. Direct anonymous `bucket_path` SELECT is denied. Authenticated owner Media CMS retains table-level SELECT. `supabase/migrations/20260830050000_restrict_anon_media_asset_columns.sql` is local-only and has not been applied hosted.
+Owner uploads go through authenticated Server Actions using the user session. Storage policies already require `is_admin()`. The service-role key is not used for upload.
 
-Planned later:
+Anonymous reads remain limited to published public metadata. Direct anonymous `bucket_path` SELECT stays denied. Public adapters omit `bucket_path`.
 
-- `public-media` — published headshot, case-study images, public resume PDFs (`is_public = true`)
-- Never upload `private-source/` files
-- Storage RLS should match `media_assets`: public read only when `status = published` and `is_public = true`
+Replacement policy: upload a new asset, retarget the relationship, retire the old row separately. Deletion of referenced assets is RESTRICT.
 
 ---
 

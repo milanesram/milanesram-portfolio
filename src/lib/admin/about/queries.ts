@@ -14,8 +14,6 @@ export type AdminAboutPage = {
   speaking_heading: string;
   speaking_body: string;
   boundaries_heading: string;
-  seo_title: string;
-  seo_description: string;
   updated_at: string;
 };
 
@@ -39,7 +37,7 @@ export type AdminAboutEducationLink = {
 };
 
 const ABOUT_COLUMNS =
-  "id, status, kicker, headline, lede, journey_heading, education_heading, speaking_heading, speaking_body, boundaries_heading, seo_title, seo_description, updated_at";
+  "id, status, kicker, headline, lede, journey_heading, education_heading, speaking_heading, speaking_body, boundaries_heading, updated_at";
 
 export async function getAdminAboutPage(supabase: AdminClient) {
   return supabase

@@ -31,6 +31,7 @@ export type AdminResumeTrack = {
   delivery_mode: ResumeDeliveryMode;
   media_asset_id: string | null;
   request_cta_label: string;
+  home_kicker: string | null;
   sort_order: number;
   status: ContentStatus;
   updated_at: string;
@@ -57,7 +58,7 @@ const PAGE_COLUMNS =
   "id, status, kicker, headline, lede, request_intro, request_footnote, closing_heading, closing_lede, updated_at";
 
 const TRACK_COLUMNS =
-  "id, slug, focus_page_id, title, summary, delivery_mode, media_asset_id, request_cta_label, sort_order, status, updated_at";
+  "id, slug, focus_page_id, title, summary, delivery_mode, media_asset_id, request_cta_label, home_kicker, sort_order, status, updated_at";
 
 export async function getAdminResumePage(client: AdminClient) {
   return client

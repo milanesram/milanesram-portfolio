@@ -5,7 +5,8 @@ import { requireAdminMutation } from "@/lib/admin/authorization";
 import { isUuid } from "@/lib/admin/ids";
 import {
   getAdminMediaAsset,
-  listMediaFocusReferences,
+  getMediaUsageCounts,
+  mediaUsageTotal,
 } from "@/lib/admin/media/queries";
 
 export default async function EditMediaPage({
@@ -25,16 +26,18 @@ export default async function EditMediaPage({
     redirect("/admin/login");
   }
 
-  const [assetResult, refsResult] = await Promise.all([
-    getAdminMediaAsset(auth.supabase, id),
-    listMediaFocusReferences(auth.supabase, id),
-  ]);
+  const assetResult = await getAdminMediaAsset(auth.supabase, id);
 
   if (assetResult.error || !assetResult.data) {
     notFound();
   }
 
-  const references = refsResult.error ? [] : (refsResult.data ?? []);
+  const usage = await getMediaUsageCounts(
+    auth.supabase,
+    id,
+    assetResult.data.purpose,
+  );
+  const referenceCount = mediaUsageTotal(usage);
 
   return (
     <div className="space-y-10">
@@ -46,36 +49,50 @@ export default async function EditMediaPage({
       <section className="max-w-2xl rounded-xl border border-line bg-paper-elevated p-6">
         <h3 className="font-serif text-xl text-ink">Media details</h3>
         <p className="mt-2 text-sm leading-6 text-ink-soft">
-          Storage identity is read-only. This step does not upload, replace,
-          or delete Storage objects.
+          Storage identity is read-only. Replace a published file by uploading a
+          new asset and updating the relationship explicitly.
+        </p>
+        <p className="mt-2 text-sm text-ink-faint">
+          {assetResult.data.mime_type ?? "Unknown type"}
+          {assetResult.data.byte_size
+            ? ` · ${Math.round(assetResult.data.byte_size / 1024)} KB`
+            : ""}
+          {assetResult.data.purpose ? ` · ${assetResult.data.purpose}` : ""}
         </p>
         <div className="mt-6 space-y-5">
           <MediaForm media={assetResult.data} />
           <DeleteMediaButton
             mediaId={assetResult.data.id}
             title={assetResult.data.title}
-            referenceCount={references.length}
+            referenceCount={referenceCount}
           />
         </div>
       </section>
 
       <section className="max-w-2xl rounded-xl border border-line bg-paper-elevated p-6">
         <h3 className="font-serif text-xl text-ink">References</h3>
-        {refsResult.error ? (
-          <p role="alert" className="mt-4 text-sm text-danger">
-            References could not be loaded.
-          </p>
-        ) : references.length === 0 ? (
+        {referenceCount === 0 && !usage.portrait ? (
           <p className="mt-4 text-sm text-ink-soft">
-            Not referenced by any focus page.
+            Not referenced by Journey, Projects, Resume, or Writing.
           </p>
         ) : (
           <ul className="mt-4 space-y-2 text-sm text-ink-soft">
-            {references.map((reference) => (
-              <li key={reference.id}>
-                Used by focus page {reference.nav_label} ({reference.slug})
+            {usage.journey > 0 ? (
+              <li>Journey milestones: {usage.journey}</li>
+            ) : null}
+            {usage.projects > 0 ? (
+              <li>Project screenshots: {usage.projects}</li>
+            ) : null}
+            {usage.resume > 0 ? <li>Resume tracks: {usage.resume}</li> : null}
+            {usage.publications > 0 ? (
+              <li>Publications: {usage.publications}</li>
+            ) : null}
+            {usage.portrait ? (
+              <li>
+                Portrait purpose. Public Home/About select published portrait
+                assets by purpose, not a foreign key.
               </li>
-            ))}
+            ) : null}
           </ul>
         )}
       </section>

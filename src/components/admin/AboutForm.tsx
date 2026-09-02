@@ -343,12 +343,6 @@ export function AboutForm({
           </Link>
           . Leftover About SEO columns are no longer public.
         </p>
-        <input type="hidden" name="seo_title" value={page?.seo_title ?? ""} />
-        <input
-          type="hidden"
-          name="seo_description"
-          value={page?.seo_description ?? ""}
-        />
       </fieldset>
 
       <div className="flex flex-wrap gap-3 pt-2">

@@ -16,6 +16,7 @@ const LIMITS = {
   request: 400,
   closingHeading: 200,
   cta: 80,
+  homeKicker: 40,
   slug: 80,
   title: 160,
   summary: 2000,
@@ -50,6 +51,7 @@ export type ParsedResumeTrackInput = {
   deliveryMode: ResumeDeliveryMode;
   mediaAssetId: string | null;
   requestCtaLabel: string;
+  homeKicker: string | null;
   sortOrder: number;
   intent: ResumeIntent;
 };
@@ -181,6 +183,14 @@ export function parseResumeTrackFormData(
   );
   if (!requestCtaLabel.ok) return requestCtaLabel;
 
+  const homeKickerRaw = readString(formData, "home_kicker")?.trim() ?? "";
+  if (homeKickerRaw.length > LIMITS.homeKicker) {
+    return {
+      ok: false,
+      error: `Home kicker must be ${LIMITS.homeKicker} characters or fewer.`,
+    };
+  }
+
   const modeRaw = (readString(formData, "delivery_mode") ?? "request").trim();
   if (!MODES.has(modeRaw as ResumeDeliveryMode)) {
     return { ok: false, error: "Choose a valid delivery mode." };
@@ -231,6 +241,7 @@ export function parseResumeTrackFormData(
       deliveryMode,
       mediaAssetId,
       requestCtaLabel: requestCtaLabel.value,
+      homeKicker: homeKickerRaw || null,
       sortOrder: sortRaw,
       intent: intent.value,
     },

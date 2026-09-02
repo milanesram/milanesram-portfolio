@@ -129,16 +129,6 @@ function ItemForm({
         />
         Metric item
       </label>
-      <label className="flex min-h-11 items-center gap-3 text-sm font-medium text-ink">
-        <input
-          type="checkbox"
-          name="show_on_home"
-          defaultChecked={item?.show_on_home}
-          disabled={pending}
-          className="size-4 accent-[var(--accent)]"
-        />
-        Show on home
-      </label>
       <button
         type="submit"
         disabled={pending}

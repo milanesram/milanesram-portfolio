@@ -3,7 +3,7 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { requireAdminMutation } from "@/lib/admin/authorization";
 import {
   listAdminMediaAssets,
-  listAllMediaFocusReferences,
+  listAllMediaUsage,
 } from "@/lib/admin/media/queries";
 import { redirect } from "next/navigation";
 
@@ -20,32 +20,30 @@ export default async function AdminMediaPage() {
     redirect("/admin/login");
   }
 
-  const [assetsResult, refsResult] = await Promise.all([
+  const [assetsResult, usage] = await Promise.all([
     listAdminMediaAssets(auth.supabase),
-    listAllMediaFocusReferences(auth.supabase),
+    listAllMediaUsage(auth.supabase),
   ]);
 
   const records = assetsResult.error ? [] : (assetsResult.data ?? []);
-  const usage = new Map<string, number>();
-
-  for (const row of refsResult.error ? [] : (refsResult.data ?? [])) {
-    if (!row.resume_media_id) {
-      continue;
-    }
-
-    usage.set(row.resume_media_id, (usage.get(row.resume_media_id) ?? 0) + 1);
-  }
 
   return (
     <div>
-      <div>
-        <h2 className="font-serif text-2xl text-ink">All media</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
-          Media rows are metadata only. Storage buckets are not configured,
-          so this CMS does not create assets or upload files. Drafts and
-          private rows stay in the admin. Public pages still use local
-          content.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="font-serif text-2xl text-ink">All media</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
+            Upload images and PDFs through the admin. Uploaded files start as
+            draft. Relationships to Journey, Projects, Resume, and Writing block
+            deletion until removed.
+          </p>
+        </div>
+        <Link
+          href="/admin/media/new"
+          className="inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 text-sm font-medium text-paper-elevated"
+        >
+          Upload media
+        </Link>
       </div>
 
       {assetsResult.error ? (
@@ -56,8 +54,8 @@ export default async function AdminMediaPage() {
 
       {records.length === 0 && !assetsResult.error ? (
         <p className="mt-8 rounded-xl border border-dashed border-line bg-paper-elevated p-6 text-sm text-ink-soft">
-          No media metadata in Supabase yet. There is no New action because
-          a row requires a Storage object path, and upload is out of scope.
+          No media metadata in Supabase yet. Upload an approved image or PDF to
+          create the first asset.
         </p>
       ) : (
         <div className="mt-8 overflow-x-auto rounded-xl border border-line bg-paper-elevated">
@@ -96,7 +94,7 @@ export default async function AdminMediaPage() {
                     <StatusBadge status={record.status} />
                   </td>
                   <td className="px-4 py-3 text-ink-soft">
-                    {usage.get(record.id) ?? 0} focus page
+                    {usage.get(record.id) ?? 0} relationship
                     {(usage.get(record.id) ?? 0) === 1 ? "" : "s"}
                   </td>
                 </tr>

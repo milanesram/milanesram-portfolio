@@ -1,7 +1,12 @@
 import Link from "next/link";
+import { IndexChromeForm } from "@/components/admin/IndexChromeForm";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { saveProjectsPageAction } from "@/app/admin/projects/actions";
 import { requireAdminMutation } from "@/lib/admin/authorization";
-import { listAdminProjects } from "@/lib/admin/projects/queries";
+import {
+  getAdminProjectsPage,
+  listAdminProjects,
+} from "@/lib/admin/projects/queries";
 import { redirect } from "next/navigation";
 
 export default async function AdminProjectsPage() {
@@ -11,11 +16,35 @@ export default async function AdminProjectsPage() {
     redirect("/admin/login");
   }
 
-  const { data, error } = await listAdminProjects(auth.supabase);
-  const projects = error ? [] : (data ?? []);
+  const [pageResult, listResult] = await Promise.all([
+    getAdminProjectsPage(auth.supabase),
+    listAdminProjects(auth.supabase),
+  ]);
+  const projects = listResult.error ? [] : (listResult.data ?? []);
+  const error = listResult.error;
 
   return (
-    <div>
+    <div className="space-y-12">
+      <section className="space-y-6">
+        <div>
+          <h2 className="font-serif text-2xl text-ink">Projects page</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
+            Public kicker, headline, and lede. Project records stay in the list
+            below.
+          </p>
+        </div>
+        {pageResult.error ? (
+          <p role="alert" className="text-sm text-danger">
+            Projects page settings could not be loaded.
+          </p>
+        ) : (
+          <div className="max-w-2xl rounded-xl border border-line bg-paper-elevated p-6">
+            <IndexChromeForm page={pageResult.data} action={saveProjectsPageAction} />
+          </div>
+        )}
+      </section>
+
+      <section>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="font-serif text-2xl text-ink">All projects</h2>
@@ -83,6 +112,7 @@ export default async function AdminProjectsPage() {
           </table>
         </div>
       )}
+      </section>
     </div>
   );
 }

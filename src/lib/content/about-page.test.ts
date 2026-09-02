@@ -23,8 +23,6 @@ const ABOUT_ROW: AboutPageRow = {
   speaking_heading: "Speaking and advisory",
   speaking_body: "I have spoken and advised on data privacy and cybersecurity.",
   boundaries_heading: "Professional boundaries",
-  seo_title: "About",
-  seo_description: "Privacy and governance background.",
 };
 
 const GPA: JourneyMilestoneRow = {

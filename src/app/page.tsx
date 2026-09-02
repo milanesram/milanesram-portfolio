@@ -10,9 +10,10 @@ import { Container } from "@/components/layout/Container";
 import { PageHero } from "@/components/ui/PageHero";
 import {
   getPublishedFocusPages,
-  HOME_FOCUS_CARD_PRESENTATION,
+  HOME_FOCUS_CARD_CTA_LABEL,
 } from "@/lib/content/focus";
 import { getPublishedHomePage } from "@/lib/content/home";
+import { getPublishedResumeTracks } from "@/lib/content/resume";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import {
   profileFromPublishedResult,
@@ -31,12 +32,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [homeResult, portraitResult, profileResult, focusResult] =
+  const [homeResult, portraitResult, profileResult, focusResult, tracksResult] =
     await Promise.all([
       getPublishedHomePage(),
       getPublishedPublicMediaAssetsByPurpose("portrait"),
       getPublishedSiteProfile(),
       getPublishedFocusPages(),
+      getPublishedResumeTracks(),
     ]);
 
   const portrait = selectPublishedPortrait(portraitResult);
@@ -78,6 +80,18 @@ export default async function HomePage() {
   }
 
   const home = homeResult.page;
+  const homeKickerByFocusSlug = new Map<string, string>();
+
+  if (tracksResult.ok) {
+    for (const track of tracksResult.tracks) {
+      if (track.focusSlug) {
+        homeKickerByFocusSlug.set(
+          track.focusSlug,
+          track.homeKicker?.trim() || "Pathway",
+        );
+      }
+    }
+  }
 
   return (
     <>
@@ -141,11 +155,6 @@ export default async function HomePage() {
           />
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
             {(focusResult.ok ? focusResult.pages : []).map((track) => {
-              const presentation =
-                HOME_FOCUS_CARD_PRESENTATION[
-                  track.slug as keyof typeof HOME_FOCUS_CARD_PRESENTATION
-                ];
-
               return (
                 <Link
                   key={track.id}
@@ -153,7 +162,7 @@ export default async function HomePage() {
                   className="group flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-shadow hover:shadow-md"
                 >
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
-                    {presentation?.resumeLabel ?? "Pathway"}
+                    {homeKickerByFocusSlug.get(track.slug) ?? "Pathway"}
                   </p>
                   <h3 className="mt-3 font-serif text-2xl font-medium text-ink">
                     {track.title}
@@ -172,7 +181,7 @@ export default async function HomePage() {
                     ))}
                   </ul>
                   <span className="mt-6 text-sm font-medium text-accent group-hover:underline">
-                    {presentation?.ctaLabel ?? "View this track"}
+                    {HOME_FOCUS_CARD_CTA_LABEL}
                   </span>
                 </Link>
               );

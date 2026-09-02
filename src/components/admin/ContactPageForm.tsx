@@ -133,6 +133,34 @@ export function ContactPageForm({
           className={fieldClass}
         />
       </label>
+      <label className={labelClass}>
+        Shared CTA heading
+        <input
+          name="cta_heading"
+          required
+          defaultValue={page?.cta_heading ?? "Start a conversation"}
+          disabled={pending}
+          className={fieldClass}
+        />
+      </label>
+      <label className={labelClass}>
+        Shared CTA lede
+        <textarea
+          name="cta_lede"
+          required
+          rows={3}
+          defaultValue={
+            page?.cta_lede ??
+            "Email and LinkedIn are the public contact channels."
+          }
+          disabled={pending}
+          className={fieldClass}
+        />
+      </label>
+      <p className="text-sm leading-6 text-ink-soft">
+        Used by the generic site CTA when a page does not supply its own
+        heading and lede. Button labels stay in code.
+      </p>
       <div className="rounded-lg border border-line bg-paper px-4 py-3 text-sm leading-6 text-ink-soft">
         Contact form flag (Settings):{" "}
         <strong className="text-ink">{formEnabled ? "enabled" : "unpublished"}</strong>

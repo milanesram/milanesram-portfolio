@@ -1,10 +1,10 @@
 # Portfolio Customization Architecture
 
-**Status:** Updated at Step 52H
-**Controlling reference for:** Steps 52I+
-**Git freeze parent:** `fb4ec4ed15d8a62bdd7dfc3c1a6cf9a1179d383b` (`feat: finalize public career surfaces`)
+**Status:** Updated at Step 52I — residual content operations complete; next is Preview deployment (52J)
+**Controlling reference for:** Steps 52J+
+**Git freeze parent:** `fb25960ce3edbadd89ddcb8a9a5139cb2436ee08` (`feat: make resume contact and seo configurable`)
 **Hosted project:** `rainier-portfolio` (`itoctveqrtozdehoofoq`)
-**Schema in this step:** `resume_page`, `resume_tracks`, `contact_page`, `page_seo`.
+**Schema in this step:** `experience_page`, `projects_page`, `writing_page`; `resume_tracks.home_kicker`; `contact_page` CTA fields; leftover `seo_*` / `resume_media_id` / `show_on_home` dropped.
 
 ---
 
@@ -79,15 +79,15 @@ Mutable public content by surface (chrome shared by all routes: header `navPrima
 | `/about` | H1, lede, narrative, education glance, speaking, boundaries, metadata, portrait, Journey milestones | Hosted `about_page` + `journey_milestones` + `about_education_credentials`; hosted portrait |
 | `/focus/cybersecurity-grc` | Headline, summary, competencies, featured project, experience, credentials, selected writing, CTAs, metadata | Hosted `focus_pages` + UUID relationships (`focus_experience_items`, `focus_credentials`, `featured_project_id`, `featured_publication_id`) |
 | `/focus/privacy-ai-governance` | Same pattern | Same |
-| `/experience` | Page chrome; role list including Scionetrade | Static `experienceCopy`; hosted `experiences` + `experience_items` only |
-| `/projects` | Page chrome; project cards | Static `projectsCopy`; hosted `projects`. Index cards remain text-first; no screenshot thumbnail in 52G. |
-| `/projects/privai-guard` | Case-study kicker; sections; ordered screenshots; microsite CTA | Hosted project + sections + `project_media`; kicker hard-coded in page |
-| `/writing` | Index copy; publication cards | `WRITING_INDEX_COPY` + hosted publications |
+| `/experience` | Page chrome; role list including Scionetrade | Hosted `experience_page` + `experiences` + `experience_items` |
+| `/projects` | Page chrome; project cards | Hosted `projects_page` + hosted `projects`. Index cards remain text-first. |
+| `/projects/privai-guard` | Case-study kicker; sections; ordered screenshots; microsite CTA | Hosted project + sections + `project_media`; kicker remains page-owned |
+| `/writing` | Index copy; publication cards | Hosted `writing_page` + hosted publications |
 | `/writing/[slug]` | Title, abstract, PDF/link, metadata | Hosted publications (+ media) |
 | `/credentials` | Page chrome; credential cards | Hosted `credentials_page` + hosted `credentials` |
-| `/resume` | Hero, track cards, request copy, CTA, metadata | Temporary hosted Focus cards via `getPublishedFocusPages()` until 52G `resume_tracks`; request-based V1.0 unchanged; hosted `site_profile` for email/LinkedIn |
-| `/contact` | Hero, email, LinkedIn, placeholder, metadata | Hosted `site_profile` for channels; page strings static; hosted `site_settings` only for form gate |
-| Header / footer / OG / sitemap / robots | Names, labels, paths | Hosted `site_profile` for identity/contact; `navPrimary`/`FOCUS_PUBLIC_ROUTES` remain code-owned route labels; sitemap uses `page_seo` + published writing/PrivAI; robots honors `site_indexable` |
+| `/resume` | Hero, track cards, request copy, CTA, metadata | Hosted `resume_page` + `resume_tracks`; request-based V1.0; hosted `site_profile` for email/LinkedIn |
+| `/contact` | Hero, email, LinkedIn, placeholder, metadata | Hosted `contact_page` + `site_profile`; `site_settings` only for form gate |
+| Header / footer / OG / sitemap / robots | Names, labels, paths | Hosted `site_profile` for identity/contact; `navPrimary`/`FOCUS_PUBLIC_ROUTES` remain code-owned; sitemap uses `page_seo` + published writing/PrivAI; Production robots honor `site_indexable`; Preview `VERCEL_ENV=preview` is noindex |
 
 Writing detail slugs (hosted, published):  
 `privacy-preserving-machine-learning-global-healthcare-ai`, `egov-ph-architectural-fragility-bcdr`, `generative-ai-privacy-compliance-documentation`, `contain-the-rumor-protect-the-people`, `data-breach-to-boardroom-cyber-governance`, `orb-to-oversight-world-app-privacy`, `you-are-easier-to-hack-than-everything`, `before-blocks-build-the-bedrock`, `price-of-ubiquity-gcash-critical-infrastructure`, `philippine-elections-2025-data-privacy`, `ncsp-localization-local-government-units` (link-only).
@@ -110,10 +110,11 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Home | Flagship copy | Hosted `home_page` overlay fields | Project row facts | Hosted overlay | Project row + Home overlay | KEEP HOSTED |
 | Home | Flagship selection | `home_page.featured_project_id` | `projects.is_featured` unused by Home | Hosted UUID | Hosted project UUID relationship | KEEP HOSTED |
 | Home | Track cards | Hosted `focus_pages.card_summary` / `card_chips` / `nav_label` | Static `homeTracks` retired | Hosted Focus card fields | Hosted Focus | KEEP HOSTED |
-| Home | Selected experience | `home_experience_items` UUIDs | `show_on_home` leftover (3 metrics, unused) | Hosted relationships | Ordered item UUID relationships | KEEP HOSTED |
+| Home | Selected experience | `home_experience_items` UUIDs | Retired `show_on_home` | Hosted relationships | Ordered item UUID relationships | KEEP HOSTED |
 | Home | Selected credentials | `home_credentials` UUIDs | `credentials.highlight` unused by Home | Hosted relationships | Credential UUID + sort | KEEP HOSTED |
 | Home | Portrait | Hosted `media_assets` purpose=portrait | None | Hosted | Hosted | KEEP HOSTED |
-| Home | Metadata | Hosted `page_seo` (`home`) | Leftover `home_page.seo_*` unread | Hosted | `page_seo` | KEEP HOSTED |
+| Home | Metadata | Hosted `page_seo` (`home`) | Duplicate `home_page.seo_*` dropped | Hosted | `page_seo` | KEEP HOSTED |
+| Home | Track kickers | `resume_tracks.home_kicker` | Hard-coded Resume A/B retired | Hosted | Track-owned short label | KEEP HOSTED |
 | Home | Closing CTA | Hosted `home_page` closing fields | Email/LinkedIn from profile | Hosted | Page/CTA copy records | KEEP HOSTED |
 | About | H1, lede, paragraphs, speaking, boundaries | Hosted `about_page` | Static `aboutCopy` retired | Hosted | Hosted about document | KEEP HOSTED |
 | About | Education glance | `about_education_credentials` UUIDs | Static `publicCredentials` retired | Hosted UUID | Credential UUID + eligibility | KEEP HOSTED |
@@ -121,7 +122,7 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | About | Journey captions/years/order | Hosted `journey_milestones` | Media caption/year leftover | Hosted milestones | Milestone records → media FK | KEEP HOSTED |
 | About | Journey images | `journey_milestones.media_asset_id` | Media binaries/alt/path | Hosted UUID | Media remains file authority | KEEP HOSTED |
 | About | Portrait | Hosted media | Same as Home | Hosted | Hosted | KEEP HOSTED |
-| About | Metadata | Hosted `page_seo` (`about`) | Leftover `about_page.seo_*` unread | Hosted | `page_seo` | KEEP HOSTED |
+| About | Metadata | Hosted `page_seo` (`about`) | Duplicate `about_page.seo_*` dropped | Hosted | `page_seo` | KEEP HOSTED |
 | Focus | slug, headline, summary, competencies, status | Hosted `focus_pages` | Static `focusPages` retired | Hosted | Hosted | KEEP HOSTED |
 | Focus | selected writing | `focus_pages.featured_publication_id` | Static slug retired | Hosted UUID | Publication UUID | KEEP HOSTED |
 | Focus | featured project | `focus_pages.featured_project_id` | Static `featuredProject` retired | Hosted UUID | Project UUID | KEEP HOSTED |
@@ -132,13 +133,13 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Experience | Role facts + bullets | Hosted 8 parents / 27 items | Static `experiences.ts` retired | Hosted | Hosted only | KEEP HOSTED |
 | Experience | Scionetrade | Hosted year-only `2018`–`2020` | Static hold retired | Hosted | Hosted year precision | KEEP HOSTED |
 | Experience | Public IDs | Hosted Experience / item UUIDs | Org/title remap retired | Hosted UUID | Hosted UUID | KEEP HOSTED |
-| Experience | Page chrome | `experienceCopy` | None | Static | Page copy record | CUT OVER TO HOSTED — later |
+| Experience | Page chrome | Hosted `experience_page` | Static `experienceCopy` retired | Hosted | Page copy record | KEEP HOSTED |
 | Projects | Project + sections | Hosted | Static `projects.ts` / unused `privaiGuardSections` | Hosted public | Hosted | KEEP HOSTED; RETIRE STATIC MIRROR |
 | Projects | featured flag | Hosted `is_featured` | Static `featured` | Dual for Focus | Hosted + relationships | KEEP HOSTED |
-| Projects | Index chrome | `projectsCopy` | None | Static | Page copy | CUT OVER TO HOSTED |
+| Projects | Index chrome | Hosted `projects_page` | Static `projectsCopy` retired | Hosted | Page copy | KEEP HOSTED |
 | PrivAI case study | Kicker | Hard-coded page | Project year/limits | JSX | Project or page copy | CUT OVER TO HOSTED |
 | Writing | Publication records, PDFs, link-only | Hosted | None as public authority | Hosted | Hosted | KEEP HOSTED |
-| Writing | Index eyebrow/title/lede | `WRITING_INDEX_COPY` | Index metadata from `page_seo` | Static chrome | Page copy later | CUT OVER TO HOSTED — later |
+| Writing | Index eyebrow/title/lede | Hosted `writing_page` | Static `WRITING_INDEX_COPY` retired | Hosted | Page copy | KEEP HOSTED |
 | Writing | Kind labels | Code map `DOCUMENT_KIND_LABELS` | None | Code | KEEP IN CODE | KEEP IN CODE |
 | Credentials | Facts | Hosted `credentials` | Static `credentials.ts` retired | Hosted | Hosted only | KEEP HOSTED; RETIRE STATIC MIRROR |
 | Credentials | Google AI | Hosted draft + needs_verification | Static `verification: pending` retired | Unpublished | Stay unpublished until verified | DEFER — JUSTIFIED |
@@ -147,7 +148,7 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Credentials | Expiration | `credentials.expires_on` | None seeded | Optional date | Optional; does not auto-unpublish | KEEP HOSTED |
 | Resume | Tracks | Hosted `resume_tracks` | Temporary Focus cards retired | Hosted | Resume-track records | KEEP HOSTED |
 | Resume | Request model copy | Hosted `resume_page` | Static page strings retired | Hosted | Resume page singleton | KEEP HOSTED |
-| Resume | Files | `resume_tracks.media_asset_id` unused | `focus_pages.resume_media_id` leftover unused | Request-only V1.0 | Optional media FK | DEFER — JUSTIFIED (files); architecture ready |
+| Resume | Files | `resume_tracks.media_asset_id` unused | Retired `focus_pages.resume_media_id` | Request-only V1.0 | Optional media FK | DEFER — JUSTIFIED (files); architecture ready |
 | Contact | Email, LinkedIn | Hosted `site_profile` | Static `siteProfile` retired | Hosted | Hosted profile | KEEP HOSTED |
 | Contact | Intro copy | Hosted `contact_page` | Static page strings retired | Hosted | Contact page singleton | KEEP HOSTED |
 | Contact | Channel visibility | `contact_page.email_enabled` / `linkedin_enabled` | Always shown | Hosted | Presentation flags | KEEP HOSTED |
@@ -213,7 +214,7 @@ Work authorization remains hosted blank and unrendered. Admin can save a blank v
 
 **Public path:** `getPublishedHomePage()` in `src/lib/content/home.ts` maps to `PublicHomePage`. Failure is `{ ok: false }`; missing/unpublished is `{ ok: true, page: null }`. Related unpublished or `needs_verification` records are omitted, not replaced with static copy.
 
-**Experience:** six current Home bullets are selected by `experience_item_id`. Exact-string matching and static slug remapping are retired for Home. `experience_items.show_on_home` remains on the schema as unused leftover (three NPC metric items) and is **not** a public Home authority.
+**Experience:** six current Home bullets are selected by `experience_item_id`. Exact-string matching and static slug remapping are retired for Home. `experience_items.show_on_home` was dropped in 52I.
 
 **Credentials:** MSIS, CIPM, and ISC2 CC by UUID. Google AI remains unpublished and unselected.
 
@@ -276,7 +277,7 @@ Home-specific card copy lives on `focus_pages.card_summary` / `card_chips` so Ho
 
 Footer Focus links use code-owned `FOCUS_PUBLIC_ROUTES` labels (`Cybersecurity / GRC`, `Privacy / AI Governance`). Those labels are stable route labels; the layout already has profile data and does not add a Focus query solely for footer chrome.
 
-Resume tracks are a separate CMS (`resume_tracks`) with optional Focus UUID relationships. Request-based Version 1.0 is unchanged. No public PDFs. `focus_pages.resume_media_id` is leftover unused.
+Resume tracks are a separate CMS (`resume_tracks`) with optional Focus UUID relationships. Request-based Version 1.0 is unchanged. No public PDFs. Resume files belong to `resume_tracks.media_asset_id`.
 
 Admin `/admin/skills` edits core copy, competencies, and evidence relationships. Saves revalidate both Focus routes, `/`, and `/admin/skills`. Resume no longer revalidates from Skills.
 
@@ -288,7 +289,7 @@ Static Credential datasets are retired. Scionetrade is not selected as Home or F
 
 **Date precision:** `date_precision` is `month` or `year`. Month records keep `start_date` / `end_date` and render as before. Year-only records store `start_year` / `end_year` and leave date columns null. Scionetrade is the first year-only record: `2018`–`2020`, no fabricated month/day.
 
-**Page chrome:** `experienceCopy` (H1, lede, overlap disclosure, additional-experience heading) remains static until a later page-copy/SEO step.
+**Page chrome:** hosted `experience_page` (H1, lede, additional-experience heading).
 
 Home’s six `home_experience_items` and Focus’s 10 + 10 `focus_experience_items` are unchanged UUID relationships.
 
@@ -341,7 +342,7 @@ Static `src/content/credentials.ts` / `publicCredentials` is retired. No runtime
 
 Approved V1.0 public model: **One professional record. Two focus lenses.** Request-based. No public PDFs.
 
-Tracks are hosted `resume_tracks` with optional `focus_page_id` (ON DELETE SET NULL). Titles/summaries are owned by the track, not copied from Focus at runtime. Delivery is `request` | `public_file`. Public-file download requires an eligible published public `resume_pdf`. Both seeded tracks are request-only with null media. `focus_pages.resume_media_id` is leftover unused. A third track can be added in admin without a Focus route.
+Tracks are hosted `resume_tracks` with optional `focus_page_id` (ON DELETE SET NULL). Titles/summaries are owned by the track, not copied from Focus at runtime. Delivery is `request` | `public_file`. Public-file download requires an eligible published public `resume_pdf`. Both seeded tracks are request-only with null media. Home kickers live on `resume_tracks.home_kicker`. A third track can be added in admin without a Focus route.
 
 Page copy lives in `resume_page`. PH-law disclaimer remains in code on the page (same as footer).
 
@@ -470,12 +471,7 @@ Anonymous reads: published (+ credentials not needing verification, media `is_pu
 
 ### `src/content/copy.ts`
 
-| Export | Classification |
-|---|---|
-| `aboutCopy` | RETIRED — hosted `about_page` is public authority |
-| `experienceCopy` | MOVE |
-| `projectsCopy` | MOVE |
-| `speakingCategories` | RETIRED — hosted `about_page_list_items` |
+Retired. Experience and Projects index chrome are hosted `experience_page` / `projects_page`.
 
 ### `src/content/experiences.ts`
 
@@ -536,7 +532,7 @@ Skip link, Menu/Close, generic “temporarily unavailable”, “No published �
 - `CallToAction` default title/lede
 - `ContactFormPlaceholder`
 - `SiteFooter` bar disclaimer
-- `lib/content/home.ts` and `lib/content/publications.ts` `WRITING_INDEX_COPY` (modules, not JSX, but same class of content)
+- `lib/content/home.ts` (Home accessor; index chrome is hosted)
 - `lib/metadata.ts` default descriptions
 
 Do not treat design-system labels as CMS content.
@@ -724,21 +720,33 @@ Resume, Contact, and top-level SEO are hosted CMS surfaces.
 - `contact_page` controls copy and visibility; Site Profile keeps email/LinkedIn values
 - `site_settings.contact_form_enabled` remains false; intake security unchanged
 - `page_seo` is the public authority for 10 known page keys
-- Home/About/Credentials `seo_*` columns remain leftover and are not public
-- `site_settings.site_indexable` now drives `robots.ts`; page-level `indexable` filters sitemap
+- Duplicate Home/About/Credentials `seo_*` columns were dropped in 52I
+- `site_settings.site_indexable` drives Production `robots.ts`; Preview `VERCEL_ENV=preview` is always noindex
 - Canonical paths stay code-owned; no JSON-LD system added
 
-Remaining after 52H (Step 52I candidates):
+## 32. Step 52I completion
 
-- Experience page chrome (`experienceCopy`) — still needs future CMS cutover
-- Projects index framing (`projectsCopy`) — still needs future CMS cutover
-- Writing index framing (`WRITING_INDEX_COPY`) — still needs future CMS cutover
-- Footer PH-law disclaimer — legitimate KEEP IN CODE until a legal-note CMS
-- Generic CTA defaults (`CallToAction`) — still needs future CMS cutover
-- Leftover `home_page` / `about_page` / `credentials_page` `seo_*` columns — legacy
-- Publications admin — still missing
-- Media upload UI — still missing
-- `focus_pages.resume_media_id` leftover column — later removal
-- Engagements table empty — later
+Residual public editorial chrome and owner operations are hosted.
 
-Next: Step 52I — residual content/admin operations cleanup + production preview readiness.
+- `experience_page`, `projects_page`, `writing_page` singletons seeded with exact prior wording
+- Home Focus kickers read `resume_tracks.home_kicker` (Resume A / Resume B preserved; no A/B switch)
+- Generic CTA heading/lede live on `contact_page`; button labels stay structural
+- Publications admin: `/admin/writing` (public site remains `/writing`)
+- Published slugs are immutable; file retargeting requires explicit confirmation
+- Media upload is owner-only, session-authenticated, UUID-pathed, draft-by-default
+- Media FKs are ON DELETE RESTRICT; referenced assets cannot be casually deleted
+- Leftover `focus_pages.resume_media_id` and `experience_items.show_on_home` dropped
+- Unused `src/lib/content/skills.ts` cookie helper removed
+- Deployment runbook: `docs/PRODUCTION_DEPLOYMENT_RUNBOOK.md`
+
+Remaining KEEP IN CODE (justified):
+
+- Routes, layout, typography, crop maps, auth, RLS, validation, accessibility
+- Footer PH-law disclaimer
+- Nav labels / `FOCUS_PUBLIC_ROUTES`
+- PrivAI case-study kicker
+- Writing section labels `Available here` / `Published elsewhere`
+- Generic CTA button labels (`Contact`, `LinkedIn`)
+- Structural unavailable copy
+
+Next: Step 52J — Preview deployment + production smoke test. Do not begin 52J in the same execution.

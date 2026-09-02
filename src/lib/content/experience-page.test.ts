@@ -53,7 +53,6 @@ const SCIONETRADE_ITEM: PublishedExperienceItemRow = {
   track: "all",
   is_metric: false,
   metric_context: null,
-  show_on_home: false,
   status: "published",
   sort_order: 10,
 };
@@ -65,7 +64,6 @@ const RAM_ITEM: PublishedExperienceItemRow = {
   track: "all",
   is_metric: false,
   metric_context: null,
-  show_on_home: false,
   status: "published",
   sort_order: 10,
 };

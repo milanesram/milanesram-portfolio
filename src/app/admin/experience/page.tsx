@@ -1,7 +1,12 @@
 import Link from "next/link";
+import { IndexChromeForm } from "@/components/admin/IndexChromeForm";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { saveExperiencePageAction } from "@/app/admin/experience/actions";
 import { requireAdminMutation } from "@/lib/admin/authorization";
-import { listAdminExperiences } from "@/lib/admin/experience/queries";
+import {
+  getAdminExperiencePage,
+  listAdminExperiences,
+} from "@/lib/admin/experience/queries";
 import { formatExperienceDateRange } from "@/lib/content/experience-page";
 import { redirect } from "next/navigation";
 
@@ -26,11 +31,39 @@ export default async function AdminExperiencePage() {
     redirect("/admin/login");
   }
 
-  const { data, error } = await listAdminExperiences(auth.supabase);
-  const experiences = error ? [] : (data ?? []);
+  const [pageResult, listResult] = await Promise.all([
+    getAdminExperiencePage(auth.supabase),
+    listAdminExperiences(auth.supabase),
+  ]);
+  const experiences = listResult.error ? [] : (listResult.data ?? []);
+  const error = listResult.error;
 
   return (
-    <div>
+    <div className="space-y-12">
+      <section className="space-y-6">
+        <div>
+          <h2 className="font-serif text-2xl text-ink">Experience page</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
+            Public kicker, headline, lede, and additional-experience heading.
+            Role facts stay in the list below.
+          </p>
+        </div>
+        {pageResult.error ? (
+          <p role="alert" className="text-sm text-danger">
+            Experience page settings could not be loaded.
+          </p>
+        ) : (
+          <div className="max-w-2xl rounded-xl border border-line bg-paper-elevated p-6">
+            <IndexChromeForm
+              page={pageResult.data}
+              additionalHeading
+              action={saveExperiencePageAction}
+            />
+          </div>
+        )}
+      </section>
+
+      <section>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="font-serif text-2xl text-ink">All experience</h2>
@@ -111,6 +144,7 @@ export default async function AdminExperiencePage() {
           </table>
         </div>
       )}
+      </section>
     </div>
   );
 }

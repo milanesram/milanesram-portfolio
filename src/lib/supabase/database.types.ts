@@ -134,7 +134,6 @@ export type Database = {
           headline: string;
           summary: string;
           competencies: string[];
-          resume_media_id: string | null;
           featured_project_id: string | null;
           featured_publication_id: string | null;
           featured_project_lede: string | null;
@@ -150,7 +149,6 @@ export type Database = {
           headline: string;
           summary: string;
           competencies?: string[];
-          resume_media_id?: string | null;
           featured_project_id?: string | null;
           featured_publication_id?: string | null;
           featured_project_lede?: string | null;
@@ -163,13 +161,6 @@ export type Database = {
         };
         Update: Partial<Database["public"]["Tables"]["focus_pages"]["Insert"]>;
         Relationships: [
-          {
-            foreignKeyName: "focus_pages_resume_media_id_fkey";
-            columns: ["resume_media_id"];
-            isOneToOne: false;
-            referencedRelation: "media_assets";
-            referencedColumns: ["id"];
-          },
           {
             foreignKeyName: "focus_pages_featured_project_id_fkey";
             columns: ["featured_project_id"];
@@ -306,7 +297,6 @@ export type Database = {
           track: TrackTag;
           is_metric: boolean;
           metric_context: string | null;
-          show_on_home: boolean;
           status: ContentStatus;
           sort_order: number;
         };
@@ -317,7 +307,6 @@ export type Database = {
           track?: TrackTag;
           is_metric?: boolean;
           metric_context?: string | null;
-          show_on_home?: boolean;
           status?: ContentStatus;
           sort_order?: number;
           created_at?: string;
@@ -567,8 +556,6 @@ export type Database = {
           closing_primary_cta_href: string;
           closing_secondary_cta_label: string;
           closing_secondary_cta_href: string;
-          seo_title: string;
-          seo_description: string;
         };
         Insert: Partial<Database["public"]["Tables"]["home_page"]["Row"]> & {
           headline: string;
@@ -602,8 +589,6 @@ export type Database = {
           closing_primary_cta_href: string;
           closing_secondary_cta_label: string;
           closing_secondary_cta_href: string;
-          seo_title: string;
-          seo_description: string;
         };
         Update: Partial<Database["public"]["Tables"]["home_page"]["Insert"]>;
         Relationships: [
@@ -777,8 +762,6 @@ export type Database = {
           speaking_heading: string;
           speaking_body: string;
           boundaries_heading: string;
-          seo_title: string;
-          seo_description: string;
         };
         Insert: Partial<Database["public"]["Tables"]["about_page"]["Row"]> & {
           kicker: string;
@@ -789,8 +772,6 @@ export type Database = {
           speaking_heading: string;
           speaking_body: string;
           boundaries_heading: string;
-          seo_title: string;
-          seo_description: string;
         };
         Update: Partial<Database["public"]["Tables"]["about_page"]["Insert"]>;
         Relationships: [];
@@ -930,15 +911,11 @@ export type Database = {
           kicker: string;
           headline: string;
           lede: string;
-          seo_title: string;
-          seo_description: string;
         };
         Insert: Partial<Database["public"]["Tables"]["credentials_page"]["Row"]> & {
           kicker: string;
           headline: string;
           lede: string;
-          seo_title: string;
-          seo_description: string;
         };
         Update: Partial<
           Database["public"]["Tables"]["credentials_page"]["Insert"]
@@ -980,6 +957,7 @@ export type Database = {
           delivery_mode: ResumeDeliveryMode;
           media_asset_id: string | null;
           request_cta_label: string;
+          home_kicker: string | null;
           sort_order: number;
           status: ContentStatus;
         };
@@ -992,6 +970,7 @@ export type Database = {
           delivery_mode?: ResumeDeliveryMode;
           media_asset_id?: string | null;
           request_cta_label: string;
+          home_kicker?: string | null;
           sort_order?: number;
           status?: ContentStatus;
           created_at?: string;
@@ -1028,6 +1007,8 @@ export type Database = {
           email_label: string;
           linkedin_label: string;
           form_intro: string;
+          cta_heading: string;
+          cta_lede: string;
         };
         Insert: Partial<Database["public"]["Tables"]["contact_page"]["Row"]> & {
           kicker: string;
@@ -1036,8 +1017,67 @@ export type Database = {
           email_label: string;
           linkedin_label: string;
           form_intro: string;
+          cta_heading: string;
+          cta_lede: string;
         };
         Update: Partial<Database["public"]["Tables"]["contact_page"]["Insert"]>;
+        Relationships: [];
+      };
+      experience_page: {
+        Row: Row & {
+          id: string;
+          singleton_key: "default";
+          status: ContentStatus;
+          kicker: string;
+          headline: string;
+          lede: string;
+          additional_heading: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["experience_page"]["Row"]> & {
+          kicker: string;
+          headline: string;
+          lede: string;
+          additional_heading: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["experience_page"]["Insert"]
+        >;
+        Relationships: [];
+      };
+      projects_page: {
+        Row: Row & {
+          id: string;
+          singleton_key: "default";
+          status: ContentStatus;
+          kicker: string;
+          headline: string;
+          lede: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["projects_page"]["Row"]> & {
+          kicker: string;
+          headline: string;
+          lede: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["projects_page"]["Insert"]
+        >;
+        Relationships: [];
+      };
+      writing_page: {
+        Row: Row & {
+          id: string;
+          singleton_key: "default";
+          status: ContentStatus;
+          kicker: string;
+          headline: string;
+          lede: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["writing_page"]["Row"]> & {
+          kicker: string;
+          headline: string;
+          lede: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["writing_page"]["Insert"]>;
         Relationships: [];
       };
       page_seo: {

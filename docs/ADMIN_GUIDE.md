@@ -1,8 +1,8 @@
 # Admin Guide
 
-**Step:** 35 — Secure Public Inquiry Intake
+**Step:** 52I — Residual content operations
 
-**Status:** Owner CMS through Inquiries plus a fail-closed public intake foundation. Hosted intake remains disabled.
+**Status:** Owner CMS covers Site Profile, Home, About, Journey, Focus, Experience, Projects, Writing, Credentials, Resume, Contact, SEO, Media upload, and Inquiries. Hosted contact intake remains disabled.
 
 This guide does not include passwords, user IDs, tokens, or other private identifiers.
 
@@ -44,8 +44,17 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin/journey/new` | Create a Journey milestone |
 | `/admin/journey/[id]` | Edit a Journey milestone and attach media |
 | `/admin/settings` | Edit the `site_profile` and `site_settings` singletons |
-| `/admin/media` | List existing media metadata |
-| `/admin/media/[id]` | Edit existing media metadata |
+| `/admin/resume` | Resume page copy and tracks |
+| `/admin/resume/new` | Create a Resume track |
+| `/admin/resume/[id]` | Edit a Resume track, including Home kicker |
+| `/admin/contact` | Contact page copy, channel visibility, shared CTA |
+| `/admin/seo` | Hosted page metadata |
+| `/admin/writing` | Writing index chrome and publication list |
+| `/admin/writing/new` | Create a publication |
+| `/admin/writing/[id]` | Edit publication metadata |
+| `/admin/media` | List media metadata |
+| `/admin/media/new` | Upload an approved image or PDF |
+| `/admin/media/[id]` | Edit media metadata |
 | `/admin/inquiries` | List owner-only inquiry inbox rows |
 | `/admin/inquiries/[id]` | Review an inquiry and mark read/unread |
 
@@ -206,7 +215,7 @@ Do not store a license number. Philippine-law public copy must not imply U.S. ba
 8. Add, edit, reorder, or delete competencies on the same focus page. Those actions do not overwrite evidence selections.
 9. Delete a focus page from its edit page after confirmation. Relationship rows cascade with the Focus page. Core Experience, credential, project, and publication records are not deleted.
 
-Public Focus and Home track cards read published hosted Focus records. Changing a Focus summary updates the Focus page and Home cards. Resume tracks are edited under **Resume** and no longer copy Focus copy automatically. `focus_pages.resume_media_id` is leftover unused.
+Public Focus and Home track cards read published hosted Focus records. Changing a Focus summary updates the Focus page and Home cards. Resume tracks are edited under **Resume**. Home kickers (`Resume A` / `Resume B`) live on `resume_tracks.home_kicker`.
 
 Saves revalidate `/focus/cybersecurity-grc`, `/focus/privacy-ai-governance`, `/`, and `/admin/skills`.
 
@@ -236,7 +245,7 @@ Saves revalidate `/focus/cybersecurity-grc`, `/focus/privacy-ai-governance`, `/`
 7. Choose the featured Project by title. Core project facts stay on the project record; Home overlay copy is separate.
 8. **Save as draft**, **Publish**, **Unpublish**, or **Archive**. Public Home renders only a published singleton. Unpublished related evidence is omitted, not replaced with old static copy.
 
-Home track cards read hosted Focus card fields. `show_on_home` on experience items is not the Home selector.
+Home track cards read hosted Focus card fields. Home selected experience is `home_experience_items`.
 
 ---
 
@@ -264,13 +273,33 @@ Home track cards read hosted Focus card fields. `show_on_home` on experience ite
 
 ## 15. Media CMS workflow
 
-1. Open **Media** from the dashboard.
-2. Inspect existing `media_assets` metadata: title, alt text, kind, public flag, and status.
-3. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
-4. Public anonymous SELECT requires both `status = published` and `is_public = true`. Anon may read only public metadata columns (`id`, `kind`, `title`, `alt_text`, `is_public`, `status`), not `bucket_path` or timestamps.
-5. Delete metadata after confirmation. Focus-page `resume_media_id` references are SET NULL. Storage objects are not deleted because Storage is not configured.
+1. Open **Media** from the dashboard, or **Upload media**.
+2. Choose kind (`image`, `document`, `resume_pdf`) and purpose (`portrait`, `journey`, `project`, `publication`, `resume`).
+3. Title is required. Images require alt text.
+4. Upload uses the signed-in owner session. The service-role key is not used.
+5. Files are stored at `{purpose}/{media_uuid}/{safe_filename}` in `public-media`.
+6. New rows start as **draft**. Public requires both `is_public` and later **Publish**. Upload does not publish automatically.
+7. Attach the asset from Journey, Projects, Writing, or Resume. Do not silently replace an existing published binary; upload a new asset and retarget the relationship.
+8. Deletion is blocked while Journey, Project, Resume, or Writing references exist (RESTRICT). Storage objects are not deleted automatically.
 
-There is no `/new` route and no upload. `bucket_path` is owner-visible immutable storage identity and is not writable from the browser. Do not invent object paths.
+Approved types only: JPEG/PNG/WebP/AVIF images (8 MB) and PDFs (12 MB). Unsafe filenames are rejected or normalized.
+
+## 15b. Writing / Publications CMS workflow
+
+1. Upload the PDF in Media when hosting a file. Keep it draft until the publication is ready.
+2. Open **Writing** (`/admin/writing`). Edit index kicker/headline/lede if needed.
+3. Create or edit publication metadata: title, type, year, summary, publisher, delivery mode, sort order.
+4. Hosted PDF: relate an existing publication PDF. Link-only: HTTPS URL, no local PDF. The NCSP item stays external.
+5. Keep draft, review, then publish.
+6. Published slugs are locked because they are public URLs. Version 1.0 does not create silent redirects.
+7. Changing the related PDF on a published hosted work requires an explicit confirmation checkbox. This retargets the relationship; it does not rewrite the old file.
+
+## 15c. Later Northwestern graduation photo
+
+1. Upload an approved graduation image in Media (`kind=image`, `purpose=journey`), keep it draft.
+2. Attach it to the existing draft Northwestern Journey milestone.
+3. QA crop on `/about` after publishing only when ready.
+4. Explicitly publish the milestone. Do not invent a substitute image.
 
 ---
 
@@ -349,7 +378,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ## 22. Experience items
 
-- Body, track, status, sort order, `is_metric`, `metric_context`, and `show_on_home`
+- Body, track, status, sort order, `is_metric`, and `metric_context`
 - Move up / move down (only among items of that experience)
 - Delete requires an explicit confirmation
 - An item update or delete is rejected unless the item’s `experience_id` matches the experience being edited
@@ -392,4 +421,4 @@ It is not a schema migration and is not run by `supabase db push`, `supabase sta
 
 ## 27. Still out of scope
 
-Publications, Storage upload, resume uploads, CAPTCHA, email notifications, registration, password reset, role management, public project/experience/education/certification/training/license/skills/settings/media cutover, real employment, education-history, certification, training, license, skills, site-profile, media, or inquiry load, hosted intake activation, and deploy.
+CAPTCHA, email notifications, registration, password reset, role management, hosted contact-form enablement, public Resume file delivery, publishing Google AI or the graduation photo before approved evidence exists, and deploy (see `docs/PRODUCTION_DEPLOYMENT_RUNBOOK.md`).

@@ -136,8 +136,6 @@ describe("credentials page validation", () => {
         form([
           ["kicker", "Credentials"],
           ["lede", "Lede"],
-          ["seo_title", "Credentials"],
-          ["seo_description", "Description"],
           ["intent", "publish"],
         ]),
       ).ok,
@@ -153,8 +151,6 @@ describe("credentials page validation", () => {
           "lede",
           "Selected verified credentials that support cybersecurity governance.",
         ],
-        ["seo_title", "Credentials"],
-        ["seo_description", "Earned Northwestern MSIS."],
         ["intent", "publish"],
       ]),
     );

@@ -10,6 +10,8 @@ const PAGE = {
   emailLabel: "Email",
   linkedinLabel: "LinkedIn",
   formIntro: "A web form is not published on this site.",
+  ctaHeading: "Start a conversation",
+  ctaLede: "Email and LinkedIn are the public contact channels.",
 };
 
 describe("contact channel visibility", () => {
@@ -48,6 +50,8 @@ describe("contact channel visibility", () => {
         email_label: "Email",
         linkedin_label: "LinkedIn",
         form_intro: "Intro",
+        cta_heading: "Start a conversation",
+        cta_lede: "Email and LinkedIn are the public contact channels.",
       }),
     ).toBeNull();
   });

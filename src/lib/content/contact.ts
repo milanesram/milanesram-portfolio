@@ -19,7 +19,7 @@ export type PublishedContactPageResult =
   | { ok: false };
 
 const CONTACT_COLUMNS =
-  "status, kicker, headline, lede, email_enabled, linkedin_enabled, email_label, linkedin_label, form_intro";
+  "status, kicker, headline, lede, email_enabled, linkedin_enabled, email_label, linkedin_label, form_intro, cta_heading, cta_lede";
 
 async function loadPublishedContactPage(): Promise<PublishedContactPageResult> {
   const supabase = createPublicSupabaseClient();

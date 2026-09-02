@@ -27,7 +27,7 @@ export type { PublishedAboutPageResult };
 export const ABOUT_PAGE_SINGLETON_KEY = "default" as const;
 
 const ABOUT_COLUMNS =
-  "id, status, kicker, headline, lede, journey_heading, education_heading, speaking_heading, speaking_body, boundaries_heading, seo_title, seo_description";
+  "id, status, kicker, headline, lede, journey_heading, education_heading, speaking_heading, speaking_body, boundaries_heading";
 
 const MEDIA_COLUMNS =
   "id, kind, alt_text, credit, mime_type, bucket_path, status, is_public";

@@ -164,6 +164,7 @@ export async function saveResumeTrackAction(
     delivery_mode: input.deliveryMode,
     media_asset_id: input.mediaAssetId,
     request_cta_label: input.requestCtaLabel,
+    home_kicker: input.homeKicker,
     sort_order: input.sortOrder,
     status: statusFromIntent(input.intent, currentStatus),
   };

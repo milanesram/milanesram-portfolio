@@ -22,7 +22,7 @@ const EXPERIENCE_COLUMNS =
   "id, organization, title, title_secondary, location_display, kind, start_date, end_date, date_precision, start_year, end_year, is_current, is_featured, summary, status, sort_order";
 
 const ITEM_COLUMNS =
-  "id, experience_id, body, track, is_metric, metric_context, show_on_home, status, sort_order";
+  "id, experience_id, body, track, is_metric, metric_context, status, sort_order";
 
 async function loadPublishedExperiences(): Promise<PublishedExperiencesResult> {
   const supabase = createPublicSupabaseClient();

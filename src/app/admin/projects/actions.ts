@@ -9,6 +9,7 @@ import {
   getAdminProject,
   getAdminProjectMedia,
   getAdminProjectSection,
+  getAdminProjectsPage,
   listAdminProjectMedia,
   listAdminProjectSections,
 } from "@/lib/admin/projects/queries";
@@ -20,6 +21,7 @@ import {
   parseSectionFormData,
   statusFromIntent,
 } from "@/lib/admin/projects/validation";
+import { parseIndexChromeFormData } from "@/lib/admin/page-chrome/validation";
 import { revalidateProjectSurfaces } from "@/lib/admin/projects/revalidate";
 
 export type MutationState = {
@@ -582,4 +584,74 @@ export async function moveProjectMediaAction(formData: FormData) {
   const project = await getAdminProject(auth.supabase, parsed.value.projectId);
   revalidateAdminProjects(parsed.value.projectId, project.data?.slug);
   redirect(`/admin/projects/${parsed.value.projectId}`);
+}
+
+const PAGE_FAILED = "The Projects page could not be saved.";
+
+export async function saveProjectsPageAction(
+  _previous: MutationState,
+  formData: FormData,
+): Promise<MutationState> {
+  const auth = await requireAdminMutation();
+
+  if (!auth.ok) {
+    return { error: auth.error, message: null };
+  }
+
+  const parsed = parseIndexChromeFormData(formData);
+
+  if (!parsed.ok) {
+    return { error: parsed.error, message: null };
+  }
+
+  const input = parsed.value;
+  const existing = await getAdminProjectsPage(auth.supabase);
+
+  if (existing.error) {
+    return { error: PAGE_FAILED, message: null };
+  }
+
+  if (input.id && (!existing.data || existing.data.id !== input.id)) {
+    return { error: PAGE_FAILED, message: null };
+  }
+
+  const values = {
+    kicker: input.kicker,
+    headline: input.headline,
+    lede: input.lede,
+    status: statusFromIntent(input.intent, existing.data?.status ?? null),
+  };
+
+  if (!existing.data) {
+    const { error } = await auth.supabase.from("projects_page").insert({
+      ...values,
+      singleton_key: "default",
+    });
+
+    if (error) {
+      return { error: PAGE_FAILED, message: null };
+    }
+  } else {
+    const { error } = await auth.supabase
+      .from("projects_page")
+      .update(values)
+      .eq("id", existing.data.id);
+
+    if (error) {
+      return { error: PAGE_FAILED, message: null };
+    }
+  }
+
+  revalidatePath("/admin/projects");
+  revalidatePath("/projects");
+
+  const messages: Record<typeof input.intent, string> = {
+    draft: "Saved as draft.",
+    publish: "Published.",
+    unpublish: "Unpublished and saved as draft.",
+    archive: "Archived.",
+    keep: "Saved.",
+  };
+
+  return { error: null, message: messages[input.intent] };
 }

@@ -147,6 +147,19 @@ export function ResumeTrackForm({
         />
       </label>
       <label className={labelClass}>
+        Home kicker
+        <input
+          name="home_kicker"
+          defaultValue={track?.home_kicker ?? ""}
+          disabled={pending}
+          className={fieldClass}
+        />
+      </label>
+      <p className="text-sm leading-6 text-ink-soft">
+        Short label on the matching Home Focus card, such as Resume A. A third
+        track does not require a hard-coded A/B switch.
+      </p>
+      <label className={labelClass}>
         Sort order
         <input
           name="sort_order"

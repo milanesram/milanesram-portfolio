@@ -133,8 +133,6 @@ export async function saveHomePageAction(
     closing_primary_cta_href: input.closingPrimaryCtaHref,
     closing_secondary_cta_label: input.closingSecondaryCtaLabel,
     closing_secondary_cta_href: input.closingSecondaryCtaHref,
-    seo_title: input.seoTitle,
-    seo_description: input.seoDescription,
     status: statusFromIntent(input.intent, existing.data?.status ?? null),
   };
 

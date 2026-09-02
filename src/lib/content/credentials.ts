@@ -30,8 +30,6 @@ export type PublicCredentialsPage = {
   kicker: string;
   headline: string;
   lede: string;
-  seoTitle: string;
-  seoDescription: string;
 };
 
 export type PublishedCredentialsResult =
@@ -101,7 +99,7 @@ async function loadPublishedCredentialsPage(): Promise<PublishedCredentialsPageR
   const supabase = createPublicSupabaseClient();
   const { data, error } = await supabase
     .from("credentials_page")
-    .select("status, kicker, headline, lede, seo_title, seo_description")
+    .select("status, kicker, headline, lede")
     .eq("singleton_key", CREDENTIALS_PAGE_SINGLETON_KEY)
     .eq("status", "published")
     .maybeSingle();
@@ -120,8 +118,6 @@ async function loadPublishedCredentialsPage(): Promise<PublishedCredentialsPageR
       kicker: data.kicker,
       headline: data.headline,
       lede: data.lede,
-      seoTitle: data.seo_title,
-      seoDescription: data.seo_description,
     },
   };
 }

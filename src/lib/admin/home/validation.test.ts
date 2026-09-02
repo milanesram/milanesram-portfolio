@@ -41,8 +41,6 @@ const required = [
   ["closing_primary_cta_href", "/resume"],
   ["closing_secondary_cta_label", "Contact"],
   ["closing_secondary_cta_href", "/contact"],
-  ["seo_title", "Title"],
-  ["seo_description", "Description"],
   ["intent", "publish"],
 ] as Array<[string, string]>;
 

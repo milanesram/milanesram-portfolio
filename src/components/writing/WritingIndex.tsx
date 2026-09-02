@@ -3,14 +3,19 @@ import { PageHero } from "@/components/ui/PageHero";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { WritingIndexCard } from "@/components/writing/WritingIndexCard";
 import {
-  WRITING_INDEX_COPY,
   groupPublishedWriting,
   type PublishedPublication,
 } from "@/lib/content/publications";
 
 export function WritingIndex({
+  kicker,
+  title,
+  lede,
   publications,
 }: {
+  kicker: string;
+  title: string;
+  lede: string;
   publications: PublishedPublication[];
 }) {
   const { lead, availableHere, publishedElsewhere } =
@@ -19,11 +24,7 @@ export function WritingIndex({
   if (!lead) {
     return (
       <>
-        <PageHero
-          kicker={WRITING_INDEX_COPY.eyebrow}
-          title={WRITING_INDEX_COPY.title}
-          lede={WRITING_INDEX_COPY.lede}
-        />
+        <PageHero kicker={kicker} title={title} lede={lede} />
         <Container className="py-16">
           <p className="text-base leading-7 text-ink-soft">
             No publications are listed yet.
@@ -35,11 +36,7 @@ export function WritingIndex({
 
   return (
     <>
-      <PageHero
-        kicker={WRITING_INDEX_COPY.eyebrow}
-        title={WRITING_INDEX_COPY.title}
-        lede={WRITING_INDEX_COPY.lede}
-      />
+      <PageHero kicker={kicker} title={title} lede={lede} />
       <section className="py-16" aria-label="Lead publication">
         <Container>
           <WritingIndexCard publication={lead} featured />

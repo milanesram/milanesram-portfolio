@@ -19,6 +19,8 @@ describe("contact page validation", () => {
         ["email_label", "Email"],
         ["linkedin_label", "LinkedIn"],
         ["form_intro", "A web form is not published on this site."],
+        ["cta_heading", "Start a conversation"],
+        ["cta_lede", "Email and LinkedIn are the public contact channels."],
         ["intent", "publish"],
       ]),
     );

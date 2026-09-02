@@ -55,6 +55,12 @@ export function AdminChrome({ email, title, children }: AdminChromeProps) {
               Projects
             </Link>
             <Link
+              href="/admin/writing"
+              className="text-sm font-medium text-ink-soft hover:text-ink"
+            >
+              Writing
+            </Link>
+            <Link
               href="/admin/experience"
               className="text-sm font-medium text-ink-soft hover:text-ink"
             >

@@ -183,29 +183,47 @@ export function DeleteMediaButton({
   title: string;
   referenceCount: number;
 }) {
-  const referenceNote =
-    referenceCount > 0
-      ? ` ${referenceCount} focus-page reference${referenceCount === 1 ? "" : "s"} will be cleared.`
-      : "";
+  const [state, formAction, pending] = useActionState(
+    deleteMediaAction,
+    initialState,
+  );
 
   return (
-    <form
-      action={deleteMediaAction}
-      className="border-t border-line pt-5"
-      onSubmit={(event) => {
-        if (
-          !window.confirm(
-            `Delete the media record “${title}”?${referenceNote} This removes metadata only, not a Storage object.`,
-          )
-        ) {
-          event.preventDefault();
-        }
-      }}
-    >
+    <form action={formAction} className="border-t border-line pt-5">
       <input type="hidden" name="id" value={mediaId} />
+      {state.error ? (
+        <p
+          role="alert"
+          className="mb-3 rounded-lg border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger"
+        >
+          {state.error}
+        </p>
+      ) : null}
+      {referenceCount > 0 ? (
+        <p className="text-sm leading-6 text-ink-soft">
+          This asset is referenced by {referenceCount} record
+          {referenceCount === 1 ? "" : "s"}. Remove those relationships before
+          deleting.
+        </p>
+      ) : (
+        <p className="text-sm leading-6 text-ink-soft">
+          Deletion removes the metadata row. Storage objects are not deleted
+          automatically.
+        </p>
+      )}
       <button
         type="submit"
-        className="inline-flex min-h-11 items-center text-sm font-medium text-danger hover:underline"
+        disabled={pending || referenceCount > 0}
+        onClick={(event) => {
+          if (
+            !window.confirm(
+              `Delete the media record “${title}”? This does not silently rewrite related pages.`,
+            )
+          ) {
+            event.preventDefault();
+          }
+        }}
+        className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-danger hover:underline disabled:opacity-60"
       >
         Delete media metadata
       </button>

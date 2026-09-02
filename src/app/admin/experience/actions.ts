@@ -7,6 +7,7 @@ import { readUuid } from "@/lib/admin/ids";
 import {
   getAdminExperience,
   getAdminExperienceItem,
+  getAdminExperiencePage,
   listAdminExperienceItems,
 } from "@/lib/admin/experience/queries";
 import {
@@ -15,6 +16,9 @@ import {
   parseOwnedItemRef,
   statusFromIntent,
 } from "@/lib/admin/experience/validation";
+import {
+  parseIndexChromeFormData,
+} from "@/lib/admin/page-chrome/validation";
 
 export type MutationState = {
   error: string | null;
@@ -186,7 +190,6 @@ export async function saveExperienceItemAction(
     track: input.track,
     is_metric: input.isMetric,
     metric_context: input.metricContext,
-    show_on_home: input.showOnHome,
     status: input.status,
     sort_order: input.sortOrder,
   };
@@ -219,7 +222,6 @@ export async function saveExperienceItemAction(
       track: values.track,
       is_metric: values.is_metric,
       metric_context: values.metric_context,
-      show_on_home: values.show_on_home,
       status: values.status,
       sort_order: values.sort_order,
     })
@@ -338,4 +340,75 @@ export async function moveExperienceItemAction(formData: FormData) {
 
   revalidateAdminExperience(parsed.value.experienceId);
   redirect(`/admin/experience/${parsed.value.experienceId}`);
+}
+
+const PAGE_FAILED = "The Experience page could not be saved.";
+
+export async function saveExperiencePageAction(
+  _previous: MutationState,
+  formData: FormData,
+): Promise<MutationState> {
+  const auth = await requireAdminMutation();
+
+  if (!auth.ok) {
+    return { error: auth.error, message: null };
+  }
+
+  const parsed = parseIndexChromeFormData(formData, { additionalHeading: true });
+
+  if (!parsed.ok) {
+    return { error: parsed.error, message: null };
+  }
+
+  const input = parsed.value;
+  const existing = await getAdminExperiencePage(auth.supabase);
+
+  if (existing.error) {
+    return { error: PAGE_FAILED, message: null };
+  }
+
+  if (input.id && (!existing.data || existing.data.id !== input.id)) {
+    return { error: PAGE_FAILED, message: null };
+  }
+
+  const values = {
+    kicker: input.kicker,
+    headline: input.headline,
+    lede: input.lede,
+    additional_heading: input.additionalHeading ?? "",
+    status: statusFromIntent(input.intent, existing.data?.status ?? null),
+  };
+
+  if (!existing.data) {
+    const { error } = await auth.supabase.from("experience_page").insert({
+      ...values,
+      singleton_key: "default",
+    });
+
+    if (error) {
+      return { error: PAGE_FAILED, message: null };
+    }
+  } else {
+    const { error } = await auth.supabase
+      .from("experience_page")
+      .update(values)
+      .eq("id", existing.data.id);
+
+    if (error) {
+      return { error: PAGE_FAILED, message: null };
+    }
+  }
+
+  revalidatePath("/admin/experience");
+  revalidatePath("/experience");
+
+  const messages: Record<typeof input.intent, string> = {
+    draft: "Saved as draft.",
+    publish: "Published.",
+    unpublish: "Unpublished and saved as draft.",
+    archive: "Archived.",
+    keep: "Saved.",
+  };
+
+  return { error: null, message: messages[input.intent] };
 }

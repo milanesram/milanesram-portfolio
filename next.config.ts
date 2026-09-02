@@ -33,6 +33,11 @@ function supabasePublicMediaRemotePatterns(): NonNullable<
 }
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "16mb",
+    },
+  },
   images: {
     remotePatterns: supabasePublicMediaRemotePatterns(),
   },

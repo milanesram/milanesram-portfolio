@@ -16,11 +16,13 @@ export type AdminContactPage = {
   email_label: string;
   linkedin_label: string;
   form_intro: string;
+  cta_heading: string;
+  cta_lede: string;
   updated_at: string;
 };
 
 const CONTACT_COLUMNS =
-  "id, status, kicker, headline, lede, email_enabled, linkedin_enabled, email_label, linkedin_label, form_intro, updated_at";
+  "id, status, kicker, headline, lede, email_enabled, linkedin_enabled, email_label, linkedin_label, form_intro, cta_heading, cta_lede, updated_at";
 
 export async function getAdminContactPage(client: AdminClient) {
   return client

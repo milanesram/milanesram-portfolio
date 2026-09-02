@@ -7,6 +7,8 @@ export type PublicContactPage = {
   emailLabel: string;
   linkedinLabel: string;
   formIntro: string;
+  ctaHeading: string;
+  ctaLede: string;
 };
 
 export type PublicContactChannel = {
@@ -31,6 +33,8 @@ export type ContactPageRow = {
   email_label: string;
   linkedin_label: string;
   form_intro: string;
+  cta_heading: string;
+  cta_lede: string;
 };
 
 export function mapContactPage(row: ContactPageRow): PublicContactPage | null {
@@ -54,6 +58,10 @@ export function mapContactPage(row: ContactPageRow): PublicContactPage | null {
     emailLabel: row.email_label.trim() || "Email",
     linkedinLabel: row.linkedin_label.trim() || "LinkedIn",
     formIntro: row.form_intro.trim(),
+    ctaHeading: row.cta_heading.trim() || "Start a conversation",
+    ctaLede:
+      row.cta_lede.trim() ||
+      "Email and LinkedIn are the public contact channels.",
   };
 }
 

@@ -21,6 +21,7 @@ function track(overrides: Partial<ResumeTrackRow> = {}): ResumeTrackRow {
     summary: "Controls and IT risk.",
     delivery_mode: "request",
     request_cta_label: "View this profile",
+    home_kicker: "Resume A",
     sort_order: 10,
     status: "published",
     focus_pages: { slug: "cybersecurity-grc", status: "published" },
@@ -46,6 +47,8 @@ describe("resume track mapping", () => {
     expect(mapped?.deliveryMode).toBe("request");
     expect(mapped?.href).toBe("/focus/cybersecurity-grc");
     expect(mapped?.media).toBeNull();
+    expect(mapped?.homeKicker).toBe("Resume A");
+    expect(mapped?.focusSlug).toBe("cybersecurity-grc");
   });
 
   it("does not create a public download without eligible media", () => {

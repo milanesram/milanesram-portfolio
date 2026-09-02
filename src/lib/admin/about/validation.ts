@@ -14,8 +14,6 @@ const LIMITS = {
   speakingBody: 2000,
   paragraph: 4000,
   listItem: 400,
-  seoTitle: 160,
-  seoDescription: 300,
   maxParagraphs: 8,
   maxSpeaking: 8,
   maxBoundaries: 8,
@@ -49,8 +47,6 @@ export type ParsedAboutPageInput = {
   speakingHeading: string;
   speakingBody: string;
   boundariesHeading: string;
-  seoTitle: string;
-  seoDescription: string;
   paragraphs: ParsedAboutParagraph[];
   speakingItems: ParsedAboutListItem[];
   boundaryItems: ParsedAboutListItem[];
@@ -201,13 +197,6 @@ export function parseAboutPageFormData(
       LIMITS.section,
       "Boundaries heading",
     ),
-    seoTitle: requiredText(formData, "seo_title", LIMITS.seoTitle, "SEO title"),
-    seoDescription: requiredText(
-      formData,
-      "seo_description",
-      LIMITS.seoDescription,
-      "SEO description",
-    ),
   };
 
   for (const field of Object.values(fields)) {
@@ -271,8 +260,6 @@ export function parseAboutPageFormData(
       boundariesHeading: fields.boundariesHeading.ok
         ? fields.boundariesHeading.value
         : "",
-      seoTitle: fields.seoTitle.ok ? fields.seoTitle.value : "",
-      seoDescription: fields.seoDescription.ok ? fields.seoDescription.value : "",
       paragraphs: paragraphs.value,
       speakingItems: speakingItems.value,
       boundaryItems: boundaryItems.value,

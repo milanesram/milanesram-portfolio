@@ -42,8 +42,6 @@ export type PublicAboutPage = {
   speakingItems: AboutListItem[];
   boundariesHeading: string;
   boundaryItems: AboutListItem[];
-  seoTitle: string;
-  seoDescription: string;
 };
 
 export type PublishedAboutPageResult =
@@ -62,8 +60,6 @@ export type AboutPageRow = {
   speaking_heading: string;
   speaking_body: string;
   boundaries_heading: string;
-  seo_title: string;
-  seo_description: string;
 };
 
 export type AboutParagraphRow = {
@@ -265,7 +261,5 @@ export function toPublicAboutPage(args: {
     speakingItems: mapAboutListItems(args.listItems, "speaking"),
     boundariesHeading: args.row.boundaries_heading,
     boundaryItems: mapAboutListItems(args.listItems, "boundary"),
-    seoTitle: args.row.seo_title,
-    seoDescription: args.row.seo_description,
   };
 }

@@ -12,6 +12,8 @@ const LIMITS = {
   lede: 2000,
   label: 80,
   formIntro: 2000,
+  ctaHeading: 200,
+  ctaLede: 2000,
 } as const;
 
 export type ContactIntent = ProfileIntent;
@@ -31,6 +33,8 @@ export type ParsedContactPageInput = {
   emailLabel: string;
   linkedinLabel: string;
   formIntro: string;
+  ctaHeading: string;
+  ctaLede: string;
   intent: ContactIntent;
 };
 
@@ -90,6 +94,20 @@ export function parseContactPageFormData(
     "Form intro",
   );
   if (!formIntro.ok) return formIntro;
+  const ctaHeading = requiredText(
+    formData,
+    "cta_heading",
+    LIMITS.ctaHeading,
+    "Site CTA heading",
+  );
+  if (!ctaHeading.ok) return ctaHeading;
+  const ctaLede = requiredText(
+    formData,
+    "cta_lede",
+    LIMITS.ctaLede,
+    "Site CTA lede",
+  );
+  if (!ctaLede.ok) return ctaLede;
 
   const intentRaw = (readString(formData, "intent") ?? "keep").trim();
   if (!INTENTS.has(intentRaw)) {
@@ -108,6 +126,8 @@ export function parseContactPageFormData(
       emailLabel: emailLabel.value,
       linkedinLabel: linkedinLabel.value,
       formIntro: formIntro.value,
+      ctaHeading: ctaHeading.value,
+      ctaLede: ctaLede.value,
       intent: intentRaw as ContactIntent,
     },
   };

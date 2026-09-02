@@ -84,8 +84,6 @@ export async function saveAboutPageAction(
     speaking_heading: input.speakingHeading,
     speaking_body: input.speakingBody,
     boundaries_heading: input.boundariesHeading,
-    seo_title: input.seoTitle,
-    seo_description: input.seoDescription,
     status: nextStatus,
   };
 

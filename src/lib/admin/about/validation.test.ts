@@ -18,8 +18,6 @@ const required = [
   ["speaking_heading", "Speaking"],
   ["speaking_body", "Body"],
   ["boundaries_heading", "Professional boundaries"],
-  ["seo_title", "About"],
-  ["seo_description", "Description"],
   ["paragraph_body", "First paragraph."],
   ["paragraph_sort", "10"],
   ["speaking_item", "Academic audiences"],

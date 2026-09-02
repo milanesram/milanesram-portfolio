@@ -33,16 +33,25 @@ export type AdminExperienceItem = {
   track: TrackTag;
   is_metric: boolean;
   metric_context: string | null;
-  show_on_home: boolean;
   status: ContentStatus;
   sort_order: number;
+};
+
+export type AdminExperiencePage = {
+  id: string;
+  status: ContentStatus;
+  kicker: string;
+  headline: string;
+  lede: string;
+  additional_heading: string;
+  updated_at: string;
 };
 
 const EXPERIENCE_COLUMNS =
   "id, organization, title, title_secondary, location_display, kind, start_date, end_date, date_precision, start_year, end_year, is_current, is_featured, summary, status, sort_order, updated_at";
 
 const ITEM_COLUMNS =
-  "id, experience_id, body, track, is_metric, metric_context, show_on_home, status, sort_order";
+  "id, experience_id, body, track, is_metric, metric_context, status, sort_order";
 
 export async function listAdminExperiences(supabase: AdminClient) {
   return supabase
@@ -81,5 +90,16 @@ export async function getAdminExperienceItem(
     .from("experience_items")
     .select(ITEM_COLUMNS)
     .eq("id", itemId)
+    .maybeSingle();
+}
+
+const EXPERIENCE_PAGE_COLUMNS =
+  "id, status, kicker, headline, lede, additional_heading, updated_at";
+
+export async function getAdminExperiencePage(supabase: AdminClient) {
+  return supabase
+    .from("experience_page")
+    .select(EXPERIENCE_PAGE_COLUMNS)
+    .eq("singleton_key", "default")
     .maybeSingle();
 }

@@ -54,6 +54,8 @@ export async function saveContactPageAction(
     email_label: input.emailLabel,
     linkedin_label: input.linkedinLabel,
     form_intro: input.formIntro,
+    cta_heading: input.ctaHeading,
+    cta_lede: input.ctaLede,
     status: statusFromIntent(input.intent, existing.data?.status ?? null),
   };
 
