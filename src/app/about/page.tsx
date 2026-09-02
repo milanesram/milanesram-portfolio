@@ -4,7 +4,6 @@ import { PageHero } from "@/components/ui/PageHero";
 import { AboutJourney } from "@/components/about/AboutJourney";
 import { AboutPortrait } from "@/components/about/AboutPortrait";
 import { Container } from "@/components/layout/Container";
-import { publicCredentials } from "@/content";
 import { getPublishedAboutPage } from "@/lib/content/about";
 import {
   getPublishedPublicMediaAssetsByPurpose,
@@ -97,14 +96,12 @@ export default async function AboutPage() {
           {about.educationHeading}
         </h2>
         <ul className="mt-4 space-y-2 text-ink-soft">
-          {publicCredentials
-            .filter((item) => item.kind === "degree")
-            .map((item) => (
-              <li key={item.id}>
-                {item.name}
-                {item.issuer ? ` · ${item.issuer}` : ""}
-              </li>
-            ))}
+          {about.educationCredentials.map((item) => (
+            <li key={item.id}>
+              {item.name}
+              {item.issuer ? ` · ${item.issuer}` : ""}
+            </li>
+          ))}
         </ul>
 
         <h2 className="mt-14 font-serif text-2xl font-medium text-ink">

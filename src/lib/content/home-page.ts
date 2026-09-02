@@ -6,6 +6,7 @@ import type {
   ExperienceKind,
   TrackTag,
 } from "@/lib/supabase/database.types";
+import { isPubliclyEligibleCredential } from "@/lib/content/credential-map";
 import { formatExperienceDateRange } from "@/lib/content/experience-page";
 
 export type HomeCta = {
@@ -200,7 +201,7 @@ export function isPublishedStatus(status: ContentStatus): boolean {
 }
 
 export function isPublicCredential(row: HomeCredentialRecord): boolean {
-  return isPublishedStatus(row.status) && row.needs_verification === false;
+  return isPubliclyEligibleCredential(row);
 }
 
 export function interpretPublishedHomePageResponse(args: {

@@ -8,6 +8,7 @@ import {
   LICENSE_KIND,
   getAdminLicense,
 } from "@/lib/admin/licenses/queries";
+import { revalidateCredentialSurfaces } from "@/lib/admin/credentials/revalidate";
 import {
   parseLicenseFormData,
   statusFromIntent,
@@ -29,6 +30,7 @@ function mapWriteError(code: string | undefined): string {
 }
 
 function revalidateAdminLicense(id?: string) {
+  revalidateCredentialSurfaces(id);
   revalidatePath("/admin/licenses");
 
   if (id) {
@@ -75,6 +77,8 @@ export async function saveLicenseAction(
     track: input.track,
     highlight: input.highlight,
     sort_order: input.sortOrder,
+    verification_url: input.verificationUrl,
+    expires_on: input.expiresOn,
     status: statusFromIntent(input.intent, currentStatus),
   };
 

@@ -6,8 +6,8 @@ export default function NewLicensePage() {
       <h2 className="font-serif text-2xl text-ink">New license</h2>
       <p className="mt-2 text-sm leading-6 text-ink-soft">
         New records are stored as credentials with kind <code>license</code>{" "}
-        and default to draft unless you publish. Public pages will not show
-        this until they are switched to the Supabase adapter.
+        and default to draft unless you publish. Public pages show a
+        credential only when it is published and not held.
       </p>
       <div className="mt-8 rounded-xl border border-line bg-paper-elevated p-6">
         <LicenseForm />

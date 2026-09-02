@@ -6,6 +6,8 @@ import {
   saveEducationAction,
   type MutationState,
 } from "@/app/admin/education/actions";
+import { CredentialEligibilityNote } from "@/components/admin/CredentialEligibilityNote";
+import { CredentialOptionalFields } from "@/components/admin/CredentialOptionalFields";
 import type { AdminEducation } from "@/lib/admin/education/queries";
 
 const initialState: MutationState = { error: null, message: null };
@@ -68,6 +70,13 @@ export function EducationForm({ education }: EducationFormProps) {
         </p>
       ) : null}
 
+      {education ? (
+        <CredentialEligibilityNote
+          status={education.status}
+          needsVerification={education.needs_verification}
+        />
+      ) : null}
+
       <label className={labelClass}>
         Name
         <input
@@ -122,6 +131,12 @@ export function EducationForm({ education }: EducationFormProps) {
           className={`${fieldClass} py-2`}
         />
       </label>
+
+      <CredentialOptionalFields
+        verificationUrl={education?.verification_url}
+        expiresOn={education?.expires_on}
+        pending={pending}
+      />
 
       <div className="grid gap-5 sm:grid-cols-2">
         <label className={labelClass}>

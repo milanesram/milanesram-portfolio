@@ -20,6 +20,9 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin/experience` | List all experience statuses |
 | `/admin/experience/new` | Create an experience record |
 | `/admin/experience/[id]` | Edit an experience record and its items |
+| `/admin/credentials` | List all credentials and edit Credentials page framing |
+| `/admin/credentials/new` | Create a credential |
+| `/admin/credentials/[id]` | Edit a credential |
 | `/admin/education` | List education (credential `kind = degree`) |
 | `/admin/education/new` | Create an education record |
 | `/admin/education/[id]` | Edit an education record |
@@ -36,7 +39,7 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin/skills/new` | Create a focus page (empty competencies) |
 | `/admin/skills/[id]` | Edit a focus page and its competencies |
 | `/admin/home` | Edit the Home singleton, chips, proof strip, and featured evidence |
-| `/admin/about` | Edit the About singleton, narrative paragraphs, and section framing |
+| `/admin/about` | Edit the About singleton, narrative, Education credential selection, and section framing |
 | `/admin/journey` | List Professional Journey milestones |
 | `/admin/journey/new` | Create a Journey milestone |
 | `/admin/journey/[id]` | Edit a Journey milestone and attach media |
@@ -102,61 +105,84 @@ Supported schema fields only. There is no company URL, logo, employment type, or
 
 ---
 
-## 6. Education CMS workflow
+## 6. Credentials CMS workflow
 
-1. Open **Education** from the dashboard.
-2. Create a record or open an existing row.
-3. Edit name, issuer, year label, details, career track, highlight, needs-verification, and sort order.
+1. Open **Credentials** from the dashboard (`/admin/credentials`).
+2. Edit page framing if needed: kicker, headline, lede, and Credentials-only SEO title/description. Section group labels stay in code.
+3. Create a credential or open an existing row.
+4. Edit official name, issuer, kind, public description, year label, career track, sort order, highlight, needs-verification, optional HTTPS verification URL, and optional expiration date.
+5. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
+6. Delete a credential from its edit page after confirmation. Home, Focus, and About relationships to that credential cascade away. The core record is not deleted when a relationship is removed.
+
+Public eligibility is **published + not held for verification**. Admin labels:
+
+- **Publicly eligible** — published and `needs_verification = false`
+- **Held** — `needs_verification = true` (Google AI is Held · draft)
+- **Draft / Archived** — not public
+
+Held or draft credentials stay off `/credentials`, Home, Focus, and About even if a relationship still exists. Restoring eligibility shows them again without recreating UUIDs.
+
+`year_label` is the display date. Do not invent completion, issue, or expiration dates. Leave verification URL blank unless an approved public HTTPS page exists. HTTP, `javascript:`, `data:`, and protocol-relative URLs are rejected. Expiration is informational and does not unpublish the record.
+
+Do not store membership IDs, certification IDs, license numbers, or certificate serials.
+
+`highlight` is an optional Credentials-page presentation flag. Home and Focus selections are separate UUID relationships and ignore highlight.
+
+Kind-specific **Education**, **Certifications**, **Training**, and **Licenses** editors remain convenience views of the same `credentials` table. The unified Credentials editor can change kind.
+
+Google AI must remain draft and `needs_verification = true` until separately verified and explicitly authorized.
+
+Saves revalidate `/credentials`, `/`, `/about`, both Focus routes, and related admin pages.
+
+---
+
+## 7. Education CMS workflow
+
+1. Open **Education** from the dashboard, or edit the same rows under **Credentials**.
+2. Create a record or open an existing row. Kind is fixed to `degree`.
+3. Edit name, issuer, year label, details, verification URL, expiration, career track, highlight, needs-verification, and sort order.
 4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
 5. Delete an education record from its edit page after confirmation.
 
-Education is stored in `public.credentials` with `kind` fixed to `degree`. Certification, training, and license rows are out of scope for this module. There is no education child table. The schema has no school URL, logo, GPA, honors, field-of-study, or start/end date columns.
+There is no education child table and no school URL, logo, GPA, honors, or start/end date columns.
 
 ---
 
-## 7. Certifications CMS workflow
+## 8. Certifications CMS workflow
 
-1. Open **Certifications** from the dashboard.
-2. Create a record or open an existing row.
-3. Edit name, issuer, year label, details, career track, highlight, needs-verification, and sort order.
+1. Open **Certifications** from the dashboard, or edit the same rows under **Credentials**.
+2. Create a record or open an existing row. Kind is fixed to `certification`.
+3. Edit name, issuer, year label, details, verification URL, expiration, career track, highlight, needs-verification, and sort order.
 4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
 5. Delete a certification from its edit page after confirmation.
 
-Certifications are stored in `public.credentials` with `kind` fixed to `certification`. Degree, training, and license rows are out of scope for this module. There is no certification child table. The schema has no credential URL, verification URL, credential ID, expiration, issue date, logo, or file attachment.
-
-A published certification with `needs_verification = true` remains hidden from anonymous public SELECT. The owner can toggle that flag in this CMS.
+Do not store credential IDs or member numbers.
 
 ---
 
-## 8. Training CMS workflow
+## 9. Training CMS workflow
 
-1. Open **Training** from the dashboard.
-2. Create a record or open an existing row.
-3. Edit name, issuer, year label, details, career track, highlight, needs-verification, and sort order.
+1. Open **Training** from the dashboard, or edit the same rows under **Credentials**.
+2. Create a record or open an existing row. Kind is fixed to `training`.
+3. Edit name, issuer, year label, details, verification URL, expiration, career track, highlight, needs-verification, and sort order.
 4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
 5. Delete a training record from its edit page after confirmation.
 
-Training is stored in `public.credentials` with `kind` fixed to `training`. Degree, certification, and license rows are out of scope for this module. There is no training child table. The schema has no training URL, credential ID, expiration, issue date, logo, or file attachment.
-
-A published training row with `needs_verification = true` remains hidden from anonymous public SELECT. The owner can toggle that flag in this CMS.
-
 ---
 
-## 9. License CMS workflow
+## 10. License CMS workflow
 
-1. Open **Licenses** from the dashboard.
-2. Create a record or open an existing row.
-3. Edit name, issuer, year label, details, career track, highlight, needs-verification, and sort order.
+1. Open **Licenses** from the dashboard, or edit the same rows under **Credentials**.
+2. Create a record or open an existing row. Kind is fixed to `license`.
+3. Edit name, issuer, year label, details, verification URL, expiration, career track, highlight, needs-verification, and sort order.
 4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
 5. Delete a license from its edit page after confirmation.
 
-Licenses are stored in `public.credentials` with `kind` fixed to `license`. Degree, certification, and training rows are out of scope for this module. There is no license child table. The schema has no license number, license state, verification URL, expiration, issue date, logo, or file attachment.
-
-A published license with `needs_verification = true` remains hidden from anonymous public SELECT. The owner can toggle that flag in this CMS.
+Do not store a license number. Philippine-law public copy must not imply U.S. bar admission.
 
 ---
 
-## 10. Skills / Focus CMS workflow
+## Skills / Focus CMS workflow
 
 1. Open **Skills** from the dashboard (`/admin/skills`).
 2. Create a focus page or open an existing row.
@@ -207,7 +233,8 @@ Home track cards read hosted Focus card fields. `show_on_home` on experience ite
 2. Edit the About singleton: kicker, headline, lede, narrative paragraphs, Journey/Education/Speaking/Boundaries headings, speaking body, and About SEO title/description.
 3. Reorder paragraphs and list items with sort order. Empty rows are ignored.
 4. **Save as draft**, **Publish**, **Unpublish**, or **Archive**. Public About renders only a published singleton.
-5. Education degree facts remain static until a later Credentials step. Do not invent a second credential list here.
+5. Select Education credentials by name, issuer, and year. Values are credential UUIDs. Reorder with the sort field. Duplicates are rejected. Publishing About requires every selected Education credential to be publicly eligible (published and not held). Ineligible credentials can remain selected in a draft About page and are omitted from the public page.
+6. Education facts stay on the credential record. About does not store a second name, issuer, year, or description.
 
 ---
 

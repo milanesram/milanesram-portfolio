@@ -19,6 +19,7 @@ const LIMITS = {
   maxParagraphs: 8,
   maxSpeaking: 8,
   maxBoundaries: 8,
+  maxEducation: 12,
 } as const;
 
 export type AboutIntent = ProfileIntent;
@@ -30,6 +31,11 @@ export type ParsedAboutParagraph = {
 
 export type ParsedAboutListItem = {
   body: string;
+  sortOrder: number;
+};
+
+export type ParsedAboutEducationLink = {
+  credentialId: string;
   sortOrder: number;
 };
 
@@ -48,6 +54,7 @@ export type ParsedAboutPageInput = {
   paragraphs: ParsedAboutParagraph[];
   speakingItems: ParsedAboutListItem[];
   boundaryItems: ParsedAboutListItem[];
+  educationCredentials: ParsedAboutEducationLink[];
   intent: AboutIntent;
 };
 
@@ -239,6 +246,9 @@ export function parseAboutPageFormData(
   );
   if (!boundaryItems.ok) return boundaryItems;
 
+  const educationCredentials = parseEducationCredentials(formData);
+  if (!educationCredentials.ok) return educationCredentials;
+
   const intentRaw = (readString(formData, "intent") ?? "keep").trim();
 
   if (!INTENTS.has(intentRaw)) {
@@ -266,7 +276,60 @@ export function parseAboutPageFormData(
       paragraphs: paragraphs.value,
       speakingItems: speakingItems.value,
       boundaryItems: boundaryItems.value,
+      educationCredentials: educationCredentials.value,
       intent: intentRaw as AboutIntent,
     },
   };
+}
+
+function parseEducationCredentials(
+  formData: FormData,
+): ParseResult<ParsedAboutEducationLink[]> {
+  const credentialIds = readAllStrings(formData, "education_credential_id");
+  const links: ParsedAboutEducationLink[] = [];
+  const used = new Set<string>();
+
+  for (const rawId of credentialIds) {
+    const credentialId = readUuid(rawId);
+
+    if (!credentialId) {
+      return { ok: false, error: "A credential selection is not valid." };
+    }
+
+    if (used.has(credentialId)) {
+      return { ok: false, error: "Education credential selections must be unique." };
+    }
+
+    const sort = parseSortOrder(
+      readString(formData, `education_credential_sort_${credentialId}`) ?? "",
+      "Education credential",
+    );
+    if (!sort.ok) return sort;
+
+    used.add(credentialId);
+    links.push({ credentialId, sortOrder: sort.value });
+  }
+
+  if (links.length > LIMITS.maxEducation) {
+    return { ok: false, error: "Too many Education credential selections." };
+  }
+
+  const sorts = new Set<number>();
+
+  for (const link of links) {
+    if (sorts.has(link.sortOrder)) {
+      return { ok: false, error: "Education credential sort order must be unique." };
+    }
+
+    sorts.add(link.sortOrder);
+  }
+
+  return { ok: true, value: links };
+}
+
+export function selectedEducationIsEligible(row: {
+  status: string;
+  needs_verification: boolean;
+}): boolean {
+  return row.status === "published" && row.needs_verification === false;
 }

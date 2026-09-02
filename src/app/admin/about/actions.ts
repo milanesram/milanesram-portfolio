@@ -8,8 +8,10 @@ import {
 } from "@/lib/admin/about/queries";
 import {
   parseAboutPageFormData,
+  selectedEducationIsEligible,
   statusFromIntent,
 } from "@/lib/admin/about/validation";
+import { revalidateAboutEducationSurfaces } from "@/lib/admin/credentials/revalidate";
 
 export type MutationState = {
   error: string | null;
@@ -19,6 +21,7 @@ export type MutationState = {
 const SAVE_FAILED = "The About page could not be saved.";
 
 function revalidateAbout() {
+  revalidateAboutEducationSurfaces();
   revalidatePath("/admin/about");
   revalidatePath("/about");
 }
@@ -50,6 +53,28 @@ export async function saveAboutPageAction(
     return { error: SAVE_FAILED, message: null };
   }
 
+  const nextStatus = statusFromIntent(input.intent, existing.data?.status ?? null);
+
+  if (nextStatus === "published" && input.educationCredentials.length > 0) {
+    const selectedIds = input.educationCredentials.map((item) => item.credentialId);
+    const { data: selectedRows, error: selectedError } = await auth.supabase
+      .from("credentials")
+      .select("id, status, needs_verification")
+      .in("id", selectedIds);
+
+    if (selectedError || !selectedRows || selectedRows.length !== selectedIds.length) {
+      return { error: "A selected Education credential could not be found.", message: null };
+    }
+
+    if (selectedRows.some((row) => !selectedEducationIsEligible(row))) {
+      return {
+        error:
+          "Publishing About requires every selected Education credential to be publicly eligible.",
+        message: null,
+      };
+    }
+  }
+
   const values = {
     kicker: input.kicker,
     headline: input.headline,
@@ -61,7 +86,7 @@ export async function saveAboutPageAction(
     boundaries_heading: input.boundariesHeading,
     seo_title: input.seoTitle,
     seo_description: input.seoDescription,
-    status: statusFromIntent(input.intent, existing.data?.status ?? null),
+    status: nextStatus,
   };
 
   let aboutPageId = existing.data?.id ?? null;
@@ -137,6 +162,31 @@ export async function saveAboutPageAction(
 
   if (listError) {
     return { error: SAVE_FAILED, message: null };
+  }
+
+  const { error: educationDeleteError } = await auth.supabase
+    .from("about_education_credentials")
+    .delete()
+    .eq("about_page_id", aboutPageId);
+
+  if (educationDeleteError) {
+    return { error: SAVE_FAILED, message: null };
+  }
+
+  if (input.educationCredentials.length > 0) {
+    const { error: educationError } = await auth.supabase
+      .from("about_education_credentials")
+      .insert(
+        input.educationCredentials.map((item) => ({
+          about_page_id: aboutPageId,
+          credential_id: item.credentialId,
+          sort_order: item.sortOrder,
+        })),
+      );
+
+    if (educationError) {
+      return { error: SAVE_FAILED, message: null };
+    }
   }
 
   revalidateAbout();

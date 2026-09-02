@@ -67,6 +67,8 @@ export type Credential = {
   tracks: Array<TrackId | "all">;
   /** Internal only. Never render in the UI. */
   verification?: VerificationState;
+  verificationUrl?: string;
+  expiresOn?: string;
 };
 
 export type FocusRouteCard = {

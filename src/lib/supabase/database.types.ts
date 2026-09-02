@@ -452,6 +452,8 @@ export type Database = {
           highlight: boolean;
           status: ContentStatus;
           sort_order: number;
+          verification_url: string | null;
+          expires_on: string | null;
         };
         Insert: {
           id?: string;
@@ -465,6 +467,8 @@ export type Database = {
           highlight?: boolean;
           status?: ContentStatus;
           sort_order?: number;
+          verification_url?: string | null;
+          expires_on?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -828,6 +832,64 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      about_education_credentials: {
+        Row: Row & {
+          id: string;
+          about_page_id: string;
+          credential_id: string;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          about_page_id: string;
+          credential_id: string;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["about_education_credentials"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "about_education_credentials_about_page_id_fkey";
+            columns: ["about_page_id"];
+            isOneToOne: false;
+            referencedRelation: "about_page";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "about_education_credentials_credential_id_fkey";
+            columns: ["credential_id"];
+            isOneToOne: false;
+            referencedRelation: "credentials";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      credentials_page: {
+        Row: Row & {
+          id: string;
+          singleton_key: "default";
+          status: ContentStatus;
+          kicker: string;
+          headline: string;
+          lede: string;
+          seo_title: string;
+          seo_description: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["credentials_page"]["Row"]> & {
+          kicker: string;
+          headline: string;
+          lede: string;
+          seo_title: string;
+          seo_description: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["credentials_page"]["Insert"]
+        >;
+        Relationships: [];
       };
       engagements: {
         Row: Row & {

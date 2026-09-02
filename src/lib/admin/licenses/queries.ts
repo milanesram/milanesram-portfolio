@@ -17,11 +17,13 @@ export type AdminLicense = {
   highlight: boolean;
   status: ContentStatus;
   sort_order: number;
+  verification_url: string | null;
+  expires_on: string | null;
   updated_at: string;
 };
 
 const LICENSE_COLUMNS =
-  "id, name, issuer, year_label, details, needs_verification, track, highlight, status, sort_order, updated_at";
+  "id, name, issuer, year_label, details, needs_verification, track, highlight, status, sort_order, verification_url, expires_on, updated_at";
 
 export async function listAdminLicenses(supabase: AdminClient) {
   return supabase

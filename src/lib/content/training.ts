@@ -6,9 +6,8 @@ import { isUuid } from "@/lib/admin/ids";
  * Public training reads from Supabase.
  *
  * Training is stored in `public.credentials` with `kind = 'training'`.
- * Cutover: do not use these from `src/app/credentials/**` until an explicit
- * content step loads reviewed rows. Public pages still render from
- * `src/content/credentials.ts`.
+ * Kind-filtered helper. Public pages use `getPublishedCredentials()`
+ * and UUID relationships, not this adapter.
  */
 
 export const TRAINING_KIND = "training" as const;

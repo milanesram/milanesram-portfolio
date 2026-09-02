@@ -6,6 +6,8 @@ import {
   saveCertificationAction,
   type MutationState,
 } from "@/app/admin/certifications/actions";
+import { CredentialEligibilityNote } from "@/components/admin/CredentialEligibilityNote";
+import { CredentialOptionalFields } from "@/components/admin/CredentialOptionalFields";
 import type { AdminCertification } from "@/lib/admin/certifications/queries";
 
 const initialState: MutationState = { error: null, message: null };
@@ -70,6 +72,13 @@ export function CertificationForm({ certification }: CertificationFormProps) {
         </p>
       ) : null}
 
+      {certification ? (
+        <CredentialEligibilityNote
+          status={certification.status}
+          needsVerification={certification.needs_verification}
+        />
+      ) : null}
+
       <label className={labelClass}>
         Name
         <input
@@ -124,6 +133,12 @@ export function CertificationForm({ certification }: CertificationFormProps) {
           className={`${fieldClass} py-2`}
         />
       </label>
+
+      <CredentialOptionalFields
+        verificationUrl={certification?.verification_url}
+        expiresOn={certification?.expires_on}
+        pending={pending}
+      />
 
       <div className="grid gap-5 sm:grid-cols-2">
         <label className={labelClass}>

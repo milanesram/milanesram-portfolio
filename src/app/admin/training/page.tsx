@@ -27,9 +27,7 @@ export default async function AdminTrainingPage() {
           <h2 className="font-serif text-2xl text-ink">All training</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
             Training rows are stored as credentials with kind{" "}
-            <code>training</code>. Drafts stay in the admin. Public pages still
-            use local content until a later step switches them to the Supabase
-            adapter.
+            <code>training</code>. Public pages read hosted credentials only.
           </p>
         </div>
         <Link

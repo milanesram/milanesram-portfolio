@@ -1,5 +1,9 @@
 import type { TrackTag } from "@/lib/supabase/database.types";
 import { readUuid } from "@/lib/admin/ids";
+import {
+  parseOptionalDate,
+  parseOptionalHttpsUrl,
+} from "@/lib/admin/credentials/fields";
 
 const TRACKS = new Set<TrackTag>(["all", "cybersecurity_grc", "privacy_ai"]);
 const INTENTS = new Set(["draft", "publish", "unpublish", "archive", "keep"]);
@@ -29,6 +33,8 @@ export type ParsedCertificationInput = {
   track: TrackTag;
   highlight: boolean;
   sortOrder: number;
+  verificationUrl: string | null;
+  expiresOn: string | null;
   intent: CertificationIntent;
 };
 
@@ -158,6 +164,18 @@ export function parseCertificationFormData(
   const details = optionalText(formData, "details", LIMITS.details, "Details");
   if (!details.ok) return details;
 
+  const verificationUrl = parseOptionalHttpsUrl(
+    readString(formData, "verification_url"),
+    "Verification URL",
+  );
+  if (!verificationUrl.ok) return verificationUrl;
+
+  const expiresOn = parseOptionalDate(
+    readString(formData, "expires_on"),
+    "Expiration date",
+  );
+  if (!expiresOn.ok) return expiresOn;
+
   const trackRaw = (readString(formData, "track") ?? "all").trim();
 
   if (!TRACKS.has(trackRaw as TrackTag)) {
@@ -182,6 +200,8 @@ export function parseCertificationFormData(
       track: trackRaw as TrackTag,
       highlight: readString(formData, "highlight") === "on",
       sortOrder: sortOrder.value,
+      verificationUrl: verificationUrl.value,
+      expiresOn: expiresOn.value,
       intent: intent.value,
     },
   };

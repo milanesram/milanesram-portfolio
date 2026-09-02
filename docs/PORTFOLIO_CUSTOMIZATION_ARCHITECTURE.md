@@ -76,7 +76,7 @@ Mutable public content by surface (chrome shared by all routes: header `navPrima
 | Route | Mutable content | Current public source |
 |---|---|---|
 | `/` | Hero, chips, CTAs, proof strip, flagship copy, track cards, selected experience bullets, selected credentials, closing CTA, metadata, portrait | Hosted `home_page` + UUID relationships; track cards from hosted `focus_pages` card fields; hosted `site_profile` for shared identity/contact; hosted portrait |
-| `/about` | H1, lede, narrative, education glance, speaking, boundaries, metadata, portrait, Journey milestones | Hosted `about_page` + `journey_milestones`; education glance still static `publicCredentials` until 52F; hosted portrait |
+| `/about` | H1, lede, narrative, education glance, speaking, boundaries, metadata, portrait, Journey milestones | Hosted `about_page` + `journey_milestones` + `about_education_credentials`; hosted portrait |
 | `/focus/cybersecurity-grc` | Headline, summary, competencies, featured project, experience, credentials, selected writing, CTAs, metadata | Hosted `focus_pages` + UUID relationships (`focus_experience_items`, `focus_credentials`, `featured_project_id`, `featured_publication_id`) |
 | `/focus/privacy-ai-governance` | Same pattern | Same |
 | `/experience` | Page chrome; role list including Scionetrade | Static `experienceCopy`; hosted `experiences` + `experience_items` only |
@@ -84,7 +84,7 @@ Mutable public content by surface (chrome shared by all routes: header `navPrima
 | `/projects/privai-guard` | Case-study kicker; sections; CTA | Hosted project + sections; kicker hard-coded in page |
 | `/writing` | Index copy; publication cards | `WRITING_INDEX_COPY` + hosted publications |
 | `/writing/[slug]` | Title, abstract, PDF/link, metadata | Hosted publications (+ media) |
-| `/credentials` | Page chrome; credential cards | Page chrome static; hosted `credentials` |
+| `/credentials` | Page chrome; credential cards | Hosted `credentials_page` + hosted `credentials` |
 | `/resume` | Hero, track cards, request copy, CTA, metadata | Temporary hosted Focus cards via `getPublishedFocusPages()` until 52G `resume_tracks`; request-based V1.0 unchanged; hosted `site_profile` for email/LinkedIn |
 | `/contact` | Hero, email, LinkedIn, placeholder, metadata | Hosted `site_profile` for channels; page strings static; hosted `site_settings` only for form gate |
 | Header / footer / OG / sitemap / robots | Names, labels, paths | Hosted `site_profile` for identity/contact; `navPrimary`/`FOCUS_PUBLIC_ROUTES` remain code-owned route labels; sitemap adds hosted writing slugs; robots static |
@@ -116,7 +116,7 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Home | Metadata | `home_page.seo_title` / `seo_description` | Sitewide SEO still code | Hosted Home-only | Page SEO record in 52G | KEEP HOSTED (Home only) |
 | Home | Closing CTA | Hosted `home_page` closing fields | Email/LinkedIn from profile | Hosted | Page/CTA copy records | KEEP HOSTED |
 | About | H1, lede, paragraphs, speaking, boundaries | Hosted `about_page` | Static `aboutCopy` retired | Hosted | Hosted about document | KEEP HOSTED |
-| About | Education glance | Static `publicCredentials` degrees | Hosted credentials | Static temporary | Hosted credentials | TEMPORARY — 52F |
+| About | Education glance | `about_education_credentials` UUIDs | Static `publicCredentials` retired | Hosted UUID | Credential UUID + eligibility | KEEP HOSTED |
 | About | Speaking categories | Hosted `about_page_list_items` | Empty `engagements` table | Hosted | Hosted About list items | KEEP HOSTED |
 | About | Journey captions/years/order | Hosted `journey_milestones` | Media caption/year leftover | Hosted milestones | Milestone records → media FK | KEEP HOSTED |
 | About | Journey images | `journey_milestones.media_asset_id` | Media binaries/alt/path | Hosted UUID | Media remains file authority | KEEP HOSTED |
@@ -140,10 +140,11 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Writing | Publication records, PDFs, link-only | Hosted | None as public authority | Hosted | Hosted | KEEP HOSTED |
 | Writing | Index eyebrow/title/lede | `WRITING_INDEX_COPY` | Index metadata description | Static | Page copy + SEO | CUT OVER TO HOSTED |
 | Writing | Kind labels | Code map `DOCUMENT_KIND_LABELS` | None | Code | KEEP IN CODE | KEEP IN CODE |
-| Credentials | Facts | Hosted `/credentials` | Static `credentials.ts` for Focus/About | Dual | Hosted only | KEEP HOSTED; RETIRE STATIC MIRROR |
-| Credentials | Google AI | Hosted draft + needs_verification | Static `verification: pending` | Unpublished | Stay unpublished until verified | DEFER — JUSTIFIED |
-| Credentials | Page chrome | `credentials/page.tsx` | None | Static | Page copy | CUT OVER TO HOSTED |
-| Credentials | Verification URL | Absent | None | Gap | Optional URL fields | See §16 |
+| Credentials | Facts | Hosted `credentials` | Static `credentials.ts` retired | Hosted | Hosted only | KEEP HOSTED; RETIRE STATIC MIRROR |
+| Credentials | Google AI | Hosted draft + needs_verification | Static `verification: pending` retired | Unpublished | Stay unpublished until verified | DEFER — JUSTIFIED |
+| Credentials | Page chrome | Hosted `credentials_page` | Static page strings retired | Hosted | Hosted page singleton | KEEP HOSTED |
+| Credentials | Verification URL | `credentials.verification_url` | None seeded | Optional HTTPS | Optional HTTPS only | KEEP HOSTED |
+| Credentials | Expiration | `credentials.expires_on` | None seeded | Optional date | Optional; does not auto-unpublish | KEEP HOSTED |
 | Resume | Tracks | Temporary hosted Focus via `getPublishedFocusPages()` | Dedicated `resume_tracks` later | Temporary hosted Focus | Resume-track records | TEMPORARY — 52G |
 | Resume | Request model copy | `resume/page.tsx` | None | Static | Resume settings | CUT OVER TO HOSTED |
 | Resume | Files | None | `focus_pages.resume_media_id` unused | Request-only V1.0 | Optional media FK | DEFER — JUSTIFIED (files); architecture ready |
@@ -231,7 +232,7 @@ Work authorization remains hosted blank and unrendered. Admin can save a blank v
 
 **Graduation:** draft milestone `c52c0001-0000-4000-8000-000000000046`, year 2026, `media_asset_id` null. Admin can attach approved media later and then explicitly publish. No placeholder image.
 
-**Temporary:** About Education glance still reads static `publicCredentials` degrees until Step 52F.
+**Education:** three current degrees are selected by `about_education_credentials` UUID: Northwestern MSIS, JD, BSBA. Public About omits a selected credential that is draft or `needs_verification = true`. Static `publicCredentials` is retired.
 
 **Admin:** `/admin/about` and `/admin/journey`. Saves revalidate `/about`, `/admin/about`, and `/admin/journey`.
 
@@ -280,7 +281,7 @@ Resume track cards temporarily consume hosted Focus until Step 52G creates `resu
 
 Admin `/admin/skills` edits core copy, competencies, and evidence relationships. Saves revalidate both Focus routes, `/`, `/resume`, and `/admin/skills`.
 
-Static Credential datasets remain for About until 52F. Scionetrade is not selected as Home or Focus evidence. Google AI is not selected.
+Static Credential datasets are retired. Scionetrade is not selected as Home or Focus evidence. Google AI is not selected.
 
 ### Experience
 
@@ -302,19 +303,28 @@ Already the customization model to copy: hosted publications, PDFs in Storage, o
 
 ### Credentials
 
-`/credentials` hosted; Focus and About degrees static. Google AI unpublished. Hierarchy MSIS → CIPM → ISC2 CC already via kind groups + `sort_order`. Dual public dataset must end.
+**Completed in 52F.** All public credential facts come from hosted `credentials`. Public eligibility is `status = published` AND `needs_verification = false` on `/credentials`, Home, Focus, and About. Google AI remains draft + `needs_verification = true` and is unpublished.
 
-### Credential verification gap (no columns yet)
+`/credentials` page headline, lede, and page-local SEO live in `credentials_page`. Section group labels (Education / Certifications / Specialized training / Legal licensure) stay in code. Sitewide SEO remains Step 52G.
 
-| Field | Justified for production customization? |
+About Education is an ordered curated selection via `about_education_credentials`, not “every degree.” Current selection and order: MSIS, JD, BSBA.
+
+Home and Focus continue to use explicit UUID relationships. `highlight` is an optional Credentials-page presentation flag and is not a Home/Focus selector. Do not add a duplicate `featured` field.
+
+`year_label` remains the display-date authority. Optional `verification_url` (HTTPS only) and `expires_on` exist but are unseeded. No membership, certificate, or license numbers are stored.
+
+Admin: `/admin/credentials` is the complete editor. Kind-specific Education / Certifications / Training / Licenses editors remain convenience views of the same table. About admin selects Education credentials by name/issuer/year.
+
+Static `src/content/credentials.ts` / `publicCredentials` is retired. No runtime name-based credential selection remains.
+
+### Credential verification and expiry
+
+| Field | Production customization? |
 |---|---|
-| verification URL (https) | Yes — optional, public if present |
-| credential URL (issuer page) | Yes — optional; may be same as verification |
-| expiry date | Yes — optional; CIPM/CC may need it later |
-| featured / highlight | Already exists (`highlight`) — reuse |
-| credential ID / member number | **No** by default — sensitive; do not store unless owner later requires a non-secret public ID |
-
-Do not add fields in 51F.
+| verification URL (https) | Yes — optional, public on `/credentials` if present |
+| expiry date | Yes — optional; display only; does not auto-unpublish |
+| featured / highlight | Reuse existing `highlight` |
+| credential ID / member number | **No** — do not store |
 
 ---
 
@@ -628,10 +638,10 @@ Do not start these in 51F.
 5. **52E — Experience hosted-only + Scionetrade year precision (complete)**
    Public Experience uses hosted records only. Scionetrade is hosted as year-only 2018–2020. Static Experience authority and hybrid merge are retired. Home/Focus UUID relationships remain intact. Ready for 52F.
 
-6. **52F — Credentials dual-source retirement**  
-   About/Focus read hosted credentials. Optional verification URL column if still justified.
+6. **52F — Credentials hosted-only authority + admin completion (complete)**
+   All public credential facts and selections are hosted and UUID-driven. Static `credentials.ts` is retired. About Education uses `about_education_credentials`. Optional verification URL and expiry are supported and unseeded. Owner admin can manage credentials and About Education selection. Ready for 52G.
 
-7. **52G — Resume tracks + Contact copy + page SEO**  
+7. **52G — Resume tracks + Contact copy + page SEO**
    Request-based model unchanged. Form remains unpublished until operational requirements met.
 
 8. **52H — Admin screens + publications CMS + mirror deletion**  
@@ -663,4 +673,16 @@ Home CMS cutover is complete. Mutable Home editorial content and featured eviden
 
 ## 28. Step 52C completion
 
-About CMS cutover is complete. Mutable About editorial content lives in `about_page`. Professional Journey is a dedicated milestone entity linked to media by UUID. The five current Journey entries are unchanged publicly. Northwestern graduation exists as a 2026 draft with no media. About Education credentials remain a documented 52F dependency. Next: Step 52D — Focus evidence relationships + static Focus retirement.
+About CMS cutover is complete. Mutable About editorial content lives in `about_page`. Professional Journey is a dedicated milestone entity linked to media by UUID. The five current Journey entries are unchanged publicly. Northwestern graduation exists as a 2026 draft with no media. About Education now uses hosted UUID relationships (completed in 52F).
+
+---
+
+## 29. Step 52F completion
+
+Credentials are hosted-only across `/credentials`, Home, Focus, and About Education. Static `src/content/credentials.ts` / `publicCredentials` is retired. About Education uses `about_education_credentials` with the current MSIS → JD → BSBA order. Home still selects MSIS, CIPM, and ISC2 CC. Cyber Focus still selects 6 credentials; Privacy Focus still selects 4. Google AI remains draft + `needs_verification = true` and is unselected.
+
+Optional `verification_url` (HTTPS only) and `expires_on` exist and are unseeded. No membership or certificate numbers were added. `highlight` remains the only featured-style flag; Home/Focus ignore it. `credentials_page` hosts headline, lede, and page-local SEO. Sitewide SEO remains Step 52G.
+
+Admin `/admin/credentials` can create and edit all credential fields. About admin selects Education credentials by UUID. Publishing About requires selected Education credentials to be publicly eligible. Public accessors omit ineligible related credentials without static fallback.
+
+Next: Step 52G — Resume tracks + Contact configuration + sitewide SEO.

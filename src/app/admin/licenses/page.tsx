@@ -27,9 +27,7 @@ export default async function AdminLicensesPage() {
           <h2 className="font-serif text-2xl text-ink">All licenses</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
             License rows are stored as credentials with kind{" "}
-            <code>license</code>. Drafts stay in the admin. Public pages still
-            use local content until a later step switches them to the Supabase
-            adapter.
+            <code>license</code>. Public pages read hosted credentials only.
           </p>
         </div>
         <Link

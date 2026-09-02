@@ -1,4 +1,5 @@
-import type { Credential } from "@/content";
+import type { Credential } from "@/content/types";
+import { formatCredentialExpiry } from "@/lib/content/credential-map";
 
 const kindLabel: Record<Credential["kind"], string> = {
   degree: "Education",
@@ -26,6 +27,23 @@ export function CredentialCard({
       </p>
       {!compact && credential.details ? (
         <p className="mt-3 text-sm leading-6 text-ink-soft">{credential.details}</p>
+      ) : null}
+      {!compact && credential.expiresOn ? (
+        <p className="mt-3 text-sm text-ink-soft">
+          {formatCredentialExpiry(credential.expiresOn)}
+        </p>
+      ) : null}
+      {!compact && credential.verificationUrl ? (
+        <p className="mt-3">
+          <a
+            href={credential.verificationUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm font-medium text-accent hover:underline"
+          >
+            {`Verify ${credential.name}`}
+          </a>
+        </p>
       ) : null}
     </article>
   );

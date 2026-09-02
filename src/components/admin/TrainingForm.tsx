@@ -6,6 +6,8 @@ import {
   saveTrainingAction,
   type MutationState,
 } from "@/app/admin/training/actions";
+import { CredentialEligibilityNote } from "@/components/admin/CredentialEligibilityNote";
+import { CredentialOptionalFields } from "@/components/admin/CredentialOptionalFields";
 import type { AdminTraining } from "@/lib/admin/training/queries";
 
 const initialState: MutationState = { error: null, message: null };
@@ -70,6 +72,13 @@ export function TrainingForm({ training }: TrainingFormProps) {
         </p>
       ) : null}
 
+      {training ? (
+        <CredentialEligibilityNote
+          status={training.status}
+          needsVerification={training.needs_verification}
+        />
+      ) : null}
+
       <label className={labelClass}>
         Name
         <input
@@ -124,6 +133,12 @@ export function TrainingForm({ training }: TrainingFormProps) {
           className={`${fieldClass} py-2`}
         />
       </label>
+
+      <CredentialOptionalFields
+        verificationUrl={training?.verification_url}
+        expiresOn={training?.expires_on}
+        pending={pending}
+      />
 
       <div className="grid gap-5 sm:grid-cols-2">
         <label className={labelClass}>

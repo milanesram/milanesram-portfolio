@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { AdminChrome } from "./AdminChrome";
 
-const upcomingModules = [
-  "Publications",
-  "Credentials",
-  "Resume Assets",
-] as const;
+const upcomingModules = ["Publications", "Resume Assets"] as const;
 
 type AdminShellProps = {
   email: string | null;
@@ -42,7 +38,7 @@ export function AdminShell({ email }: AdminShellProps) {
           Content management
         </h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
-          Home, About, Journey, Projects, Experience, Education,
+          Home, About, Journey, Projects, Experience, Credentials, Education,
           Certifications, Training, Licenses, Skills, Settings, Media, and
           Inquiries are available. Other types are not implemented yet.
         </p>
@@ -99,6 +95,18 @@ export function AdminShell({ email }: AdminShellProps) {
               <h3 className="text-base font-medium text-ink">Experience</h3>
               <p className="mt-2 text-sm text-ink-soft">
                 Create, draft, publish, and edit timeline items.
+              </p>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/admin/credentials"
+              className="block rounded-xl border border-line bg-paper-elevated p-5 hover:border-ink/30"
+            >
+              <h3 className="text-base font-medium text-ink">Credentials</h3>
+              <p className="mt-2 text-sm text-ink-soft">
+                Create and edit all credential facts, verification URLs, and
+                page framing.
               </p>
             </Link>
           </li>

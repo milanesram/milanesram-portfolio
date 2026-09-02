@@ -8,7 +8,8 @@ import { isUuid } from "@/lib/admin/ids";
  * Certifications are stored in `public.credentials` with
  * `kind = 'certification'`. Cutover: do not use these from
  * `src/app/credentials/**` until an explicit content step loads reviewed
- * rows. Public pages still render from `src/content/credentials.ts`.
+ * rows. Public pages use `getPublishedCredentials()` and UUID
+ * relationships, not this adapter.
  */
 
 export const CERTIFICATION_KIND = "certification" as const;

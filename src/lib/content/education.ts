@@ -6,9 +6,8 @@ import { isUuid } from "@/lib/admin/ids";
  * Public education reads from Supabase.
  *
  * Education is stored in `public.credentials` with `kind = 'degree'`.
- * Cutover: do not use these from `src/app/credentials/**` or the home
- * education section until an explicit content step loads reviewed rows.
- * Public pages still render from `src/content/credentials.ts`.
+ * Kind-filtered helper. Public pages use `getPublishedCredentials()`
+ * and UUID relationships, not this adapter.
  */
 
 export const EDUCATION_KIND = "degree" as const;

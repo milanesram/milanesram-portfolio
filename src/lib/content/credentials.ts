@@ -1,104 +1,56 @@
-import type { Credential, CredentialKind, TrackId } from "@/content/types";
+import { cache } from "react";
+import {
+  sortEligible,
+  type CredentialRow,
+  type PublishedCredential,
+} from "@/lib/content/credential-map";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
-import type { ContentStatus, TrackTag } from "@/lib/supabase/database.types";
 
 /**
- * Public credential reads from Supabase.
- *
- * `/credentials` reads published, verified rows through the anonymous
- * publishable client. RLS remains the publication boundary.
- * `src/content/credentials.ts` is retained as rollback/reference and as
- * the static source for routes that are not yet cut over.
+ * Public credential reads from hosted `credentials`.
+ * Eligibility is published + needs_verification = false everywhere.
+ * Public identity is the hosted UUID. There is no static fallback.
  */
 
-export type PublishedCredential = {
-  id: string;
-  kind: CredentialKind;
-  name: string;
-  issuer: string;
-  yearLabel: string | null;
-  details: string | null;
-  track: TrackTag;
-  highlight: boolean;
-  sortOrder: number;
+export const CREDENTIALS_PAGE_SINGLETON_KEY = "default" as const;
+
+export type {
+  CredentialRow,
+  PublishedCredential,
+} from "@/lib/content/credential-map";
+export {
+  formatCredentialExpiry,
+  isPubliclyEligibleCredential,
+  mapCredential,
+  mapTrack,
+  toPresentationCredential,
+} from "@/lib/content/credential-map";
+
+export type PublicCredentialsPage = {
+  kicker: string;
+  headline: string;
+  lede: string;
+  seoTitle: string;
+  seoDescription: string;
 };
 
 export type PublishedCredentialsResult =
   | { ok: true; credentials: PublishedCredential[] }
   | { ok: false };
 
-function isPubliclyEligible(
-  status: ContentStatus,
-  needsVerification: boolean,
-): boolean {
-  return status === "published" && needsVerification === false;
-}
+export type PublishedCredentialsPageResult =
+  | { ok: true; page: PublicCredentialsPage }
+  | { ok: true; page: null }
+  | { ok: false };
 
-function mapTrack(track: TrackTag): Array<TrackId | "all"> {
-  if (track === "cybersecurity_grc") {
-    return ["cyber"];
-  }
+const CREDENTIAL_COLUMNS =
+  "id, kind, name, issuer, year_label, details, track, highlight, needs_verification, status, sort_order, verification_url, expires_on";
 
-  if (track === "privacy_ai") {
-    return ["privacy"];
-  }
-
-  return ["all"];
-}
-
-function presentationId(kind: CredentialKind, name: string): string {
-  return `${kind}-${name}`
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-function mapCredential(row: {
-  id: string;
-  kind: CredentialKind;
-  name: string;
-  issuer: string;
-  year_label: string | null;
-  details: string | null;
-  track: TrackTag;
-  highlight: boolean;
-  sort_order: number;
-}): PublishedCredential {
-  return {
-    id: row.id,
-    kind: row.kind,
-    name: row.name,
-    issuer: row.issuer,
-    yearLabel: row.year_label,
-    details: row.details,
-    track: row.track,
-    highlight: row.highlight,
-    sortOrder: row.sort_order,
-  };
-}
-
-export function toPresentationCredential(
-  credential: PublishedCredential,
-): Credential {
-  return {
-    id: presentationId(credential.kind, credential.name),
-    kind: credential.kind,
-    name: credential.name,
-    issuer: credential.issuer,
-    ...(credential.yearLabel ? { yearLabel: credential.yearLabel } : {}),
-    ...(credential.details ? { details: credential.details } : {}),
-    ...(credential.highlight ? { highlight: true } : {}),
-    tracks: mapTrack(credential.track),
-  };
-}
-
-export async function getPublishedCredentials(): Promise<PublishedCredentialsResult> {
+async function loadPublishedCredentials(): Promise<PublishedCredentialsResult> {
   const supabase = createPublicSupabaseClient();
   const { data, error } = await supabase
     .from("credentials")
-    .select(
-      "id, kind, name, issuer, year_label, details, track, highlight, needs_verification, status, sort_order",
-    )
+    .select(CREDENTIAL_COLUMNS)
     .eq("status", "published")
     .eq("needs_verification", false)
     .order("sort_order", { ascending: true })
@@ -110,8 +62,70 @@ export async function getPublishedCredentials(): Promise<PublishedCredentialsRes
 
   return {
     ok: true,
-    credentials: data
-      .filter((row) => isPubliclyEligible(row.status, row.needs_verification))
-      .map(mapCredential),
+    credentials: sortEligible(data as CredentialRow[]),
   };
 }
+
+async function loadPublishedCredentialsByIds(
+  ids: string[],
+): Promise<PublishedCredentialsResult> {
+  if (ids.length === 0) {
+    return { ok: true, credentials: [] };
+  }
+
+  const supabase = createPublicSupabaseClient();
+  const { data, error } = await supabase
+    .from("credentials")
+    .select(CREDENTIAL_COLUMNS)
+    .in("id", ids)
+    .eq("status", "published")
+    .eq("needs_verification", false);
+
+  if (error || !data) {
+    return { ok: false };
+  }
+
+  const byId = new Map(
+    sortEligible(data as CredentialRow[]).map((row) => [row.id, row]),
+  );
+
+  return {
+    ok: true,
+    credentials: ids
+      .map((id) => byId.get(id))
+      .filter((row): row is PublishedCredential => Boolean(row)),
+  };
+}
+
+async function loadPublishedCredentialsPage(): Promise<PublishedCredentialsPageResult> {
+  const supabase = createPublicSupabaseClient();
+  const { data, error } = await supabase
+    .from("credentials_page")
+    .select("status, kicker, headline, lede, seo_title, seo_description")
+    .eq("singleton_key", CREDENTIALS_PAGE_SINGLETON_KEY)
+    .eq("status", "published")
+    .maybeSingle();
+
+  if (error) {
+    return { ok: false };
+  }
+
+  if (!data) {
+    return { ok: true, page: null };
+  }
+
+  return {
+    ok: true,
+    page: {
+      kicker: data.kicker,
+      headline: data.headline,
+      lede: data.lede,
+      seoTitle: data.seo_title,
+      seoDescription: data.seo_description,
+    },
+  };
+}
+
+export const getPublishedCredentials = cache(loadPublishedCredentials);
+export const getPublishedCredentialsByIds = cache(loadPublishedCredentialsByIds);
+export const getPublishedCredentialsPage = cache(loadPublishedCredentialsPage);

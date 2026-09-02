@@ -61,6 +61,12 @@ export function AdminChrome({ email, title, children }: AdminChromeProps) {
               Experience
             </Link>
             <Link
+              href="/admin/credentials"
+              className="text-sm font-medium text-ink-soft hover:text-ink"
+            >
+              Credentials
+            </Link>
+            <Link
               href="/admin/education"
               className="text-sm font-medium text-ink-soft hover:text-ink"
             >

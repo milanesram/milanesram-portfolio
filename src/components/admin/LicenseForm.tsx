@@ -6,6 +6,8 @@ import {
   saveLicenseAction,
   type MutationState,
 } from "@/app/admin/licenses/actions";
+import { CredentialEligibilityNote } from "@/components/admin/CredentialEligibilityNote";
+import { CredentialOptionalFields } from "@/components/admin/CredentialOptionalFields";
 import type { AdminLicense } from "@/lib/admin/licenses/queries";
 
 const initialState: MutationState = { error: null, message: null };
@@ -70,6 +72,13 @@ export function LicenseForm({ license }: LicenseFormProps) {
         </p>
       ) : null}
 
+      {license ? (
+        <CredentialEligibilityNote
+          status={license.status}
+          needsVerification={license.needs_verification}
+        />
+      ) : null}
+
       <label className={labelClass}>
         Name
         <input
@@ -124,6 +133,12 @@ export function LicenseForm({ license }: LicenseFormProps) {
           className={`${fieldClass} py-2`}
         />
       </label>
+
+      <CredentialOptionalFields
+        verificationUrl={license?.verification_url}
+        expiresOn={license?.expires_on}
+        pending={pending}
+      />
 
       <div className="grid gap-5 sm:grid-cols-2">
         <label className={labelClass}>

@@ -32,6 +32,12 @@ export type AdminAboutListItem = {
   sort_order: number;
 };
 
+export type AdminAboutEducationLink = {
+  id: string;
+  credential_id: string;
+  sort_order: number;
+};
+
 const ABOUT_COLUMNS =
   "id, status, kicker, headline, lede, journey_heading, education_heading, speaking_heading, speaking_body, boundaries_heading, seo_title, seo_description, updated_at";
 
@@ -63,5 +69,16 @@ export async function listAdminAboutListItems(
     .select("id, kind, body, sort_order")
     .eq("about_page_id", aboutPageId)
     .order("kind", { ascending: true })
+    .order("sort_order", { ascending: true });
+}
+
+export async function listAdminAboutEducation(
+  supabase: AdminClient,
+  aboutPageId: string,
+) {
+  return supabase
+    .from("about_education_credentials")
+    .select("id, credential_id, sort_order")
+    .eq("about_page_id", aboutPageId)
     .order("sort_order", { ascending: true });
 }

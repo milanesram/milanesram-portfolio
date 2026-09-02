@@ -7,10 +7,13 @@ import {
 } from "@/app/admin/about/actions";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import type {
+  AdminAboutEducationLink,
   AdminAboutListItem,
   AdminAboutPage,
   AdminAboutParagraph,
 } from "@/lib/admin/about/queries";
+import { credentialEligibilityLabel } from "@/lib/admin/credentials/fields";
+import type { AdminCredentialChoice } from "@/lib/admin/credentials/queries";
 
 const initialState: MutationState = { error: null, message: null };
 const fieldClass =
@@ -23,12 +26,16 @@ type AboutFormProps = {
   page?: AdminAboutPage | null;
   paragraphs: AdminAboutParagraph[];
   listItems: AdminAboutListItem[];
+  educationLinks: AdminAboutEducationLink[];
+  credentialChoices: AdminCredentialChoice[];
 };
 
 export function AboutForm({
   page,
   paragraphs,
   listItems,
+  educationLinks,
+  credentialChoices,
 }: AboutFormProps) {
   const [state, formAction, pending] = useActionState(
     saveAboutPageAction,
@@ -37,6 +44,9 @@ export function AboutForm({
   const dirtyRef = useRef(false);
   const speakingItems = listItems.filter((item) => item.kind === "speaking");
   const boundaryItems = listItems.filter((item) => item.kind === "boundary");
+  const selectedEducation = new Map(
+    educationLinks.map((link) => [link.credential_id, link.sort_order]),
+  );
 
   useEffect(() => {
     function onBeforeUnload(event: BeforeUnloadEvent) {
@@ -182,9 +192,62 @@ export function AboutForm({
             className={fieldClass}
           />
         </label>
-        <p className="text-sm text-ink-soft">
-          Education facts remain on static credentials until a later step.
-        </p>
+        <fieldset className="space-y-4">
+          <legend className="text-sm font-medium text-ink">
+            Education credentials
+          </legend>
+          <p className="text-sm text-ink-soft">
+            Ordered hosted credentials for Education at a glance. Publishing
+            About requires every selected credential to be publicly eligible.
+          </p>
+          <ul className="space-y-3">
+            {credentialChoices.map((choice, index) => {
+              const sort =
+                selectedEducation.get(choice.id) ?? (index + 1) * 10;
+              const ineligible =
+                choice.status !== "published" || choice.needs_verification;
+              return (
+                <li key={choice.id} className="rounded-lg border border-line p-3">
+                  <label className="flex items-start gap-3 text-sm text-ink">
+                    <input
+                      type="checkbox"
+                      name="education_credential_id"
+                      value={choice.id}
+                      defaultChecked={selectedEducation.has(choice.id)}
+                      disabled={pending}
+                      className="mt-1 h-4 w-4"
+                    />
+                    <span>
+                      <span className="font-medium">{choice.name}</span>
+                      <span className="mt-1 block text-ink-soft">
+                        {choice.issuer}
+                        {choice.year_label ? ` · ${choice.year_label}` : ""}
+                        {` · ${choice.kind}`}
+                        {` · ${credentialEligibilityLabel(choice)}`}
+                      </span>
+                    </span>
+                  </label>
+                  {ineligible ? (
+                    <p className="mt-2 text-xs text-ink-faint">
+                      Not publicly eligible. It can stay selected in a draft
+                      About page, but publishing will be blocked.
+                    </p>
+                  ) : null}
+                  <label className={`${labelClass} mt-3 max-w-[8rem]`}>
+                    Order
+                    <input
+                      name={`education_credential_sort_${choice.id}`}
+                      inputMode="numeric"
+                      defaultValue={sort}
+                      disabled={pending}
+                      className={fieldClass}
+                    />
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </fieldset>
         <label className={labelClass}>
           Speaking heading
           <input

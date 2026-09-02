@@ -1,3 +1,9 @@
+import type { Credential } from "@/content/types";
+import {
+  isPubliclyEligibleCredential,
+  mapTrack,
+  type CredentialRow,
+} from "@/lib/content/credential-map";
 import type { PublicJourneyMedia } from "@/lib/content/media-types";
 import type { ContentStatus, MediaKind } from "@/lib/supabase/database.types";
 
@@ -30,6 +36,7 @@ export type PublicAboutPage = {
   journeyHeading: string;
   journeyItems: PublicJourneyMilestone[];
   educationHeading: string;
+  educationCredentials: Credential[];
   speakingHeading: string;
   speakingBody: string;
   speakingItems: AboutListItem[];
@@ -69,6 +76,11 @@ export type AboutListItemRow = {
   id: string;
   kind: AboutListKind;
   body: string;
+  sort_order: number;
+};
+
+export type AboutEducationLinkRow = {
+  credential_id: string;
   sort_order: number;
 };
 
@@ -195,12 +207,43 @@ export function mapPublicJourneyMilestones(args: {
   return items;
 }
 
+export function mapAboutEducationCredentials(args: {
+  links: AboutEducationLinkRow[];
+  credentials: CredentialRow[];
+}): Credential[] {
+  const byId = new Map(args.credentials.map((row) => [row.id, row]));
+  const selected: Credential[] = [];
+
+  for (const link of sortByOrder(args.links)) {
+    const row = byId.get(link.credential_id);
+
+    if (!row || !isPubliclyEligibleCredential(row)) {
+      continue;
+    }
+
+    selected.push({
+      id: row.id,
+      kind: row.kind,
+      name: row.name,
+      issuer: row.issuer,
+      ...(row.year_label ? { yearLabel: row.year_label } : {}),
+      ...(row.details ? { details: row.details } : {}),
+      ...(row.highlight ? { highlight: true } : {}),
+      tracks: mapTrack(row.track),
+    });
+  }
+
+  return selected;
+}
+
 export function toPublicAboutPage(args: {
   row: AboutPageRow;
   paragraphs: AboutParagraphRow[];
   listItems: AboutListItemRow[];
   milestones: JourneyMilestoneRow[];
   mediaById: Map<string, PublicJourneyMedia>;
+  educationLinks?: AboutEducationLinkRow[];
+  educationCredentials?: CredentialRow[];
 }): PublicAboutPage {
   return {
     kicker: args.row.kicker,
@@ -213,6 +256,10 @@ export function toPublicAboutPage(args: {
       mediaById: args.mediaById,
     }),
     educationHeading: args.row.education_heading,
+    educationCredentials: mapAboutEducationCredentials({
+      links: args.educationLinks ?? [],
+      credentials: args.educationCredentials ?? [],
+    }),
     speakingHeading: args.row.speaking_heading,
     speakingBody: args.row.speaking_body,
     speakingItems: mapAboutListItems(args.listItems, "speaking"),

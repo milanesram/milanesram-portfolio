@@ -8,6 +8,7 @@ import {
   CERTIFICATION_KIND,
   getAdminCertification,
 } from "@/lib/admin/certifications/queries";
+import { revalidateCredentialSurfaces } from "@/lib/admin/credentials/revalidate";
 import {
   parseCertificationFormData,
   statusFromIntent,
@@ -29,6 +30,7 @@ function mapWriteError(code: string | undefined): string {
 }
 
 function revalidateAdminCertification(id?: string) {
+  revalidateCredentialSurfaces(id);
   revalidatePath("/admin/certifications");
 
   if (id) {
@@ -75,6 +77,8 @@ export async function saveCertificationAction(
     track: input.track,
     highlight: input.highlight,
     sort_order: input.sortOrder,
+    verification_url: input.verificationUrl,
+    expires_on: input.expiresOn,
     status: statusFromIntent(input.intent, currentStatus),
   };
 

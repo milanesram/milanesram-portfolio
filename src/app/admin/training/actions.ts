@@ -8,6 +8,7 @@ import {
   TRAINING_KIND,
   getAdminTraining,
 } from "@/lib/admin/training/queries";
+import { revalidateCredentialSurfaces } from "@/lib/admin/credentials/revalidate";
 import {
   parseTrainingFormData,
   statusFromIntent,
@@ -29,6 +30,7 @@ function mapWriteError(code: string | undefined): string {
 }
 
 function revalidateAdminTraining(id?: string) {
+  revalidateCredentialSurfaces(id);
   revalidatePath("/admin/training");
 
   if (id) {
@@ -75,6 +77,8 @@ export async function saveTrainingAction(
     track: input.track,
     highlight: input.highlight,
     sort_order: input.sortOrder,
+    verification_url: input.verificationUrl,
+    expires_on: input.expiresOn,
     status: statusFromIntent(input.intent, currentStatus),
   };
 

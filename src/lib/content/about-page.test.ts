@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   canPublishJourneyMilestone,
   interpretPublishedAboutPageResponse,
+  mapAboutEducationCredentials,
   mapAboutListItems,
   mapAboutParagraphs,
   mapPublicJourneyMilestones,
@@ -9,6 +10,7 @@ import {
   type AboutPageRow,
   type JourneyMilestoneRow,
 } from "./about-page";
+import type { CredentialRow } from "./credential-map";
 
 const ABOUT_ROW: AboutPageRow = {
   id: "c52c0001-0000-4000-8000-000000000001",
@@ -68,6 +70,100 @@ describe("about singleton mapping", () => {
     ]);
     expect(page.speakingItems).toEqual([{ id: "s1", body: "Academic audiences" }]);
     expect(page.boundaryItems[0]?.body).toContain("Philippines");
+    expect(page.educationCredentials).toEqual([]);
+  });
+});
+
+const MSIS: CredentialRow = {
+  id: "bda3ebf4-4601-4a34-bfe5-9bb5b595d599",
+  kind: "degree",
+  name: "Master of Science in Information Systems, Security Specialization",
+  issuer: "Northwestern University",
+  year_label: "2026",
+  details: null,
+  track: "all",
+  highlight: true,
+  needs_verification: false,
+  status: "published",
+  sort_order: 10,
+  verification_url: null,
+  expires_on: null,
+};
+
+const JD: CredentialRow = {
+  ...MSIS,
+  id: "7e8b86b6-b5cd-4824-b72c-94bb585d491e",
+  name: "Juris Doctor",
+  issuer: "San Sebastian College – Recoletos",
+  year_label: null,
+  highlight: false,
+  sort_order: 20,
+};
+
+const GOOGLE_AI: CredentialRow = {
+  ...MSIS,
+  id: "ddad349b-5faf-4f92-b12d-005ace591d4c",
+  kind: "certification",
+  name: "Google AI Professional Certificate",
+  issuer: "Google",
+  year_label: null,
+  highlight: false,
+  needs_verification: true,
+  status: "draft",
+  sort_order: 90,
+};
+
+describe("About Education UUID relationships", () => {
+  it("keeps selection after a name or issuer change", () => {
+    const selected = mapAboutEducationCredentials({
+      links: [
+        { credential_id: MSIS.id, sort_order: 10 },
+        { credential_id: JD.id, sort_order: 20 },
+      ],
+      credentials: [
+        { ...MSIS, name: "Renamed MSIS", issuer: "Renamed issuer" },
+        JD,
+      ],
+    });
+
+    expect(selected.map((item) => item.id)).toEqual([MSIS.id, JD.id]);
+    expect(selected[0]?.name).toBe("Renamed MSIS");
+    expect(selected[0]?.issuer).toBe("Renamed issuer");
+  });
+
+  it("omits an ineligible related credential without falling back to static data", () => {
+    const selected = mapAboutEducationCredentials({
+      links: [
+        { credential_id: MSIS.id, sort_order: 10 },
+        { credential_id: GOOGLE_AI.id, sort_order: 20 },
+        { credential_id: JD.id, sort_order: 30 },
+      ],
+      credentials: [MSIS, GOOGLE_AI, { ...JD, status: "draft" }],
+    });
+
+    expect(selected.map((item) => item.id)).toEqual([MSIS.id]);
+    expect(selected.some((item) => /google/i.test(item.name))).toBe(false);
+  });
+
+  it("restores a previously selected credential when eligibility returns", () => {
+    const links = [{ credential_id: MSIS.id, sort_order: 10 }];
+    const hidden = mapAboutEducationCredentials({
+      links,
+      credentials: [{ ...MSIS, status: "draft" }],
+    });
+    const restored = mapAboutEducationCredentials({
+      links,
+      credentials: [MSIS],
+    });
+
+    expect(hidden).toEqual([]);
+    expect(restored.map((item) => item.id)).toEqual([MSIS.id]);
+  });
+
+  it("does not compare credential names at runtime", () => {
+    expect(mapAboutEducationCredentials.toString()).not.toMatch(
+      /name ===|issuer ===|year_label ===/,
+    );
   });
 });
 

@@ -8,6 +8,7 @@ import {
   EDUCATION_KIND,
   getAdminEducation,
 } from "@/lib/admin/education/queries";
+import { revalidateCredentialSurfaces } from "@/lib/admin/credentials/revalidate";
 import {
   parseEducationFormData,
   statusFromIntent,
@@ -29,6 +30,7 @@ function mapWriteError(code: string | undefined): string {
 }
 
 function revalidateAdminEducation(id?: string) {
+  revalidateCredentialSurfaces(id);
   revalidatePath("/admin/education");
 
   if (id) {
@@ -75,6 +77,8 @@ export async function saveEducationAction(
     track: input.track,
     highlight: input.highlight,
     sort_order: input.sortOrder,
+    verification_url: input.verificationUrl,
+    expires_on: input.expiresOn,
     status: statusFromIntent(input.intent, currentStatus),
   };
 
