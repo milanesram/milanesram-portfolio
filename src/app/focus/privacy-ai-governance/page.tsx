@@ -5,15 +5,13 @@ import { Container } from "@/components/layout/Container";
 import { getPublishedFocusPage } from "@/lib/content/focus";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import { profileFromPublishedResult } from "@/lib/content/site-profile";
-import { createPageMetadata } from "@/lib/metadata";
+import { generateRouteMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = createPageMetadata(
-  "Privacy and AI Governance",
-  "Privacy operations, data protection, and AI governance — privacy-risk assessment, compliance, and human-reviewed Shadow AI work.",
-  "/focus/privacy-ai-governance",
-);
+export function generateMetadata() {
+  return generateRouteMetadata("focus-privacy-ai-governance");
+}
 
 export default async function PrivacyFocusPage() {
   const [result, profileResult] = await Promise.all([

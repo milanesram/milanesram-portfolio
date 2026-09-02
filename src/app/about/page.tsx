@@ -9,19 +9,12 @@ import {
   getPublishedPublicMediaAssetsByPurpose,
   selectPublishedPortrait,
 } from "@/lib/content/media";
-import { createPageMetadata } from "@/lib/metadata";
+import { generateRouteMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const result = await getPublishedAboutPage();
-  const page = result.ok ? result.page : null;
-  const title = page?.seoTitle ?? "About";
-  const description =
-    page?.seoDescription ??
-    "Privacy and governance background, an earned Northwestern MSIS (Security Specialization), and current cybersecurity, GRC, privacy, and AI-governance work.";
-
-  return createPageMetadata(title, description, "/about");
+  return generateRouteMetadata("about");
 }
 
 export default async function AboutPage() {

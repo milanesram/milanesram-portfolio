@@ -127,6 +127,7 @@ If a package is added later, it must be justified against this constraint.
 ## 9. Accessibility and SEO ownership
 
 - `SiteHeader` owns skip-target id (`#main`) and mobile focus management.
-- Each `page.tsx` exports `metadata` via `createPageMetadata`.
-- `src/app/robots.ts` and `src/app/sitemap.ts` list public routes only.
+- Each `page.tsx` exports metadata via `generateRouteMetadata` / `createPageMetadata`.
+- `src/app/robots.ts` honors `site_settings.site_indexable` and always excludes `/admin`.
+- `src/app/sitemap.ts` includes indexable public routes plus published Writing/PrivAI details.
 - `opengraph-image.tsx` provides a typographic OG image (no photograph).

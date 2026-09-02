@@ -6,15 +6,13 @@ import {
   getPublishedProjects,
   toPresentationProject,
 } from "@/lib/content/projects";
-import { createPageMetadata } from "@/lib/metadata";
+import { generateRouteMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = createPageMetadata(
-  "Projects",
-  "Selected work including PrivAI Guard, a non-production Shadow AI governance capstone, and national privacy-regulatory systems.",
-  "/projects",
-);
+export function generateMetadata() {
+  return generateRouteMetadata("projects");
+}
 
 export default async function ProjectsPage() {
   const result = await getPublishedProjects();

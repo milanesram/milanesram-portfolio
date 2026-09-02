@@ -21,8 +21,8 @@ export default async function AdminSkillsPage() {
           <h2 className="font-serif text-2xl text-ink">All skill groups</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
             Skills are stored as the <code>competencies</code> array on{" "}
-            <code>focus_pages</code>. Public Focus, Home track cards, and
-            Resume track cards read published hosted Focus records.
+            <code>focus_pages</code>. Public Focus and Home track cards read
+            published hosted Focus records. Resume tracks are a separate CMS.
           </p>
         </div>
         <Link

@@ -9,17 +9,21 @@ import {
   toPresentationProject,
   toPresentationSection,
 } from "@/lib/content/projects";
-import { createPageMetadata } from "@/lib/metadata";
+import { createPageMetadata, withPublicRobots } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
 const MICROSITE_URL = "https://priv-ai-guard-audience-microsite.vercel.app/";
 
-export const metadata = createPageMetadata(
-  "PrivAI Guard",
-  "Shadow AI privacy-risk triage capstone MVP — structured assessment, human review, remediation, and audit evidence. Non-production, synthetic data only.",
-  "/projects/privai-guard",
-);
+export async function generateMetadata() {
+  return withPublicRobots(
+    createPageMetadata(
+      "PrivAI Guard",
+      "Shadow AI privacy-risk triage capstone MVP — structured assessment, human review, remediation, and audit evidence. Non-production, synthetic data only.",
+      "/projects/privai-guard",
+    ),
+  );
+}
 
 export default async function PrivaiGuardPage() {
   const project = await getPublishedProjectBySlug("privai-guard");

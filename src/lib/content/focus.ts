@@ -23,8 +23,9 @@ import type {
  * Public Focus reads from hosted `focus_pages` and UUID relationships.
  *
  * Routes stay code-owned. Supporting evidence is selected by UUID, not
- * static arrays, slugs, or body-string matching. Home/Resume consume the
- * cached list helper. `resume_media_id` is unused until Step 52G.
+ * static arrays, slugs, or body-string matching. Home consumes the cached
+ * list helper. `resume_media_id` remains unused leftover; Resume files
+ * belong to `resume_tracks`.
  */
 
 export type {

@@ -4,15 +4,13 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
 import { experienceCopy } from "@/content";
 import { getPublishedExperiences } from "@/lib/content/experiences";
-import { createPageMetadata } from "@/lib/metadata";
+import { generateRouteMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = createPageMetadata(
-  "Experience",
-  "Cybersecurity, GRC, privacy, and technology-risk experience spanning consulting, regulatory operations, and commercial privacy-program work.",
-  "/experience",
-);
+export function generateMetadata() {
+  return generateRouteMetadata("experience");
+}
 
 export default async function ExperiencePage() {
   const result = await getPublishedExperiences();

@@ -80,7 +80,7 @@ Public / authenticated SELECT policies:
 - `credentials`: also `needs_verification = false`
 - `media_assets`: also `is_public = true`
 - `site_profile`: public SELECT when `status = 'published'`
-- `site_settings`: public-only website flags (`contact_form_enabled`, `site_indexable`); `USING (true)` is valid only while this invariant holds. Never store secrets, administrator data, or unpublished/internal settings in this table.
+- `site_settings`: public-only website flags (`contact_form_enabled`, `site_indexable`); `USING (true)` is valid only while this invariant holds. Never store secrets, administrator data, or unpublished/internal settings in this table. `site_indexable` drives `robots.ts`; do not treat a query failure as noindex.
 
 Admin policies use `USING ((SELECT public.is_admin()))` and matching `WITH CHECK`.
 

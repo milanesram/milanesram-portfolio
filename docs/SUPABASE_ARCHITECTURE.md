@@ -103,7 +103,8 @@ The approved `docs/INITIAL_DATA_MODEL.md` is leaner than a one-table-per-noun li
 | licenses | `credentials.kind = license` | Same object type |
 | leadership | `engagements` | Speaking, advisory, awards, leadership |
 | skills | `focus_pages.competencies` | Text array; no skills table |
-| resume_assets | `media_assets` (`kind = resume_pdf`, `is_public`) | |
+| resume_assets | `media_assets` (`kind = resume_pdf`) + optional `resume_tracks.media_asset_id` | Request-only in V1.0; no public files |
+| page_seo | `page_seo` | Known top-level route keys |
 | site_settings | `site_settings` | Public-only flags: contact form + indexability. Never secrets. |
 | contact_messages | `inquiries` | Admin-only table; public creation only via server RPC |
 
@@ -113,7 +114,7 @@ No table stores the comprehensive CV or private-source documents.
 
 ## 4. Tables
 
-`user_roles`, `site_profile`, `site_settings`, `focus_pages`, `experiences`, `experience_items`, `projects`, `project_sections`, `project_media`, `publications`, `credentials`, `engagements`, `media_assets`, `inquiries`, `inquiry_submission_events`
+`user_roles`, `site_profile`, `site_settings`, `focus_pages`, `experiences`, `experience_items`, `projects`, `project_sections`, `project_media`, `publications`, `credentials`, `engagements`, `media_assets`, `inquiries`, `inquiry_submission_events`, `home_page`, `about_page`, `journey_milestones`, `credentials_page`, `resume_page`, `resume_tracks`, `contact_page`, `page_seo`
 
 `inquiry_submission_events` is Data-API private: hash-only rate-limit rows, no `anon` / `authenticated` grants, FORCE RLS, and no public policies. Retention is opportunistic deletion of events older than 24 hours inside `submit_public_inquiry`.
 

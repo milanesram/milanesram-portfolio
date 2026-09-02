@@ -119,7 +119,8 @@ Supported schema fields only. There is no company URL, logo, employment type, or
 ## 6. Credentials CMS workflow
 
 1. Open **Credentials** from the dashboard (`/admin/credentials`).
-2. Edit page framing if needed: kicker, headline, lede, and Credentials-only SEO title/description. Section group labels stay in code.
+2. Edit page framing if needed: kicker, headline, and lede. Public SEO is managed under **SEO**.
+
 3. Create a credential or open an existing row.
 4. Edit official name, issuer, kind, public description, year label, career track, sort order, highlight, needs-verification, optional HTTPS verification URL, and optional expiration date.
 5. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
@@ -205,9 +206,9 @@ Do not store a license number. Philippine-law public copy must not imply U.S. ba
 8. Add, edit, reorder, or delete competencies on the same focus page. Those actions do not overwrite evidence selections.
 9. Delete a focus page from its edit page after confirmation. Relationship rows cascade with the Focus page. Core Experience, credential, project, and publication records are not deleted.
 
-Public Focus, Home track cards, and temporary Resume track cards read published hosted Focus records. Changing a Focus summary updates the Focus page and Resume cards. Changing Home card summary/chips updates Home only. Resume media is not edited here; `resume_media_id` stays reserved for a later Resume step.
+Public Focus and Home track cards read published hosted Focus records. Changing a Focus summary updates the Focus page and Home cards. Resume tracks are edited under **Resume** and no longer copy Focus copy automatically. `focus_pages.resume_media_id` is leftover unused.
 
-Saves revalidate `/focus/cybersecurity-grc`, `/focus/privacy-ai-governance`, `/`, `/resume`, and `/admin/skills`.
+Saves revalidate `/focus/cybersecurity-grc`, `/focus/privacy-ai-governance`, `/`, and `/admin/skills`.
 
 ---
 
@@ -216,7 +217,8 @@ Saves revalidate `/focus/cybersecurity-grc`, `/focus/privacy-ai-governance`, `/`
 1. Open **Settings** from the dashboard.
 2. Edit the Profile singleton (`site_profile`): display name, headline, summary, work authorization, optional location, LinkedIn URL, public email, and optional primary CTA label.
 3. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
-4. Edit Website flags (`site_settings`): contact form enabled and site indexable. Save flags. This table has no status column.
+4. Edit Website flags (`site_settings`): contact form enabled and site indexable. Save flags. This table has no status column. Site indexable now drives `robots.txt`. The contact-form flag is not enough to operate the form; server-only `CONTACT_INTAKE_ENABLED` and intake secrets are also required.
+
 5. There is no `/new` route and no Delete. Each table allows at most one row (`singleton_key = 'default'`).
 
 `public_email` is a public contact address, not the owner Auth email. `linkedin_url` must be `https:`. `site_settings` flags are anonymously readable by design and must never hold secrets. Published `site_profile` is the public authority for shared identity, headline, summary, email, and LinkedIn. Published `home_page` is the public authority for Home editorial content. Published `about_page` is the public authority for About editorial content. Work authorization may be saved blank and is not rendered when empty.
@@ -226,7 +228,7 @@ Saves revalidate `/focus/cybersecurity-grc`, `/focus/privacy-ai-governance`, `/`
 ## 12. Home CMS workflow
 
 1. Open **Home** from the dashboard (`/admin/home`).
-2. Edit the Home singleton (`home_page`): headline, lede, CTA labels/URLs, featured-project overlay, section framing, closing CTA, and Home SEO title/description.
+2. Edit the Home singleton (`home_page`): headline, lede, CTA labels/URLs, featured-project overlay, section framing, and closing CTA. Public SEO is managed under **SEO**.
 3. Reorder domain chips by label + sort order. Empty chip rows are ignored.
 4. Edit proof-strip items (label, supporting text, optional URL). Relate an item to a credential or a project, not both.
 5. Select featured Experience evidence by checking experience items. The visible label is organization, role, and bullet excerpt. Home stores the item UUID, so later bullet edits do not drop the selection.
@@ -241,7 +243,7 @@ Home track cards read hosted Focus card fields. `show_on_home` on experience ite
 ## 13. About CMS workflow
 
 1. Open **About** from the dashboard (`/admin/about`).
-2. Edit the About singleton: kicker, headline, lede, narrative paragraphs, Journey/Education/Speaking/Boundaries headings, speaking body, and About SEO title/description.
+2. Edit the About singleton: kicker, headline, lede, narrative paragraphs, Journey/Education/Speaking/Boundaries headings, and speaking body. Public SEO is managed under **SEO**.
 3. Reorder paragraphs and list items with sort order. Empty rows are ignored.
 4. **Save as draft**, **Publish**, **Unpublish**, or **Archive**. Public About renders only a published singleton.
 5. Select Education credentials by name, issuer, and year. Values are credential UUIDs. Reorder with the sort field. Duplicates are rejected. Publishing About requires every selected Education credential to be publicly eligible (published and not held). Ineligible credentials can remain selected in a draft About page and are omitted from the public page.
@@ -282,11 +284,49 @@ There is no `/new` route and no upload. `bucket_path` is owner-visible immutable
 
 There is no `/new` route. Owner CMS still cannot INSERT. Inquiry records are private administrative data and have no public content adapter.
 
-Public `/contact` stays email, LinkedIn, and a disabled placeholder unless both `site_settings.contact_form_enabled` and server-only `CONTACT_INTAKE_ENABLED=true` are set and the intake secrets exist. Submissions go to `POST /api/contact`, then a server-only RPC. The Step 35 migration is not applied hosted, so current hosted intake stays off.
+Public `/contact` copy and channel visibility are managed under **Contact**. Email and LinkedIn values remain on Site Profile. The form stays unpublished unless both `site_settings.contact_form_enabled` and server-only `CONTACT_INTAKE_ENABLED=true` are set and the intake secrets exist. Submissions go to `POST /api/contact`, then a server-only RPC.
 
 ---
 
-## 17. Draft / publish behavior
+## 17. Resume CMS workflow
+
+1. Open **Resume** from the dashboard (`/admin/resume`).
+2. Edit page kicker, headline, lede, request intro/footnote, and closing CTA copy.
+3. Add or edit tracks: title, slug, summary, optional Focus relationship, delivery mode, optional resume media, CTA label, sort order, and status.
+4. Version 1.0 tracks stay **request**. Do not upload or publish Resume A / Resume B files.
+5. `public_file` only renders a download when the media is a published, public `resume_pdf` with purpose `resume`. Ineligible files never become public because a relationship exists.
+6. Removing a track does not delete the Focus page or the media file.
+
+Saves revalidate `/resume`.
+
+---
+
+## 18. Contact CMS workflow
+
+1. Open **Contact** from the dashboard (`/admin/contact`).
+2. Edit kicker, headline, lede, email/LinkedIn labels, visibility toggles, and unpublished-form copy.
+3. Do not paste the email address or LinkedIn URL here. Those remain on Site Profile.
+4. Disabling email hides the Contact-page control; it does not clear Site Profile email.
+5. Form enablement is shown read-only from Settings. Changing it requires Settings plus server environment.
+
+Saves revalidate `/contact`.
+
+---
+
+## 19. SEO CMS workflow
+
+1. Open **SEO** from the dashboard (`/admin/seo`).
+2. Edit known top-level pages only. Admin cannot create arbitrary routes.
+3. Set title, description, optional Open Graph title/description, and page indexability.
+4. Blank OG fields fall back to the page title and description. Values are not truncated on save.
+5. Global indexability is the Settings `site_indexable` flag. Final indexing is global AND page indexable.
+6. Writing detail and Project detail metadata stay on those records.
+
+Saves revalidate the affected route, `/robots.txt`, and `/sitemap.xml`.
+
+---
+
+## 20. Draft / publish behavior
 
 | Status | Admin | Public adapter | Current public pages |
 |---|---|---|---|
@@ -298,7 +338,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 18. Project sections
+## 21. Project sections
 
 - Heading, body, track, status, and sort order
 - Move up / move down (only among sections of that project)
@@ -307,7 +347,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 19. Experience items
+## 22. Experience items
 
 - Body, track, status, sort order, `is_metric`, `metric_context`, and `show_on_home`
 - Move up / move down (only among items of that experience)
@@ -317,7 +357,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 20. Focus-page competencies
+## 23. Focus-page competencies
 
 - Plain text values on `focus_pages.competencies`
 - Move up / move down (only within that page’s array)
@@ -327,13 +367,13 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 21. Logout
+## 24. Logout
 
 Use **Log out**. The session cookies are cleared and the browser returns to `/admin/login`.
 
 ---
 
-## 22. Troubleshooting authentication
+## 25. Troubleshooting authentication
 
 1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Public intake also requires server-only `CONTACT_INTAKE_ENABLED`, `CONTACT_RATE_LIMIT_SECRET`, and `SUPABASE_SERVICE_ROLE_KEY` (never commit values).
 2. The hosted project has `public.is_admin()` and the owner `user_roles` row.
@@ -342,7 +382,7 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ---
 
-## 23. Proposed content script
+## 26. Proposed content script
 
 `supabase/content/privai_guard_project.sql` inserts the approved public PrivAI Guard project and seven sections if they are absent.
 
@@ -350,6 +390,6 @@ It is not a schema migration and is not run by `supabase db push`, `supabase sta
 
 ---
 
-## 24. Still out of scope
+## 27. Still out of scope
 
 Publications, Storage upload, resume uploads, CAPTCHA, email notifications, registration, password reset, role management, public project/experience/education/certification/training/license/skills/settings/media cutover, real employment, education-history, certification, training, license, skills, site-profile, media, or inquiry load, hosted intake activation, and deploy.

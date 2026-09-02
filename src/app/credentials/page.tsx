@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { CredentialCard } from "@/components/ui/CredentialCard";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
@@ -7,21 +6,12 @@ import {
   getPublishedCredentialsPage,
   toPresentationCredential,
 } from "@/lib/content/credentials";
-import { createPageMetadata } from "@/lib/metadata";
+import { generateRouteMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
-const FALLBACK_TITLE = "Credentials";
-const FALLBACK_DESCRIPTION =
-  "Education, certifications, specialized training, and Philippine legal licensure.";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const result = await getPublishedCredentialsPage();
-  const page = result.ok ? result.page : null;
-  const title = page?.seoTitle ?? FALLBACK_TITLE;
-  const description = page?.seoDescription ?? FALLBACK_DESCRIPTION;
-
-  return createPageMetadata(title, description, "/credentials");
+export function generateMetadata() {
+  return generateRouteMetadata("credentials");
 }
 
 const groups = [
@@ -41,8 +31,8 @@ export default async function CredentialsPage() {
     return (
       <>
         <PageHero
-          kicker={FALLBACK_TITLE}
-          title={FALLBACK_TITLE}
+          kicker="Credentials"
+          title="Credentials"
           lede="Credentials are temporarily unavailable."
         />
         <Container className="py-16">
@@ -58,8 +48,8 @@ export default async function CredentialsPage() {
     return (
       <>
         <PageHero
-          kicker={FALLBACK_TITLE}
-          title={FALLBACK_TITLE}
+          kicker="Credentials"
+          title="Credentials"
           lede="This page is not published."
         />
         <Container className="py-16">

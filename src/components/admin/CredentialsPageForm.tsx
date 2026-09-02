@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
+import Link from "next/link";
 import {
   saveCredentialsPageAction,
   type MutationState,
@@ -108,27 +109,19 @@ export function CredentialsPageForm({
           className={fieldClass}
         />
       </label>
-      <label className={labelClass}>
-        SEO title
-        <input
-          name="seo_title"
-          required
-          defaultValue={page?.seo_title}
-          disabled={pending}
-          className={fieldClass}
-        />
-      </label>
-      <label className={labelClass}>
-        SEO description
-        <textarea
-          name="seo_description"
-          required
-          rows={3}
-          defaultValue={page?.seo_description}
-          disabled={pending}
-          className={fieldClass}
-        />
-      </label>
+      <p className="text-sm leading-6 text-ink-soft">
+        Public title and description are managed in{" "}
+        <Link href="/admin/seo" className="text-accent hover:underline">
+          SEO
+        </Link>
+        . Leftover Credentials SEO columns are no longer public.
+      </p>
+      <input type="hidden" name="seo_title" value={page?.seo_title ?? ""} />
+      <input
+        type="hidden"
+        name="seo_description"
+        value={page?.seo_description ?? ""}
+      />
 
       <div className="flex flex-wrap gap-3 pt-2">
         <button

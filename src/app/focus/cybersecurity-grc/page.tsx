@@ -5,15 +5,13 @@ import { Container } from "@/components/layout/Container";
 import { getPublishedFocusPage } from "@/lib/content/focus";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import { profileFromPublishedResult } from "@/lib/content/site-profile";
-import { createPageMetadata } from "@/lib/metadata";
+import { generateRouteMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = createPageMetadata(
-  "Cybersecurity, GRC, and IT Risk",
-  "Cybersecurity governance, GRC, and IT risk — controls, audit readiness, security governance, and risk remediation.",
-  "/focus/cybersecurity-grc",
-);
+export function generateMetadata() {
+  return generateRouteMetadata("focus-cybersecurity-grc");
+}
 
 export default async function CyberFocusPage() {
   const [result, profileResult] = await Promise.all([

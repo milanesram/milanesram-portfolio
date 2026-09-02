@@ -4,7 +4,7 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
 import { WritingDetail } from "@/components/writing/WritingDetail";
 import { getPublishedPublicationBySlug } from "@/lib/content/publications";
-import { createPageMetadata } from "@/lib/metadata";
+import { createPageMetadata, withPublicRobots } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -19,10 +19,12 @@ export async function generateMetadata({
   const result = await getPublishedPublicationBySlug(slug);
 
   if (!result.ok) {
-    return createPageMetadata(
-      "Writing",
-      "Selected writing is temporarily unavailable.",
-      "/writing",
+    return withPublicRobots(
+      createPageMetadata(
+        "Writing",
+        "Selected writing is temporarily unavailable.",
+        "/writing",
+      ),
     );
   }
 
@@ -30,10 +32,12 @@ export async function generateMetadata({
     notFound();
   }
 
-  return createPageMetadata(
-    result.publication.title,
-    result.publication.abstract,
-    `/writing/${result.publication.slug}`,
+  return withPublicRobots(
+    createPageMetadata(
+      result.publication.title,
+      result.publication.abstract,
+      `/writing/${result.publication.slug}`,
+    ),
   );
 }
 

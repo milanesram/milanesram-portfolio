@@ -22,37 +22,12 @@ import {
   getPublishedPublicMediaAssetsByPurpose,
   selectPublishedPortrait,
 } from "@/lib/content/media";
-import { createPageMetadata } from "@/lib/metadata";
+import { generateRouteMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const result = await getPublishedHomePage();
-  const page = result.ok ? result.page : null;
-  const title = page?.seoTitle ?? "Portfolio";
-  const description =
-    page?.seoDescription ??
-    "Cybersecurity governance, GRC, technology risk, privacy, and AI governance.";
-  const metadata = createPageMetadata(
-    "Cybersecurity, GRC, IT Risk & Privacy",
-    description,
-    "",
-  );
-
-  return {
-    ...metadata,
-    title: { absolute: title },
-    openGraph: {
-      ...metadata.openGraph,
-      title,
-      description,
-    },
-    twitter: {
-      ...metadata.twitter,
-      title,
-      description,
-    },
-  };
+  return generateRouteMetadata("home");
 }
 
 export default async function HomePage() {

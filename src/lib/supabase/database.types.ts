@@ -35,6 +35,18 @@ export type MediaPurpose =
   | "publication"
   | "resume";
 export type ProjectMediaDisplayRole = "hero" | "workflow" | "gallery";
+export type ResumeDeliveryMode = "request" | "public_file";
+export type PageSeoKey =
+  | "home"
+  | "about"
+  | "focus-cybersecurity-grc"
+  | "focus-privacy-ai-governance"
+  | "experience"
+  | "projects"
+  | "writing"
+  | "credentials"
+  | "resume"
+  | "contact";
 export type DocumentKind =
   | "publication"
   | "white_paper"
@@ -933,6 +945,127 @@ export type Database = {
         >;
         Relationships: [];
       };
+      resume_page: {
+        Row: Row & {
+          id: string;
+          singleton_key: "default";
+          status: ContentStatus;
+          kicker: string;
+          headline: string;
+          lede: string;
+          request_intro: string;
+          request_footnote: string;
+          closing_heading: string;
+          closing_lede: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["resume_page"]["Row"]> & {
+          kicker: string;
+          headline: string;
+          lede: string;
+          request_intro: string;
+          request_footnote: string;
+          closing_heading: string;
+          closing_lede: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["resume_page"]["Insert"]>;
+        Relationships: [];
+      };
+      resume_tracks: {
+        Row: Row & {
+          id: string;
+          slug: string;
+          focus_page_id: string | null;
+          title: string;
+          summary: string;
+          delivery_mode: ResumeDeliveryMode;
+          media_asset_id: string | null;
+          request_cta_label: string;
+          sort_order: number;
+          status: ContentStatus;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          focus_page_id?: string | null;
+          title: string;
+          summary: string;
+          delivery_mode?: ResumeDeliveryMode;
+          media_asset_id?: string | null;
+          request_cta_label: string;
+          sort_order?: number;
+          status?: ContentStatus;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["resume_tracks"]["Insert"]>;
+        Relationships: [
+          {
+            foreignKeyName: "resume_tracks_focus_page_id_fkey";
+            columns: ["focus_page_id"];
+            isOneToOne: false;
+            referencedRelation: "focus_pages";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "resume_tracks_media_asset_id_fkey";
+            columns: ["media_asset_id"];
+            isOneToOne: false;
+            referencedRelation: "media_assets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      contact_page: {
+        Row: Row & {
+          id: string;
+          singleton_key: "default";
+          status: ContentStatus;
+          kicker: string;
+          headline: string;
+          lede: string;
+          email_enabled: boolean;
+          linkedin_enabled: boolean;
+          email_label: string;
+          linkedin_label: string;
+          form_intro: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["contact_page"]["Row"]> & {
+          kicker: string;
+          headline: string;
+          lede: string;
+          email_label: string;
+          linkedin_label: string;
+          form_intro: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["contact_page"]["Insert"]>;
+        Relationships: [];
+      };
+      page_seo: {
+        Row: Row & {
+          id: string;
+          page_key: PageSeoKey;
+          title: string;
+          description: string;
+          og_title: string | null;
+          og_description: string | null;
+          indexable: boolean;
+          status: ContentStatus;
+        };
+        Insert: {
+          id?: string;
+          page_key: PageSeoKey;
+          title: string;
+          description: string;
+          og_title?: string | null;
+          og_description?: string | null;
+          indexable?: boolean;
+          status?: ContentStatus;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["page_seo"]["Insert"]>;
+        Relationships: [];
+      };
       engagements: {
         Row: Row & {
           id: string;
@@ -1078,6 +1211,7 @@ export type Database = {
       media_kind: MediaKind;
       media_purpose: MediaPurpose;
       project_media_display_role: ProjectMediaDisplayRole;
+      resume_delivery_mode: ResumeDeliveryMode;
       document_kind: DocumentKind;
       publication_rights_status: PublicationRightsStatus;
       admin_role: AdminRole;

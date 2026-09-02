@@ -177,6 +177,10 @@ export async function saveSiteSettingsAction(
     }
 
     revalidateAdminSettings();
+    revalidatePath("/robots.txt");
+    revalidatePath("/sitemap.xml");
+    revalidatePath("/contact");
+    revalidatePath("/admin/contact");
     return { error: null, message: "Saved." };
   }
 
@@ -191,5 +195,9 @@ export async function saveSiteSettingsAction(
   }
 
   revalidateAdminSettings();
+  revalidatePath("/robots.txt");
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/contact");
+  revalidatePath("/admin/contact");
   return { error: null, message: "Saved." };
 }

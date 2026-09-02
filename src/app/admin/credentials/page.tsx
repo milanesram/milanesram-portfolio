@@ -35,8 +35,8 @@ export default async function AdminCredentialsPage() {
         <div>
           <h2 className="font-serif text-2xl text-ink">Credentials page</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
-            Page headline, lede, and Credentials-only metadata. Section group
-            labels stay in code. Sitewide SEO remains a later step.
+            Page headline and lede. Section group labels stay in code. Public
+            SEO is managed under SEO.
           </p>
         </div>
         {pageResult.error ? (

@@ -1,12 +1,21 @@
 import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/site-url";
+import {
+  buildRobotsRules,
+} from "@/lib/content/page-seo";
+import { getPublicSiteIndexability } from "@/lib/content/seo";
 
-export default function robots(): MetadataRoute.Robots {
+export const dynamic = "force-dynamic";
+
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const indexable = await getPublicSiteIndexability();
+  const rules = buildRobotsRules(indexable);
+
   return {
     rules: {
       userAgent: "*",
-      allow: "/",
-      disallow: ["/private-source/", "/admin", "/admin/"],
+      ...(rules.allow ? { allow: rules.allow } : {}),
+      disallow: rules.disallow,
     },
     sitemap: `${getSiteUrl()}/sitemap.xml`,
   };
