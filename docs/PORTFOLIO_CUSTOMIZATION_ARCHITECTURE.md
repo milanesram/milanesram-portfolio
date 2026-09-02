@@ -76,7 +76,7 @@ Mutable public content by surface (chrome shared by all routes: header `navPrima
 | Route | Mutable content | Current public source |
 |---|---|---|
 | `/` | Hero, chips, CTAs, proof strip, flagship copy, track cards, selected experience bullets, selected credentials, closing CTA, metadata, portrait | Hosted `home_page` + UUID relationships; track cards still static `homeTracks` until 52D; hosted `site_profile` for shared identity/contact; hosted portrait |
-| `/about` | H1, lede, narrative, education glance, speaking, boundaries, metadata, portrait, journey images/captions | Static `aboutCopy` / `publicCredentials` / `speakingCategories`; hosted media |
+| `/about` | H1, lede, narrative, education glance, speaking, boundaries, metadata, portrait, Journey milestones | Hosted `about_page` + `journey_milestones`; education glance still static `publicCredentials` until 52F; hosted portrait |
 | `/focus/cybersecurity-grc` | Headline, summary, competencies, featured project, experience, credentials, selected writing, CTAs, metadata | Hosted `focus_pages` + publication; static FocusView evidence (`featuredProject`, `experiencesForTrack`, `publicCredentials`, `selectedWritingSlug`) |
 | `/focus/privacy-ai-governance` | Same pattern | Same |
 | `/experience` | Page chrome; role list including Scionetrade | Static `experienceCopy`; hybrid hosted experiences + static Scionetrade |
@@ -115,12 +115,13 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Home | Portrait | Hosted `media_assets` purpose=portrait | None | Hosted | Hosted | KEEP HOSTED |
 | Home | Metadata | `home_page.seo_title` / `seo_description` | Sitewide SEO still code | Hosted Home-only | Page SEO record in 52G | KEEP HOSTED (Home only) |
 | Home | Closing CTA | Hosted `home_page` closing fields | Email/LinkedIn from profile | Hosted | Page/CTA copy records | KEEP HOSTED |
-| About | H1, lede, paragraphs, speaking, boundaries | `aboutCopy` | None | Static | Hosted about document | CUT OVER TO HOSTED |
-| About | Education glance | Static `publicCredentials` degrees | Hosted credentials | Static duplicate | Hosted credentials | RETIRE STATIC MIRROR |
-| About | Speaking categories | `speakingCategories` | Empty `engagements` table | Static | Hosted engagements or about fields | CUT OVER TO HOSTED |
-| About | Journey images/captions/years | Hosted `media_assets` purpose=journey | Crop map in `AboutJourney` | Hybrid (media-as-milestone) | Milestone records → media FK | HOSTED RELATIONSHIP |
+| About | H1, lede, paragraphs, speaking, boundaries | Hosted `about_page` | Static `aboutCopy` retired | Hosted | Hosted about document | KEEP HOSTED |
+| About | Education glance | Static `publicCredentials` degrees | Hosted credentials | Static temporary | Hosted credentials | TEMPORARY — 52F |
+| About | Speaking categories | Hosted `about_page_list_items` | Empty `engagements` table | Hosted | Hosted About list items | KEEP HOSTED |
+| About | Journey captions/years/order | Hosted `journey_milestones` | Media caption/year leftover | Hosted milestones | Milestone records → media FK | KEEP HOSTED |
+| About | Journey images | `journey_milestones.media_asset_id` | Media binaries/alt/path | Hosted UUID | Media remains file authority | KEEP HOSTED |
 | About | Portrait | Hosted media | Same as Home | Hosted | Hosted | KEEP HOSTED |
-| About | Metadata | `about/page.tsx` | None | Static | SEO record | CUT OVER TO HOSTED |
+| About | Metadata | `about_page.seo_title` / `seo_description` | Sitewide SEO still code | Hosted About-only | Page SEO record in 52G | KEEP HOSTED (About only) |
 | Focus | slug, headline, summary, competencies, status | Hosted `focus_pages` | Static `focusPages` | Dual (public reads hosted; Resume/footer read static) | Hosted | KEEP HOSTED; RETIRE STATIC MIRROR |
 | Focus | selected writing | `focusPages[].selectedWritingSlug` | None on hosted row | Static | `focus_pages.selected_publication_id` (or junction) | HOSTED RELATIONSHIP |
 | Focus | featured project | Static `featuredProject` | Hosted projects | Static | Focus→project relationship | HOSTED RELATIONSHIP |
@@ -220,32 +221,19 @@ Work authorization remains hosted blank and unrendered. Admin can save a blank v
 
 ---
 
-## 8. About and Journey
+## 8. About and Journey (completed in 52C)
 
-About narrative, speaking, and boundaries are static and must become hosted so they can evolve without source edits.
+**Authoritative store:** published `about_page` singleton `c52c0001-0000-4000-8000-000000000001`, plus `about_page_paragraphs` and `about_page_list_items`. Journey events live in `journey_milestones` with optional `media_asset_id`.
 
-Layout, portrait frame, and Journey **crop classes** stay in code.
+**Public path:** `getPublishedAboutPage()` in `src/lib/content/about.ts`. Failure is `{ ok: false }`; missing/unpublished is `{ ok: true, page: null }`. Draft milestones, including Northwestern graduation, are omitted.
 
-### Journey today
+**Journey:** five published milestones keep the current captions, years, order, and media UUIDs. GPA year is 2025. ANU year is null. Crop classes stay in code keyed by media UUID (`src/lib/content/journey-crop.ts`). Media caption/year on `media_assets` are leftover compatibility fields, not public Journey authority.
 
-Hybrid: published `media_assets` with `purpose = journey` (5 images). Captions/years live on the media row. There is no milestone entity. ANU image has caption but `year_label` null. Ordering is media query order.
+**Graduation:** draft milestone `c52c0001-0000-4000-8000-000000000046`, year 2026, `media_asset_id` null. Admin can attach approved media later and then explicitly publish. No placeholder image.
 
-This is **media-as-milestone**, not a career-milestone model.
+**Temporary:** About Education glance still reads static `publicCredentials` degrees until Step 52F.
 
-### Future Journey model (do not implement yet)
-
-| Field | Required |
-|---|---|
-| milestone ID | UUID |
-| title | yes |
-| year/date | optional (display label) |
-| description/caption | yes |
-| media_asset_id | optional FK |
-| sort_order | yes |
-| status | draft / published |
-| category/type | optional (speaking, education, convening, etc.) |
-
-Milestones can exist without media. Public Journey renders published milestones; missing media omits the figure, not the whole section.
+**Admin:** `/admin/about` and `/admin/journey`. Saves revalidate `/about`, `/admin/about`, and `/admin/journey`.
 
 Crop map remains code keyed by media UUID.
 
@@ -445,10 +433,10 @@ Anonymous reads: published (+ credentials not needing verification, media `is_pu
 
 | Export | Classification |
 |---|---|
-| `aboutCopy` | MOVE |
+| `aboutCopy` | RETIRED — hosted `about_page` is public authority |
 | `experienceCopy` | MOVE |
 | `projectsCopy` | MOVE |
-| `speakingCategories` | MOVE |
+| `speakingCategories` | RETIRED — hosted `about_page_list_items` |
 
 ### `src/content/experiences.ts`
 
@@ -610,8 +598,8 @@ Do not start these in 51F.
 2. **52B — Home relationships + copy (complete)**
    Hosted `home_page` is public Home authority. Experience and credential selections use UUIDs. Exact-string matching is retired. Ready for 52C.
 
-3. **52C — About + Journey milestones**  
-   Host About document. Introduce `journey_milestones`. Do **not** publish Northwestern graduation without approved media.
+3. **52C — About + Journey milestones (complete)**
+   Hosted `about_page` is public About authority. `journey_milestones` own captions/years/order. Graduation remains draft without media. Ready for 52D.
 
 4. **52D — Focus evidence relationships**  
    Attach writing/project/experience/credentials by ID. Point Resume/footer at hosted Focus. Retire `focusPages` public use.
@@ -648,4 +636,10 @@ Site Profile public cutover is complete. Public chrome, Contact, Resume request 
 
 ## 27. Step 52B completion
 
-Home CMS cutover is complete. Mutable Home editorial content and featured evidence live in `home_page` and UUID relationship tables. Exact-string Experience matching is gone. `show_on_home` is unused leftover. Focus/Resume track cards remain a documented 52D dependency. Next: Step 52C — About content + Journey milestone model.
+Home CMS cutover is complete. Mutable Home editorial content and featured evidence live in `home_page` and UUID relationship tables. Exact-string Experience matching is gone. `show_on_home` is unused leftover. Focus/Resume track cards remain a documented 52D dependency.
+
+---
+
+## 28. Step 52C completion
+
+About CMS cutover is complete. Mutable About editorial content lives in `about_page`. Professional Journey is a dedicated milestone entity linked to media by UUID. The five current Journey entries are unchanged publicly. Northwestern graduation exists as a 2026 draft with no media. About Education credentials remain a documented 52F dependency. Next: Step 52D — Focus evidence relationships + static Focus retirement.

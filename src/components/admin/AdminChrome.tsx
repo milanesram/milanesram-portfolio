@@ -37,6 +37,18 @@ export function AdminChrome({ email, title, children }: AdminChromeProps) {
               Home
             </Link>
             <Link
+              href="/admin/about"
+              className="text-sm font-medium text-ink-soft hover:text-ink"
+            >
+              About
+            </Link>
+            <Link
+              href="/admin/journey"
+              className="text-sm font-medium text-ink-soft hover:text-ink"
+            >
+              Journey
+            </Link>
+            <Link
               href="/admin/projects"
               className="text-sm font-medium text-ink-soft hover:text-ink"
             >

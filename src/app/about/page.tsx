@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import { CallToAction } from "@/components/ui/CallToAction";
 import { PageHero } from "@/components/ui/PageHero";
 import { AboutJourney } from "@/components/about/AboutJourney";
 import { AboutPortrait } from "@/components/about/AboutPortrait";
 import { Container } from "@/components/layout/Container";
-import { aboutCopy, publicCredentials, speakingCategories } from "@/content";
+import { publicCredentials } from "@/content";
+import { getPublishedAboutPage } from "@/lib/content/about";
 import {
   getPublishedPublicMediaAssetsByPurpose,
   selectPublishedPortrait,
@@ -12,27 +14,67 @@ import { createPageMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = createPageMetadata(
-  "About",
-  "Privacy and governance background, an earned Northwestern MSIS (Security Specialization), and current cybersecurity, GRC, privacy, and AI-governance work.",
-  "/about",
-);
+export async function generateMetadata(): Promise<Metadata> {
+  const result = await getPublishedAboutPage();
+  const page = result.ok ? result.page : null;
+  const title = page?.seoTitle ?? "About";
+  const description =
+    page?.seoDescription ??
+    "Privacy and governance background, an earned Northwestern MSIS (Security Specialization), and current cybersecurity, GRC, privacy, and AI-governance work.";
+
+  return createPageMetadata(title, description, "/about");
+}
 
 export default async function AboutPage() {
-  const [portraitResult, journeyResult] = await Promise.all([
+  const [aboutResult, portraitResult] = await Promise.all([
+    getPublishedAboutPage(),
     getPublishedPublicMediaAssetsByPurpose("portrait"),
-    getPublishedPublicMediaAssetsByPurpose("journey"),
   ]);
 
   const portrait = selectPublishedPortrait(portraitResult);
-  const journeyItems = journeyResult.ok ? journeyResult.assets : [];
+
+  if (!aboutResult.ok) {
+    return (
+      <>
+        <PageHero
+          kicker="About"
+          title="About"
+          lede="This page is temporarily unavailable."
+        />
+        <Container className="py-16">
+          <p className="text-base leading-7 text-ink-soft">
+            About content is temporarily unavailable.
+          </p>
+        </Container>
+      </>
+    );
+  }
+
+  if (!aboutResult.page) {
+    return (
+      <>
+        <PageHero
+          kicker="About"
+          title="About"
+          lede="This page is not published."
+        />
+        <Container className="py-16">
+          <p className="text-base leading-7 text-ink-soft">
+            About content is not published.
+          </p>
+        </Container>
+      </>
+    );
+  }
+
+  const about = aboutResult.page;
 
   return (
     <>
       <PageHero
-        kicker={aboutCopy.kicker}
-        title={aboutCopy.title}
-        lede={aboutCopy.lede}
+        kicker={about.kicker}
+        title={about.headline}
+        lede={about.lede}
       />
       <Container narrow className="py-16">
         {portrait ? (
@@ -42,15 +84,17 @@ export default async function AboutPage() {
         ) : null}
 
         <div className="space-y-5 text-lg leading-8 text-ink-soft">
-          {aboutCopy.paragraphs.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+          {about.paragraphs.map((paragraph) => (
+            <p key={paragraph.id}>{paragraph.body}</p>
           ))}
         </div>
 
-        {journeyItems.length > 0 ? <AboutJourney items={journeyItems} /> : null}
+        {about.journeyItems.length > 0 ? (
+          <AboutJourney heading={about.journeyHeading} items={about.journeyItems} />
+        ) : null}
 
         <h2 className="mt-14 font-serif text-2xl font-medium text-ink">
-          Education at a glance
+          {about.educationHeading}
         </h2>
         <ul className="mt-4 space-y-2 text-ink-soft">
           {publicCredentials
@@ -64,21 +108,21 @@ export default async function AboutPage() {
         </ul>
 
         <h2 className="mt-14 font-serif text-2xl font-medium text-ink">
-          Speaking and advisory
+          {about.speakingHeading}
         </h2>
-        <p className="mt-4 leading-7 text-ink-soft">{aboutCopy.speaking}</p>
+        <p className="mt-4 leading-7 text-ink-soft">{about.speakingBody}</p>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-ink-soft">
-          {speakingCategories.map((item) => (
-            <li key={item}>{item}</li>
+          {about.speakingItems.map((item) => (
+            <li key={item.id}>{item.body}</li>
           ))}
         </ul>
 
         <h2 className="mt-14 font-serif text-2xl font-medium text-ink">
-          {aboutCopy.boundaryHeading}
+          {about.boundariesHeading}
         </h2>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-ink-soft">
-          {aboutCopy.nonClaims.map((item) => (
-            <li key={item}>{item}</li>
+          {about.boundaryItems.map((item) => (
+            <li key={item.id}>{item.body}</li>
           ))}
         </ul>
 

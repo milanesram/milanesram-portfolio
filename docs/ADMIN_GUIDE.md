@@ -36,6 +36,10 @@ This guide does not include passwords, user IDs, tokens, or other private identi
 | `/admin/skills/new` | Create a focus page (empty competencies) |
 | `/admin/skills/[id]` | Edit a focus page and its competencies |
 | `/admin/home` | Edit the Home singleton, chips, proof strip, and featured evidence |
+| `/admin/about` | Edit the About singleton, narrative paragraphs, and section framing |
+| `/admin/journey` | List Professional Journey milestones |
+| `/admin/journey/new` | Create a Journey milestone |
+| `/admin/journey/[id]` | Edit a Journey milestone and attach media |
 | `/admin/settings` | Edit the `site_profile` and `site_settings` singletons |
 | `/admin/media` | List existing media metadata |
 | `/admin/media/[id]` | Edit existing media metadata |
@@ -174,7 +178,7 @@ Saving the focus page does not overwrite competencies. Skill add, edit, reorder,
 4. Edit Website flags (`site_settings`): contact form enabled and site indexable. Save flags. This table has no status column.
 5. There is no `/new` route and no Delete. Each table allows at most one row (`singleton_key = 'default'`).
 
-`public_email` is a public contact address, not the owner Auth email. `linkedin_url` must be `https:`. `site_settings` flags are anonymously readable by design and must never hold secrets. Published `site_profile` is the public authority for shared identity, headline, summary, email, and LinkedIn. Published `home_page` is the public authority for Home editorial content. About editorial copy remains in `src/content/` until a later cutover. Work authorization may be saved blank and is not rendered when empty.
+`public_email` is a public contact address, not the owner Auth email. `linkedin_url` must be `https:`. `site_settings` flags are anonymously readable by design and must never hold secrets. Published `site_profile` is the public authority for shared identity, headline, summary, email, and LinkedIn. Published `home_page` is the public authority for Home editorial content. Published `about_page` is the public authority for About editorial content. Work authorization may be saved blank and is not rendered when empty.
 
 ---
 
@@ -193,7 +197,28 @@ Focus/Resume track cards on Home remain code until a later Focus step. `show_on_
 
 ---
 
-## 13. Media CMS workflow
+## 13. About CMS workflow
+
+1. Open **About** from the dashboard (`/admin/about`).
+2. Edit the About singleton: kicker, headline, lede, narrative paragraphs, Journey/Education/Speaking/Boundaries headings, speaking body, and About SEO title/description.
+3. Reorder paragraphs and list items with sort order. Empty rows are ignored.
+4. **Save as draft**, **Publish**, **Unpublish**, or **Archive**. Public About renders only a published singleton.
+5. Education degree facts remain static until a later Credentials step. Do not invent a second credential list here.
+
+---
+
+## 14. Journey CMS workflow
+
+1. Open **Journey** from the dashboard (`/admin/journey`).
+2. Each row is a professional milestone: title, year, caption, optional media, sort order, and status.
+3. Caption and year live on the milestone. Media is an optional presentation file selected by title.
+4. Drafts may have no media. Publishing without an approved public image is blocked.
+5. The Northwestern MSIS Graduation row is a **2026 draft with no media**. Do not publish it until an approved graduation photo is attached through Media, then explicitly publish the milestone.
+6. Do not invent or reuse an unrelated image for graduation.
+
+---
+
+## 15. Media CMS workflow
 
 1. Open **Media** from the dashboard.
 2. Inspect existing `media_assets` metadata: title, alt text, kind, public flag, and status.
@@ -205,7 +230,7 @@ There is no `/new` route and no upload. `bucket_path` is owner-visible immutable
 
 ---
 
-## 14. Inquiries CMS workflow
+## 16. Inquiries CMS workflow
 
 1. Open **Inquiries** from the dashboard.
 2. Review owner-only `inquiries` rows: received time, sender name/email, context, track, and a short message preview.
@@ -219,7 +244,7 @@ Public `/contact` stays email, LinkedIn, and a disabled placeholder unless both 
 
 ---
 
-## 15. Draft / publish behavior
+## 17. Draft / publish behavior
 
 | Status | Admin | Public adapter | Current public pages |
 |---|---|---|---|
@@ -231,7 +256,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 16. Project sections
+## 18. Project sections
 
 - Heading, body, track, status, and sort order
 - Move up / move down (only among sections of that project)
@@ -240,7 +265,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 17. Experience items
+## 19. Experience items
 
 - Body, track, status, sort order, `is_metric`, `metric_context`, and `show_on_home`
 - Move up / move down (only among items of that experience)
@@ -250,7 +275,7 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 18. Focus-page competencies
+## 20. Focus-page competencies
 
 - Plain text values on `focus_pages.competencies`
 - Move up / move down (only within that page’s array)
@@ -260,13 +285,13 @@ Public pages are **not** switched to Supabase in this step. After reviewed proje
 
 ---
 
-## 19. Logout
+## 21. Logout
 
 Use **Log out**. The session cookies are cleared and the browser returns to `/admin/login`.
 
 ---
 
-## 20. Troubleshooting authentication
+## 22. Troubleshooting authentication
 
 1. `.env.local` defines `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Public intake also requires server-only `CONTACT_INTAKE_ENABLED`, `CONTACT_RATE_LIMIT_SECRET`, and `SUPABASE_SERVICE_ROLE_KEY` (never commit values).
 2. The hosted project has `public.is_admin()` and the owner `user_roles` row.
@@ -275,7 +300,7 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ---
 
-## 21. Proposed content script
+## 23. Proposed content script
 
 `supabase/content/privai_guard_project.sql` inserts the approved public PrivAI Guard project and seven sections if they are absent.
 
@@ -283,6 +308,6 @@ It is not a schema migration and is not run by `supabase db push`, `supabase sta
 
 ---
 
-## 22. Still out of scope
+## 24. Still out of scope
 
 Publications, Storage upload, resume uploads, CAPTCHA, email notifications, registration, password reset, role management, public project/experience/education/certification/training/license/skills/settings/media cutover, real employment, education-history, certification, training, license, skills, site-profile, media, or inquiry load, hosted intake activation, and deploy.

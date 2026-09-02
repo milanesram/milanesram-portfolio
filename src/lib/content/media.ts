@@ -2,6 +2,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { PUBLIC_MEDIA_BUCKET } from "@/lib/content/media-bucket";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
+import type { PublicJourneyMedia } from "@/lib/content/media-types";
 import type {
   ContentStatus,
   Database,
@@ -9,13 +10,16 @@ import type {
   MediaPurpose,
 } from "@/lib/supabase/database.types";
 
+export type { PublicJourneyMedia };
+
 /**
  * Public media-metadata reads from Supabase.
  *
  * Home and About may use `getPublishedPublicMediaAssetsByPurpose` for
- * `portrait` and `journey` images. Writing still resolves publication
- * PDFs through `getPublishedPublicMediaAssetById`. Do not import this
- * from Projects, Resume, or Focus for image purposes.
+ * `portrait` images. About Journey attaches images through milestone
+ * UUID relationships. Writing still resolves publication PDFs through
+ * `getPublishedPublicMediaAssetById`. Do not import this from Projects,
+ * Resume, or Focus for image purposes.
  *
  * Uses the anonymous publishable client. RLS remains the publication
  * boundary (published AND is_public). Does not read cookies, attach an
@@ -63,6 +67,17 @@ export type PublicImageMedia = {
 export type PublishedPublicMediaByPurposeResult =
   | { ok: true; assets: PublicImageMedia[] }
   | { ok: false };
+
+export type EligiblePublicImageRow = {
+  id: string;
+  kind: MediaKind;
+  alt_text: string | null;
+  credit: string | null;
+  mime_type: string | null;
+  bucket_path: string;
+  status: ContentStatus;
+  is_public: boolean;
+};
 
 const SUPPORTED_PUBLIC_IMAGE_MIMES = [
   "image/jpeg",
@@ -206,6 +221,32 @@ export async function getPublishedPublicMediaAssetById(
 
 function isVisualMediaPurpose(purpose: MediaPurpose | null): purpose is VisualMediaPurpose {
   return purpose === "portrait" || purpose === "journey";
+}
+
+export function mapEligiblePublicJourneyMedia(
+  row: EligiblePublicImageRow,
+): PublicJourneyMedia | null {
+  if (row.kind !== "image" || !isPubliclyReadable(row.status, row.is_public)) {
+    return null;
+  }
+
+  if (!isSupportedPublicImageMime(row.mime_type)) {
+    return null;
+  }
+
+  const altText = row.alt_text?.trim();
+  const publicUrl = getPublicMediaObjectUrl(row.bucket_path);
+
+  if (!altText || !publicUrl) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    altText,
+    publicUrl,
+    credit: row.credit,
+  };
 }
 
 function isSupportedPublicImageMime(mimeType: string | null): boolean {

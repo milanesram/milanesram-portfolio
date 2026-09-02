@@ -605,6 +605,129 @@ export type Database = {
           },
         ];
       };
+      about_page: {
+        Row: Row & {
+          id: string;
+          singleton_key: "default";
+          status: ContentStatus;
+          kicker: string;
+          headline: string;
+          lede: string;
+          journey_heading: string;
+          education_heading: string;
+          speaking_heading: string;
+          speaking_body: string;
+          boundaries_heading: string;
+          seo_title: string;
+          seo_description: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["about_page"]["Row"]> & {
+          kicker: string;
+          headline: string;
+          lede: string;
+          journey_heading: string;
+          education_heading: string;
+          speaking_heading: string;
+          speaking_body: string;
+          boundaries_heading: string;
+          seo_title: string;
+          seo_description: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["about_page"]["Insert"]>;
+        Relationships: [];
+      };
+      about_page_paragraphs: {
+        Row: Row & {
+          id: string;
+          about_page_id: string;
+          body: string;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          about_page_id: string;
+          body: string;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["about_page_paragraphs"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "about_page_paragraphs_about_page_id_fkey";
+            columns: ["about_page_id"];
+            isOneToOne: false;
+            referencedRelation: "about_page";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      about_page_list_items: {
+        Row: Row & {
+          id: string;
+          about_page_id: string;
+          kind: "speaking" | "boundary";
+          body: string;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          about_page_id: string;
+          kind: "speaking" | "boundary";
+          body: string;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["about_page_list_items"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "about_page_list_items_about_page_id_fkey";
+            columns: ["about_page_id"];
+            isOneToOne: false;
+            referencedRelation: "about_page";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      journey_milestones: {
+        Row: Row & {
+          id: string;
+          title: string;
+          year: number | null;
+          caption: string;
+          media_asset_id: string | null;
+          sort_order: number;
+          status: ContentStatus;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          year?: number | null;
+          caption: string;
+          media_asset_id?: string | null;
+          sort_order?: number;
+          status?: ContentStatus;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["journey_milestones"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "journey_milestones_media_asset_id_fkey";
+            columns: ["media_asset_id"];
+            isOneToOne: false;
+            referencedRelation: "media_assets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       engagements: {
         Row: Row & {
           id: string;
