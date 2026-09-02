@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { focusPages, navPrimary } from "@/content";
+import { FOCUS_PUBLIC_ROUTES, navPrimary } from "@/content";
 import {
   selectFooterIdentity,
   type PublicSiteProfile,
@@ -46,10 +46,10 @@ export function SiteFooter({ profile }: { profile: PublicSiteProfile | null }) {
             Focus areas
           </p>
           <ul className="mt-3 space-y-2">
-            {focusPages.map((track) => (
-              <li key={track.id}>
+            {FOCUS_PUBLIC_ROUTES.map((track) => (
+              <li key={track.slug}>
                 <Link
-                  href={`/focus/${track.slug}`}
+                  href={track.href}
                   className="text-sm text-ink-soft hover:text-ink"
                 >
                   {track.navLabel}

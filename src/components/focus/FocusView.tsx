@@ -8,36 +8,24 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/layout/Container";
 import {
-  featuredProject,
-  focusPages,
-  publicCredentials,
-  type FocusPage,
-  type TrackId,
-} from "@/content";
-import { experiencesForTrack } from "@/content";
-import type { FocusSelectedWriting } from "@/lib/content/focus";
+  otherFocusRoute,
+  type PublicFocusPage,
+} from "@/lib/content/focus";
 import { visibleWorkAuthorization } from "@/lib/content/site-profile";
 
 export function FocusView({
-  trackId,
   page,
-  selectedWriting,
   workAuthorization = "",
 }: {
-  trackId: TrackId;
-  page: FocusPage;
-  selectedWriting: FocusSelectedWriting | null;
+  page: PublicFocusPage;
   workAuthorization?: string;
 }) {
   const authorization = visibleWorkAuthorization(workAuthorization);
-  const other = focusPages.find((item) => item.id !== trackId)!;
-  const experiences = experiencesForTrack(trackId).filter(
-    (item) => item.kind !== "leadership",
-  );
-  const credentials = publicCredentials.filter(
-    (credential) =>
-      credential.tracks.includes(trackId) || credential.highlight || credential.kind === "license",
-  );
+  const other = otherFocusRoute(page.slug);
+  const resumeLabel =
+    page.slug === "cybersecurity-grc"
+      ? "Cybersecurity / GRC resume"
+      : "Privacy / AI Governance resume";
 
   return (
     <>
@@ -48,11 +36,9 @@ export function FocusView({
         <div className="mt-6 flex flex-wrap gap-3">
           <ButtonLink
             href="/resume"
-            variant={trackId === "cyber" ? "primary" : "secondary"}
+            variant={page.slug === "cybersecurity-grc" ? "primary" : "secondary"}
           >
-            {trackId === "cyber"
-              ? "Cybersecurity / GRC resume"
-              : "Privacy / AI Governance resume"}
+            {resumeLabel}
           </ButtonLink>
           <ButtonLink href="/projects/privai-guard" variant="secondary">
             Read the PrivAI Guard case study
@@ -79,60 +65,61 @@ export function FocusView({
         </Container>
       </section>
 
-      <section className="border-y border-line py-16">
-        <Container>
-          <SectionHeader
-            kicker="Featured evidence"
-            title="PrivAI Guard"
-            lede={
-              trackId === "cyber"
-                ? "Control design, access boundaries, risk scoring, remediation, and audit evidence."
-                : "Privacy-risk triage, data-subject impact review, and human-reviewed routing."
-            }
-          />
-          <div className="mt-8">
-            <ProjectCard project={featuredProject} featured />
-          </div>
-        </Container>
-      </section>
+      {page.featuredProject ? (
+        <section className="border-y border-line py-16">
+          <Container>
+            <SectionHeader
+              kicker="Featured evidence"
+              title={page.featuredProject.name}
+              lede={page.featuredProjectLede || undefined}
+            />
+            <div className="mt-8">
+              <ProjectCard project={page.featuredProject} featured />
+            </div>
+          </Container>
+        </section>
+      ) : null}
 
-      <section className="py-16">
-        <Container>
-          <SectionHeader kicker="Experience" title="Selected roles" />
-          <div className="mt-8">
-            {experiences.slice(0, 5).map((experience) => (
-              <ExperiencePreview
-                key={experience.id}
-                experience={experience}
-                track={trackId}
-              />
-            ))}
-          </div>
-          <div className="mt-8">
-            <ButtonLink href="/experience" variant="text">
-              View full experience
-            </ButtonLink>
-          </div>
-        </Container>
-      </section>
+      {page.experience.length > 0 ? (
+        <section className="py-16">
+          <Container>
+            <SectionHeader kicker="Experience" title="Selected roles" />
+            <div className="mt-8">
+              {page.experience.map((experience) => (
+                <ExperiencePreview
+                  key={experience.id}
+                  experience={experience}
+                />
+              ))}
+            </div>
+            <div className="mt-8">
+              <ButtonLink href="/experience" variant="text">
+                View full experience
+              </ButtonLink>
+            </div>
+          </Container>
+        </section>
+      ) : null}
 
-      <section className="border-y border-line py-16">
-        <Container>
-          <SectionHeader kicker="Credentials" title="Relevant credentials" />
-          <div className="mt-8 grid gap-5 md:grid-cols-2">
-            {credentials.map((credential) => (
-              <CredentialCard key={credential.id} credential={credential} />
-            ))}
-          </div>
-        </Container>
-      </section>
+      {page.credentials.length > 0 ? (
+        <section className="border-y border-line py-16">
+          <Container>
+            <SectionHeader kicker="Credentials" title="Relevant credentials" />
+            <div className="mt-8 grid gap-5 md:grid-cols-2">
+              {page.credentials.map((credential) => (
+                <CredentialCard key={credential.id} credential={credential} />
+              ))}
+            </div>
+          </Container>
+        </section>
+      ) : null}
 
-      {selectedWriting ? (
+      {page.featuredPublication ? (
         <section className="py-16">
           <Container>
             <SectionHeader kicker="Writing" title="Selected writing" />
             <div className="mt-8">
-              <FocusWritingCard publication={selectedWriting} />
+              <FocusWritingCard publication={page.featuredPublication} />
             </div>
           </Container>
         </section>
@@ -142,7 +129,7 @@ export function FocusView({
         <Container>
           <p className="text-sm text-ink-soft">
             Also available:{" "}
-            <ButtonLink href={`/focus/${other.slug}`} variant="text">
+            <ButtonLink href={other.href} variant="text">
               {other.navLabel}
             </ButtonLink>
           </p>

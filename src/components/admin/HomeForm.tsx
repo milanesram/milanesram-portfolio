@@ -590,8 +590,8 @@ export function HomeForm({
       <fieldset className="space-y-5">
         <legend className="font-serif text-xl text-ink">Focus framing</legend>
         <p className="text-sm text-ink-soft">
-          Track cards remain code until Step 52D. This section only edits Home
-          heading copy.
+          This section only edits Home heading copy. Track cards read hosted
+          Focus records.
         </p>
         <label className={labelClass}>
           Focus kicker

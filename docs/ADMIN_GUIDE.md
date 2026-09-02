@@ -155,18 +155,21 @@ A published license with `needs_verification = true` remains hidden from anonymo
 
 ---
 
-## 10. Skills CMS workflow
+## 10. Skills / Focus CMS workflow
 
-1. Open **Skills** from the dashboard.
+1. Open **Skills** from the dashboard (`/admin/skills`).
 2. Create a focus page or open an existing row.
-3. Edit nav label, slug, headline, summary, and sort order.
-4. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
-5. Add, edit, reorder, or delete competencies on the same focus page.
-6. Delete a focus page from its edit page after confirmation. The competencies array is stored on the same row and is removed with it.
+3. Edit nav label, slug, headline, summary, Home card summary/chips, featured project, featured writing, and sort order.
+4. Select Experience evidence by organization, role, and bullet excerpt. Values are experience-item UUIDs. Reorder with the sort field. Duplicate items on the same Focus page are rejected.
+5. Select credentials by name/issuer/year. Draft, archived, and `needs_verification` credentials (including Google AI) are disabled and cannot be saved as public Focus evidence.
+6. Choose one featured Project and one featured Writing/publication by title. Unpublished related records stay selected in admin but are omitted from the public Focus page.
+7. **Save as draft**, **Publish**, **Unpublish** (returns to draft), or **Archive**.
+8. Add, edit, reorder, or delete competencies on the same focus page. Those actions do not overwrite evidence selections.
+9. Delete a focus page from its edit page after confirmation. Relationship rows cascade with the Focus page. Core Experience, credential, project, and publication records are not deleted.
 
-Skills are stored as `public.focus_pages.competencies` (`text[]`). There is no skills table, category table, or per-skill status. The focus page is the career-track grouping. Resume media is not edited here. The schema has no featured, highlight, or show-on-home column on `focus_pages`.
+Public Focus, Home track cards, and temporary Resume track cards read published hosted Focus records. Changing a Focus summary updates the Focus page and Resume cards. Changing Home card summary/chips updates Home only. Resume media is not edited here; `resume_media_id` stays reserved for a later Resume step.
 
-Saving the focus page does not overwrite competencies. Skill add, edit, reorder, and delete are separate actions scoped to that page UUID plus the array index.
+Saves revalidate `/focus/cybersecurity-grc`, `/focus/privacy-ai-governance`, `/`, `/resume`, and `/admin/skills`.
 
 ---
 
@@ -193,7 +196,7 @@ Saving the focus page does not overwrite competencies. Skill add, edit, reorder,
 7. Choose the featured Project by title. Core project facts stay on the project record; Home overlay copy is separate.
 8. **Save as draft**, **Publish**, **Unpublish**, or **Archive**. Public Home renders only a published singleton. Unpublished related evidence is omitted, not replaced with old static copy.
 
-Focus/Resume track cards on Home remain code until a later Focus step. `show_on_home` on experience items is not the Home selector.
+Home track cards read hosted Focus card fields. `show_on_home` on experience items is not the Home selector.
 
 ---
 

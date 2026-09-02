@@ -75,9 +75,9 @@ Mutable public content by surface (chrome shared by all routes: header `navPrima
 
 | Route | Mutable content | Current public source |
 |---|---|---|
-| `/` | Hero, chips, CTAs, proof strip, flagship copy, track cards, selected experience bullets, selected credentials, closing CTA, metadata, portrait | Hosted `home_page` + UUID relationships; track cards still static `homeTracks` until 52D; hosted `site_profile` for shared identity/contact; hosted portrait |
+| `/` | Hero, chips, CTAs, proof strip, flagship copy, track cards, selected experience bullets, selected credentials, closing CTA, metadata, portrait | Hosted `home_page` + UUID relationships; track cards from hosted `focus_pages` card fields; hosted `site_profile` for shared identity/contact; hosted portrait |
 | `/about` | H1, lede, narrative, education glance, speaking, boundaries, metadata, portrait, Journey milestones | Hosted `about_page` + `journey_milestones`; education glance still static `publicCredentials` until 52F; hosted portrait |
-| `/focus/cybersecurity-grc` | Headline, summary, competencies, featured project, experience, credentials, selected writing, CTAs, metadata | Hosted `focus_pages` + publication; static FocusView evidence (`featuredProject`, `experiencesForTrack`, `publicCredentials`, `selectedWritingSlug`) |
+| `/focus/cybersecurity-grc` | Headline, summary, competencies, featured project, experience, credentials, selected writing, CTAs, metadata | Hosted `focus_pages` + UUID relationships (`focus_experience_items`, `focus_credentials`, `featured_project_id`, `featured_publication_id`) |
 | `/focus/privacy-ai-governance` | Same pattern | Same |
 | `/experience` | Page chrome; role list including Scionetrade | Static `experienceCopy`; hybrid hosted experiences + static Scionetrade |
 | `/projects` | Page chrome; project cards | Static `projectsCopy`; hosted `projects` |
@@ -85,9 +85,9 @@ Mutable public content by surface (chrome shared by all routes: header `navPrima
 | `/writing` | Index copy; publication cards | `WRITING_INDEX_COPY` + hosted publications |
 | `/writing/[slug]` | Title, abstract, PDF/link, metadata | Hosted publications (+ media) |
 | `/credentials` | Page chrome; credential cards | Page chrome static; hosted `credentials` |
-| `/resume` | Hero, track cards, request copy, CTA, metadata | Static `focusPages` + page strings; hosted `site_profile` for email/LinkedIn |
+| `/resume` | Hero, track cards, request copy, CTA, metadata | Temporary hosted Focus cards via `getPublishedFocusPages()` until 52G `resume_tracks`; request-based V1.0 unchanged; hosted `site_profile` for email/LinkedIn |
 | `/contact` | Hero, email, LinkedIn, placeholder, metadata | Hosted `site_profile` for channels; page strings static; hosted `site_settings` only for form gate |
-| Header / footer / OG / sitemap / robots | Names, labels, paths | Hosted `site_profile` for identity/contact; `navPrimary`/`focusPages` remain code; sitemap adds hosted writing slugs; robots static |
+| Header / footer / OG / sitemap / robots | Names, labels, paths | Hosted `site_profile` for identity/contact; `navPrimary`/`FOCUS_PUBLIC_ROUTES` remain code-owned route labels; sitemap adds hosted writing slugs; robots static |
 
 Writing detail slugs (hosted, published):  
 `privacy-preserving-machine-learning-global-healthcare-ai`, `egov-ph-architectural-fragility-bcdr`, `generative-ai-privacy-compliance-documentation`, `contain-the-rumor-protect-the-people`, `data-breach-to-boardroom-cyber-governance`, `orb-to-oversight-world-app-privacy`, `you-are-easier-to-hack-than-everything`, `before-blocks-build-the-bedrock`, `price-of-ubiquity-gcash-critical-infrastructure`, `philippine-elections-2025-data-privacy`, `ncsp-localization-local-government-units` (link-only).
@@ -109,7 +109,7 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Home | Proof strip | Hosted `home_proof_items` editorial labels + optional credential/project FKs | Official names stay on source records | Hosted hybrid | Hosted copy + relationships | KEEP HOSTED |
 | Home | Flagship copy | Hosted `home_page` overlay fields | Project row facts | Hosted overlay | Project row + Home overlay | KEEP HOSTED |
 | Home | Flagship selection | `home_page.featured_project_id` | `projects.is_featured` unused by Home | Hosted UUID | Hosted project UUID relationship | KEEP HOSTED |
-| Home | Track cards | `homeTracks` | `focusPages` / hosted focus summaries | Static temporary | Resume/Focus config | TEMPORARY — 52D |
+| Home | Track cards | Hosted `focus_pages.card_summary` / `card_chips` / `nav_label` | Static `homeTracks` retired | Hosted Focus card fields | Hosted Focus | KEEP HOSTED |
 | Home | Selected experience | `home_experience_items` UUIDs | `show_on_home` leftover (3 metrics, unused) | Hosted relationships | Ordered item UUID relationships | KEEP HOSTED |
 | Home | Selected credentials | `home_credentials` UUIDs | `credentials.highlight` unused by Home | Hosted relationships | Credential UUID + sort | KEEP HOSTED |
 | Home | Portrait | Hosted `media_assets` purpose=portrait | None | Hosted | Hosted | KEEP HOSTED |
@@ -122,11 +122,11 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | About | Journey images | `journey_milestones.media_asset_id` | Media binaries/alt/path | Hosted UUID | Media remains file authority | KEEP HOSTED |
 | About | Portrait | Hosted media | Same as Home | Hosted | Hosted | KEEP HOSTED |
 | About | Metadata | `about_page.seo_title` / `seo_description` | Sitewide SEO still code | Hosted About-only | Page SEO record in 52G | KEEP HOSTED (About only) |
-| Focus | slug, headline, summary, competencies, status | Hosted `focus_pages` | Static `focusPages` | Dual (public reads hosted; Resume/footer read static) | Hosted | KEEP HOSTED; RETIRE STATIC MIRROR |
-| Focus | selected writing | `focusPages[].selectedWritingSlug` | None on hosted row | Static | `focus_pages.selected_publication_id` (or junction) | HOSTED RELATIONSHIP |
-| Focus | featured project | Static `featuredProject` | Hosted projects | Static | Focus→project relationship | HOSTED RELATIONSHIP |
-| Focus | experience evidence | `experiencesForTrack()` static | Hosted experiences | Static | Focus→experience_item relationships | HOSTED RELATIONSHIP |
-| Focus | credentials | Static `publicCredentials` | Hosted credentials | Static | Focus→credential relationships | HOSTED RELATIONSHIP |
+| Focus | slug, headline, summary, competencies, status | Hosted `focus_pages` | Static `focusPages` retired | Hosted | Hosted | KEEP HOSTED |
+| Focus | selected writing | `focus_pages.featured_publication_id` | Static slug retired | Hosted UUID | Publication UUID | KEEP HOSTED |
+| Focus | featured project | `focus_pages.featured_project_id` | Static `featuredProject` retired | Hosted UUID | Project UUID | KEEP HOSTED |
+| Focus | experience evidence | `focus_experience_items` | Static `experiencesForTrack` retired | Hosted UUID | Experience item UUID | KEEP HOSTED |
+| Focus | credentials | `focus_credentials` | Static `publicCredentials` retired | Hosted UUID | Credential UUID + eligibility | KEEP HOSTED |
 | Focus | track CTA labels | `FocusView` JSX | Resume tracks | JSX | Focus/Resume config | CUT OVER TO HOSTED |
 | Focus | metadata | Focus `page.tsx` | None | Static | SEO record | CUT OVER TO HOSTED |
 | Experience | Role facts + bullets | Hosted 7 parents / 26 items | Static `experiences.ts` (IDs, merge order, Focus) | Hybrid | Hosted only | KEEP HOSTED; RETIRE STATIC MIRROR |
@@ -144,7 +144,7 @@ Classification key: **KEEP IN CODE** · **KEEP HOSTED** · **CUT OVER TO HOSTED*
 | Credentials | Google AI | Hosted draft + needs_verification | Static `verification: pending` | Unpublished | Stay unpublished until verified | DEFER — JUSTIFIED |
 | Credentials | Page chrome | `credentials/page.tsx` | None | Static | Page copy | CUT OVER TO HOSTED |
 | Credentials | Verification URL | Absent | None | Gap | Optional URL fields | See §16 |
-| Resume | Tracks | Static `focusPages` | Hosted focus summaries (must stay in sync) | Static | Resume-track records | CUT OVER TO HOSTED |
+| Resume | Tracks | Temporary hosted Focus via `getPublishedFocusPages()` | Dedicated `resume_tracks` later | Temporary hosted Focus | Resume-track records | TEMPORARY — 52G |
 | Resume | Request model copy | `resume/page.tsx` | None | Static | Resume settings | CUT OVER TO HOSTED |
 | Resume | Files | None | `focus_pages.resume_media_id` unused | Request-only V1.0 | Optional media FK | DEFER — JUSTIFIED (files); architecture ready |
 | Contact | Email, LinkedIn | Hosted `site_profile` | Static `siteProfile` retired | Hosted | Hosted profile | KEEP HOSTED |
@@ -199,7 +199,7 @@ Public rendering path:
 
 **Caching / freshness:** `React.cache()` dedupes one public profile query per request. Most public routes are already `force-dynamic`. Admin `saveSiteProfileAction` calls `revalidatePath("/", "layout")`. Profile edits become visible on the next public request.
 
-**Still deferred:** About narrative (52C); Focus/Resume track cards (`homeTracks`, 52D); remaining per-page SEO outside Home (52G); `location_display` and `hero_cta_primary_label` remain unused publicly.
+**Still deferred:** remaining per-page SEO outside Home (52G); `location_display` and `hero_cta_primary_label` remain unused publicly.
 
 Work authorization remains hosted blank and unrendered. Admin can save a blank value. No static fallback reintroduces employment-status wording.
 
@@ -217,7 +217,7 @@ Work authorization remains hosted blank and unrendered. Admin can save a blank v
 
 **Admin:** `/admin/home`. Saves revalidate `/` and `/admin/home`.
 
-**Temporary:** `homeTracks` focus/resume cards stay in code until Step 52D.
+**Focus cards:** Home track cards now consume hosted Focus `nav_label`, `card_summary`, and `card_chips`. Home CMS heading/lede were not rewritten.
 
 ---
 
@@ -262,9 +262,25 @@ Add via admin/CMS after image approval.
 
 ### Focus
 
-Public headline/summary/competencies: hosted. Resume/footer still use static `focusPages` (mirrors currently aligned). Evidence is static. `selectedWritingSlug` is static. Admin `/admin/skills` edits `focus_pages` (misnamed). Unused column: `resume_media_id`.
+**Completed in 52D.** Public Focus core copy and supporting evidence are hosted. Accessor: `getPublishedFocusPage(slug)` / `getPublishedFocusPages()` in `src/lib/content/focus.ts`. No runtime static `focusPages` career-content authority.
 
-Future configure: title/nav, headline, summary, competencies, active/status, sort_order, featured experience items, featured project, selected writing, selected credentials, optional CTAs — all via stable IDs, no duplicated evidence text.
+Relationships:
+- `focus_experience_items` → `experience_items.id` (parent context joined from `experiences`)
+- `focus_credentials` → `credentials.id` (public only if published and `needs_verification = false`)
+- `focus_pages.featured_project_id` → `projects.id` `ON DELETE SET NULL`
+- `focus_pages.featured_publication_id` → `publications.id` `ON DELETE SET NULL`
+
+Home-specific card copy lives on `focus_pages.card_summary` / `card_chips` so Home wording stays unchanged without duplicating Focus summaries onto Home CMS. Featured-project ledes live on `focus_pages.featured_project_lede`.
+
+Footer Focus links use code-owned `FOCUS_PUBLIC_ROUTES` labels (`Cybersecurity / GRC`, `Privacy / AI Governance`). Those labels are stable route labels; the layout already has profile data and does not add a Focus query solely for footer chrome.
+
+Resume track cards temporarily consume hosted Focus until Step 52G creates `resume_tracks`. Request-based Version 1.0 is unchanged. No public PDFs.
+
+`resume_media_id` remains unused: **KEEP FOR 52G**. Do not activate public resume files here.
+
+Admin `/admin/skills` edits core copy, competencies, and evidence relationships. Saves revalidate both Focus routes, `/`, `/resume`, and `/admin/skills`.
+
+Static Experience/Credential datasets remain for other surfaces until 52E/52F. Scionetrade is not selected as Focus evidence. Google AI is not selected.
 
 ### Experience
 
@@ -425,7 +441,7 @@ Anonymous reads: published (+ credentials not needing verification, media `is_pu
 |---|---|
 | `siteProfile` career fields | RETIRED — hosted `site_profile` is public authority |
 | `siteProfile.workAuthorization` | KEEP HOSTED blank |
-| `focusPages` | RETIRE after Focus/Resume cutover (keep as TEST FIXTURE briefly) |
+| `focusPages` | RETIRED — public career-content authority removed; `FOCUS_PUBLIC_ROUTES` is route config only |
 | `navPrimary` | KEEP — presentation/config in code |
 | `umbrellaDomains` | LEGACY unused |
 
@@ -445,7 +461,7 @@ Anonymous reads: published (+ credentials not needing verification, media `is_pu
 | `experiences` hosted roles | RETIRE public authority after UUID cutover |
 | `scionetrade` entry | DEFER — JUSTIFIED static hold |
 | `homeExperiences` | LEGACY unused |
-| `experiencesForTrack` / `bulletsForTrack` | RETIRE after Focus relationships |
+| `experiencesForTrack` / `bulletsForTrack` | RETIRED for public Focus; KEEP until 52E if Experience still uses track helpers |
 
 ### `src/content/projects.ts`
 
@@ -601,8 +617,8 @@ Do not start these in 51F.
 3. **52C — About + Journey milestones (complete)**
    Hosted `about_page` is public About authority. `journey_milestones` own captions/years/order. Graduation remains draft without media. Ready for 52D.
 
-4. **52D — Focus evidence relationships**  
-   Attach writing/project/experience/credentials by ID. Point Resume/footer at hosted Focus. Retire `focusPages` public use.
+4. **52D — Focus evidence relationships (complete)**
+   Hosted Focus is the public authority. Experience, credentials, project, and writing use stable UUIDs. `focusPages` / `homeTracks` public career-content authority retired. Resume temporarily consumes hosted Focus. Ready for 52E.
 
 5. **52E — Experience UUID public IDs + static retirement**  
    Public layer uses hosted UUIDs. Keep Scionetrade static hold until months authorized. Focus/Home no longer import `experiences.ts` except the hold.

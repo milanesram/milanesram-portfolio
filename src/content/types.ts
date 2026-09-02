@@ -69,12 +69,8 @@ export type Credential = {
   verification?: VerificationState;
 };
 
-export type FocusPage = {
-  id: TrackId;
+export type FocusRouteCard = {
   slug: string;
   navLabel: string;
-  headline: string;
   summary: string;
-  competencies: string[];
-  selectedWritingSlug: string;
 };

@@ -2,7 +2,7 @@ import { CallToAction } from "@/components/ui/CallToAction";
 import { CareerTrackCard } from "@/components/ui/CareerTrackCard";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
-import { focusPages } from "@/content";
+import { getPublishedFocusPages } from "@/lib/content/focus";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import {
   profileFromPublishedResult,
@@ -20,9 +20,14 @@ export const metadata = createPageMetadata(
 );
 
 export default async function ResumePage() {
-  const profile = profileFromPublishedResult(await getPublishedSiteProfile());
+  const [profileResult, focusResult] = await Promise.all([
+    getPublishedSiteProfile(),
+    getPublishedFocusPages(),
+  ]);
+  const profile = profileFromPublishedResult(profileResult);
   const contact = selectPublicContactChannels(profile);
   const workAuthorization = visibleWorkAuthorization(profile?.workAuthorization);
+  const tracks = focusResult.ok ? focusResult.pages : [];
 
   return (
     <>
@@ -33,8 +38,15 @@ export default async function ResumePage() {
       />
       <Container className="py-16">
         <div className="grid gap-6 lg:grid-cols-2">
-          {focusPages.map((track) => (
-            <CareerTrackCard key={track.id} track={track} />
+          {tracks.map((track) => (
+            <CareerTrackCard
+              key={track.id}
+              track={{
+                slug: track.slug,
+                navLabel: track.title,
+                summary: track.summary,
+              }}
+            />
           ))}
         </div>
         <p className="mt-8 text-sm leading-6 text-ink-soft">

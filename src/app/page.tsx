@@ -8,7 +8,11 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/layout/Container";
 import { PageHero } from "@/components/ui/PageHero";
-import { getPublishedHomePage, homeTracks } from "@/lib/content/home";
+import {
+  getPublishedFocusPages,
+  HOME_FOCUS_CARD_PRESENTATION,
+} from "@/lib/content/focus";
+import { getPublishedHomePage } from "@/lib/content/home";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import {
   profileFromPublishedResult,
@@ -52,11 +56,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [homeResult, portraitResult, profileResult] = await Promise.all([
-    getPublishedHomePage(),
-    getPublishedPublicMediaAssetsByPurpose("portrait"),
-    getPublishedSiteProfile(),
-  ]);
+  const [homeResult, portraitResult, profileResult, focusResult] =
+    await Promise.all([
+      getPublishedHomePage(),
+      getPublishedPublicMediaAssetsByPurpose("portrait"),
+      getPublishedSiteProfile(),
+      getPublishedFocusPages(),
+    ]);
 
   const portrait = selectPublishedPortrait(portraitResult);
   const profile = profileFromPublishedResult(profileResult);
@@ -159,34 +165,43 @@ export default async function HomePage() {
             lede={home.focusSection.lede}
           />
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
-            {homeTracks.map((track) => (
-              <Link
-                key={track.id}
-                href={track.href}
-                className="group flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-shadow hover:shadow-md"
-              >
-                <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
-                  {track.resumeLabel}
-                </p>
-                <h3 className="mt-3 font-serif text-2xl font-medium text-ink">
-                  {track.title}
-                </h3>
-                <p className="mt-3 text-base leading-7 text-ink-soft">{track.summary}</p>
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {track.chips.map((chip) => (
-                    <li
-                      key={chip}
-                      className="rounded-full bg-accent-soft px-3 py-1 text-sm text-ink"
-                    >
-                      {chip}
-                    </li>
-                  ))}
-                </ul>
-                <span className="mt-6 text-sm font-medium text-accent group-hover:underline">
-                  {track.ctaLabel}
-                </span>
-              </Link>
-            ))}
+            {(focusResult.ok ? focusResult.pages : []).map((track) => {
+              const presentation =
+                HOME_FOCUS_CARD_PRESENTATION[
+                  track.slug as keyof typeof HOME_FOCUS_CARD_PRESENTATION
+                ];
+
+              return (
+                <Link
+                  key={track.id}
+                  href={`/focus/${track.slug}`}
+                  className="group flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-shadow hover:shadow-md"
+                >
+                  <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
+                    {presentation?.resumeLabel ?? "Pathway"}
+                  </p>
+                  <h3 className="mt-3 font-serif text-2xl font-medium text-ink">
+                    {track.title}
+                  </h3>
+                  <p className="mt-3 text-base leading-7 text-ink-soft">
+                    {track.cardSummary}
+                  </p>
+                  <ul className="mt-5 flex flex-wrap gap-2">
+                    {track.cardChips.map((chip) => (
+                      <li
+                        key={chip}
+                        className="rounded-full bg-accent-soft px-3 py-1 text-sm text-ink"
+                      >
+                        {chip}
+                      </li>
+                    ))}
+                  </ul>
+                  <span className="mt-6 text-sm font-medium text-accent group-hover:underline">
+                    {presentation?.ctaLabel ?? "View this track"}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </Container>
       </section>

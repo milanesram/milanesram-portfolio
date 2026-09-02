@@ -2,11 +2,7 @@ import { notFound } from "next/navigation";
 import { FocusView } from "@/components/focus/FocusView";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
-import {
-  getPublishedFocusPageBySlug,
-  getSelectedFocusWriting,
-  toPresentationFocusPage,
-} from "@/lib/content/focus";
+import { getPublishedFocusPage } from "@/lib/content/focus";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import { profileFromPublishedResult } from "@/lib/content/site-profile";
 import { createPageMetadata } from "@/lib/metadata";
@@ -20,7 +16,10 @@ export const metadata = createPageMetadata(
 );
 
 export default async function CyberFocusPage() {
-  const result = await getPublishedFocusPageBySlug("cybersecurity-grc");
+  const [result, profileResult] = await Promise.all([
+    getPublishedFocusPage("cybersecurity-grc"),
+    getPublishedSiteProfile(),
+  ]);
 
   if (!result.ok) {
     return (
@@ -43,17 +42,9 @@ export default async function CyberFocusPage() {
     notFound();
   }
 
-  const page = toPresentationFocusPage(result.page, "cyber");
-  const [selectedWriting, profileResult] = await Promise.all([
-    getSelectedFocusWriting(page.selectedWritingSlug),
-    getPublishedSiteProfile(),
-  ]);
-
   return (
     <FocusView
-      trackId="cyber"
-      page={page}
-      selectedWriting={selectedWriting}
+      page={result.page}
       workAuthorization={profileFromPublishedResult(profileResult)?.workAuthorization}
     />
   );

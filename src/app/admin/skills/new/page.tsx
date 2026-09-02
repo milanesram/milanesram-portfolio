@@ -7,8 +7,8 @@ export default function NewSkillGroupPage() {
       <p className="mt-2 text-sm leading-6 text-ink-soft">
         New records are stored in <code>focus_pages</code> with an empty
         competencies array and default to draft unless you publish. Add skills
-        after the group exists. Public pages will not show this until they are
-        switched to the Supabase adapter.
+        and evidence after the group exists. Public Focus only renders published
+        rows.
       </p>
       <div className="mt-8 rounded-xl border border-line bg-paper-elevated p-6">
         <SkillFocusForm />

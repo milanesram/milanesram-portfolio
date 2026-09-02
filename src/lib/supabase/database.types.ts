@@ -121,6 +121,11 @@ export type Database = {
           summary: string;
           competencies: string[];
           resume_media_id: string | null;
+          featured_project_id: string | null;
+          featured_publication_id: string | null;
+          featured_project_lede: string | null;
+          card_summary: string | null;
+          card_chips: string[];
           status: ContentStatus;
           sort_order: number;
         };
@@ -132,6 +137,11 @@ export type Database = {
           summary: string;
           competencies?: string[];
           resume_media_id?: string | null;
+          featured_project_id?: string | null;
+          featured_publication_id?: string | null;
+          featured_project_lede?: string | null;
+          card_summary?: string | null;
+          card_chips?: string[];
           status?: ContentStatus;
           sort_order?: number;
           created_at?: string;
@@ -144,6 +154,90 @@ export type Database = {
             columns: ["resume_media_id"];
             isOneToOne: false;
             referencedRelation: "media_assets";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "focus_pages_featured_project_id_fkey";
+            columns: ["featured_project_id"];
+            isOneToOne: false;
+            referencedRelation: "projects";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "focus_pages_featured_publication_id_fkey";
+            columns: ["featured_publication_id"];
+            isOneToOne: false;
+            referencedRelation: "publications";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      focus_experience_items: {
+        Row: Row & {
+          id: string;
+          focus_page_id: string;
+          experience_item_id: string;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          focus_page_id: string;
+          experience_item_id: string;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["focus_experience_items"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "focus_experience_items_focus_page_id_fkey";
+            columns: ["focus_page_id"];
+            isOneToOne: false;
+            referencedRelation: "focus_pages";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "focus_experience_items_experience_item_id_fkey";
+            columns: ["experience_item_id"];
+            isOneToOne: false;
+            referencedRelation: "experience_items";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      focus_credentials: {
+        Row: Row & {
+          id: string;
+          focus_page_id: string;
+          credential_id: string;
+          sort_order: number;
+        };
+        Insert: {
+          id?: string;
+          focus_page_id: string;
+          credential_id: string;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["focus_credentials"]["Insert"]
+        >;
+        Relationships: [
+          {
+            foreignKeyName: "focus_credentials_focus_page_id_fkey";
+            columns: ["focus_page_id"];
+            isOneToOne: false;
+            referencedRelation: "focus_pages";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "focus_credentials_credential_id_fkey";
+            columns: ["credential_id"];
+            isOneToOne: false;
+            referencedRelation: "credentials";
             referencedColumns: ["id"];
           },
         ];

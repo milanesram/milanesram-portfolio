@@ -10,7 +10,16 @@ import {
   saveFocusPageAction,
   type MutationState,
 } from "@/app/admin/skills/actions";
-import type { AdminFocusPage } from "@/lib/admin/skills/queries";
+import type {
+  AdminFocusCredentialLink,
+  AdminFocusExperienceLink,
+  AdminFocusPage,
+  AdminFocusPickerCredential,
+  AdminFocusPickerItem,
+  AdminFocusPickerProject,
+  AdminFocusPickerPublication,
+} from "@/lib/admin/skills/queries";
+import { isPubliclySelectableCredential } from "@/lib/admin/skills/validation";
 
 const initialState: MutationState = { error: null, message: null };
 
@@ -20,9 +29,29 @@ const labelClass = "block text-sm font-medium text-ink";
 
 type SkillFocusFormProps = {
   page?: AdminFocusPage;
+  experienceLinks?: AdminFocusExperienceLink[];
+  credentialLinks?: AdminFocusCredentialLink[];
+  experienceChoices?: AdminFocusPickerItem[];
+  credentialChoices?: AdminFocusPickerCredential[];
+  projectChoices?: AdminFocusPickerProject[];
+  publicationChoices?: AdminFocusPickerPublication[];
 };
 
-export function SkillFocusForm({ page }: SkillFocusFormProps) {
+export function SkillFocusForm({
+  page,
+  experienceLinks = [],
+  credentialLinks = [],
+  experienceChoices = [],
+  credentialChoices = [],
+  projectChoices = [],
+  publicationChoices = [],
+}: SkillFocusFormProps) {
+  const selectedExperience = new Map(
+    experienceLinks.map((link) => [link.experience_item_id, link.sort_order]),
+  );
+  const selectedCredentials = new Map(
+    credentialLinks.map((link) => [link.credential_id, link.sort_order]),
+  );
   const [state, formAction, pending] = useActionState(
     saveFocusPageAction,
     initialState,
@@ -127,6 +156,179 @@ export function SkillFocusForm({ page }: SkillFocusFormProps) {
           className={`${fieldClass} py-2`}
         />
       </label>
+
+      <label className={labelClass}>
+        Home card summary
+        <textarea
+          name="card_summary"
+          required
+          maxLength={2000}
+          rows={3}
+          defaultValue={page?.card_summary ?? ""}
+          disabled={pending}
+          className={`${fieldClass} py-2`}
+        />
+      </label>
+
+      <label className={labelClass}>
+        Home card chips (one per line)
+        <textarea
+          name="card_chips"
+          rows={4}
+          defaultValue={page?.card_chips.join("\n") ?? ""}
+          disabled={pending}
+          className={`${fieldClass} py-2`}
+        />
+      </label>
+
+      <label className={labelClass}>
+        Featured project
+        <select
+          name="featured_project_id"
+          defaultValue={page?.featured_project_id ?? ""}
+          disabled={pending}
+          className={fieldClass}
+        >
+          <option value="">None</option>
+          {projectChoices.map((project) => (
+            <option key={project.id} value={project.id}>
+              {project.name}
+              {project.status !== "published" ? " (unpublished)" : ""}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className={labelClass}>
+        Featured project lede
+        <textarea
+          name="featured_project_lede"
+          maxLength={500}
+          rows={2}
+          defaultValue={page?.featured_project_lede ?? ""}
+          disabled={pending}
+          className={`${fieldClass} py-2`}
+        />
+      </label>
+
+      <label className={labelClass}>
+        Featured writing
+        <select
+          name="featured_publication_id"
+          defaultValue={page?.featured_publication_id ?? ""}
+          disabled={pending}
+          className={fieldClass}
+        >
+          <option value="">None</option>
+          {publicationChoices.map((publication) => (
+            <option key={publication.id} value={publication.id}>
+              {publication.title} · {publication.document_kind}
+              {publication.status !== "published" ? " (unpublished)" : ""}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <fieldset className="space-y-4">
+        <legend className="font-serif text-xl text-ink">Selected experience</legend>
+        <p className="text-sm text-ink-soft">
+          Selection uses stable item IDs. Editing bullet text does not break Focus.
+        </p>
+        <ul className="space-y-3">
+          {experienceChoices.map((choice, index) => {
+            const sort = selectedExperience.get(choice.id) ?? (index + 1) * 10;
+            return (
+              <li key={choice.id} className="rounded-lg border border-line p-3">
+                <label className="flex items-start gap-3 text-sm text-ink">
+                  <input
+                    type="checkbox"
+                    name="experience_item_id"
+                    value={choice.id}
+                    defaultChecked={selectedExperience.has(choice.id)}
+                    disabled={pending}
+                    className="mt-1 h-4 w-4"
+                  />
+                  <span>
+                    <span className="font-medium">
+                      {choice.organization} · {choice.title}
+                    </span>
+                    <span className="mt-1 block text-ink-soft">{choice.excerpt}</span>
+                    {choice.status !== "published" ? (
+                      <span className="mt-1 block text-xs text-ink-faint">
+                        Unpublished — omitted from the public Focus page.
+                      </span>
+                    ) : null}
+                  </span>
+                </label>
+                <label className={`${labelClass} mt-3 max-w-[8rem]`}>
+                  Order
+                  <input
+                    name={`experience_sort_${choice.id}`}
+                    inputMode="numeric"
+                    defaultValue={sort}
+                    disabled={pending}
+                    className={fieldClass}
+                  />
+                </label>
+              </li>
+            );
+          })}
+        </ul>
+      </fieldset>
+
+      <fieldset className="space-y-4">
+        <legend className="font-serif text-xl text-ink">Selected credentials</legend>
+        <p className="text-sm text-ink-soft">
+          Draft, archived, and unverified credentials cannot be selected as public
+          Focus evidence.
+        </p>
+        <ul className="space-y-3">
+          {credentialChoices.map((choice, index) => {
+            const eligible = isPubliclySelectableCredential({
+              status: choice.status,
+              needsVerification: choice.needs_verification,
+            });
+            const sort = selectedCredentials.get(choice.id) ?? (index + 1) * 10;
+            return (
+              <li key={choice.id} className="rounded-lg border border-line p-3">
+                <label className="flex items-start gap-3 text-sm text-ink">
+                  <input
+                    type="checkbox"
+                    name="credential_id"
+                    value={choice.id}
+                    defaultChecked={selectedCredentials.has(choice.id)}
+                    disabled={pending || !eligible}
+                    className="mt-1 h-4 w-4"
+                  />
+                  <span>
+                    <span className="font-medium">{choice.name}</span>
+                    <span className="mt-1 block text-ink-soft">
+                      {choice.issuer}
+                      {choice.year_label ? ` · ${choice.year_label}` : ""} ·{" "}
+                      {choice.kind}
+                    </span>
+                    {!eligible ? (
+                      <span className="mt-1 block text-xs text-ink-faint">
+                        Not eligible for public Focus evidence.
+                      </span>
+                    ) : null}
+                  </span>
+                </label>
+                <label className={`${labelClass} mt-3 max-w-[8rem]`}>
+                  Order
+                  <input
+                    name={`credential_sort_${choice.id}`}
+                    inputMode="numeric"
+                    defaultValue={sort}
+                    disabled={pending || !eligible}
+                    className={fieldClass}
+                  />
+                </label>
+              </li>
+            );
+          })}
+        </ul>
+      </fieldset>
 
       <label className={labelClass}>
         Sort order

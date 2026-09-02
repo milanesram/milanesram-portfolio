@@ -5,10 +5,8 @@ import { isUuid } from "@/lib/admin/ids";
 /**
  * Public skills reads from Supabase.
  *
- * Skills are stored as `focus_pages.competencies` (text[]). There is no
- * skills table. Cutover: do not use these from public focus/home/about
- * routes until an explicit content step loads reviewed rows. Public pages
- * still render from `src/content/site.ts`.
+ * Unused leftover helper. Public Focus, Home track cards, and Resume
+ * consume `src/lib/content/focus.ts`. Do not add a second public authority.
  */
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

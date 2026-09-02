@@ -64,8 +64,7 @@ export default async function AdminHomePage() {
         <h2 className="font-serif text-2xl text-ink">Home page</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
           Published Home copy and UUID relationships. Experience and credential
-          facts stay in their own tables. Track cards remain code until a later
-          Focus step.
+          facts stay in their own tables. Track cards read hosted Focus records.
         </p>
       </div>
 

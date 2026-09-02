@@ -6,6 +6,7 @@ import { requireAdminMutation } from "@/lib/admin/authorization";
 import { readUuid } from "@/lib/admin/ids";
 import { getAdminFocusPage } from "@/lib/admin/skills/queries";
 import {
+  isPubliclySelectableCredential,
   moveCompetency,
   parseCompetencyMutation,
   parseFocusPageFormData,
@@ -34,8 +35,12 @@ function mapWriteError(code: string | undefined): string {
   return SAVE_FAILED;
 }
 
-function revalidateAdminSkills(id?: string) {
+function revalidateFocusSurfaces(id?: string) {
   revalidatePath("/admin/skills");
+  revalidatePath("/");
+  revalidatePath("/resume");
+  revalidatePath("/focus/cybersecurity-grc");
+  revalidatePath("/focus/privacy-ai-governance");
 
   if (id) {
     revalidatePath(`/admin/skills/${id}`);
@@ -71,14 +76,86 @@ export async function saveFocusPageAction(
     currentStatus = existing.data.status;
   }
 
+  const experienceIds = input.experienceLinks.map((link) => link.experienceItemId);
+  const credentialIds = input.credentialLinks.map((link) => link.credentialId);
+
+  if (experienceIds.length > 0) {
+    const found = await auth.supabase
+      .from("experience_items")
+      .select("id")
+      .in("id", experienceIds);
+
+    if (found.error || (found.data ?? []).length !== experienceIds.length) {
+      return { error: "An experience selection does not exist.", message: null };
+    }
+  }
+
+  if (credentialIds.length > 0) {
+    const unique = [...new Set(credentialIds)];
+    const found = await auth.supabase
+      .from("credentials")
+      .select("id, status, needs_verification")
+      .in("id", unique);
+
+    if (found.error || (found.data ?? []).length !== unique.length) {
+      return { error: "A credential selection does not exist.", message: null };
+    }
+
+    const ineligible = (found.data ?? []).some(
+      (row) =>
+        !isPubliclySelectableCredential({
+          status: row.status,
+          needsVerification: row.needs_verification,
+        }),
+    );
+
+    if (ineligible) {
+      return {
+        error: "Selected credentials must be published and verified.",
+        message: null,
+      };
+    }
+  }
+
+  if (input.featuredProjectId) {
+    const found = await auth.supabase
+      .from("projects")
+      .select("id")
+      .eq("id", input.featuredProjectId)
+      .maybeSingle();
+
+    if (found.error || !found.data) {
+      return { error: "That project selection does not exist.", message: null };
+    }
+  }
+
+  if (input.featuredPublicationId) {
+    const found = await auth.supabase
+      .from("publications")
+      .select("id")
+      .eq("id", input.featuredPublicationId)
+      .maybeSingle();
+
+    if (found.error || !found.data) {
+      return { error: "That publication selection does not exist.", message: null };
+    }
+  }
+
   const values = {
     slug: input.slug,
     nav_label: input.navLabel,
     headline: input.headline,
     summary: input.summary,
+    card_summary: input.cardSummary,
+    card_chips: input.cardChips,
+    featured_project_lede: input.featuredProjectLede || null,
+    featured_project_id: input.featuredProjectId,
+    featured_publication_id: input.featuredPublicationId,
     sort_order: input.sortOrder,
     status: statusFromIntent(input.intent, currentStatus),
   };
+
+  let pageId = input.id;
 
   if (!input.id) {
     const { data, error } = await auth.supabase
@@ -91,20 +168,64 @@ export async function saveFocusPageAction(
       return { error: mapWriteError(error?.code), message: null };
     }
 
-    revalidateAdminSkills(data.id);
-    redirect(`/admin/skills/${data.id}`);
+    pageId = data.id;
+  } else {
+    const { error } = await auth.supabase
+      .from("focus_pages")
+      .update(values)
+      .eq("id", input.id);
+
+    if (error) {
+      return { error: mapWriteError(error.code), message: null };
+    }
   }
 
-  const { error } = await auth.supabase
-    .from("focus_pages")
-    .update(values)
-    .eq("id", input.id);
-
-  if (error) {
-    return { error: mapWriteError(error.code), message: null };
+  if (!pageId) {
+    return { error: SAVE_FAILED, message: null };
   }
 
-  revalidateAdminSkills(input.id);
+  const [experienceDelete, credentialsDelete] = await Promise.all([
+    auth.supabase.from("focus_experience_items").delete().eq("focus_page_id", pageId),
+    auth.supabase.from("focus_credentials").delete().eq("focus_page_id", pageId),
+  ]);
+
+  if (experienceDelete.error || credentialsDelete.error) {
+    return { error: SAVE_FAILED, message: null };
+  }
+
+  if (input.experienceLinks.length > 0) {
+    const { error } = await auth.supabase.from("focus_experience_items").insert(
+      input.experienceLinks.map((link) => ({
+        focus_page_id: pageId,
+        experience_item_id: link.experienceItemId,
+        sort_order: link.sortOrder,
+      })),
+    );
+
+    if (error) {
+      return { error: mapWriteError(error.code), message: null };
+    }
+  }
+
+  if (input.credentialLinks.length > 0) {
+    const { error } = await auth.supabase.from("focus_credentials").insert(
+      input.credentialLinks.map((link) => ({
+        focus_page_id: pageId,
+        credential_id: link.credentialId,
+        sort_order: link.sortOrder,
+      })),
+    );
+
+    if (error) {
+      return { error: mapWriteError(error.code), message: null };
+    }
+  }
+
+  revalidateFocusSurfaces(pageId);
+
+  if (!input.id) {
+    redirect(`/admin/skills/${pageId}`);
+  }
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -142,7 +263,7 @@ export async function deleteFocusPageAction(formData: FormData) {
     return;
   }
 
-  revalidateAdminSkills(id);
+  revalidateFocusSurfaces(id);
   redirect("/admin/skills");
 }
 
@@ -172,10 +293,10 @@ async function updateCompetencies(
     .eq("id", pageId);
 
   if (error) {
-    return { error: mapWriteError(error.code), message: null };
+    return { error: mapWriteError(error?.code), message: null };
   }
 
-  revalidateAdminSkills(pageId);
+  revalidateFocusSurfaces(pageId);
   return { error: null, message: "Saved." };
 }
 
@@ -276,7 +397,7 @@ export async function deleteCompetencyAction(formData: FormData) {
     return;
   }
 
-  revalidateAdminSkills(parsed.value.pageId);
+  revalidateFocusSurfaces(parsed.value.pageId);
 }
 
 export async function moveCompetencyAction(formData: FormData) {
@@ -317,5 +438,5 @@ export async function moveCompetencyAction(formData: FormData) {
     return;
   }
 
-  revalidateAdminSkills(parsed.value.pageId);
+  revalidateFocusSurfaces(parsed.value.pageId);
 }

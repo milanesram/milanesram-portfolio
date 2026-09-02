@@ -14,7 +14,7 @@ import type {
  * anonymous publishable client, then merge only the existing static
  * Scionetrade record. Home selected evidence now uses
  * `home_experience_items` UUIDs. RLS remains the publication boundary.
- * FocusView still reads `src/content/experiences.ts`.
+ * Focus evidence now uses `focus_experience_items` UUIDs.
  */
 
 const MONTH_LABELS = [

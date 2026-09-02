@@ -1,7 +1,7 @@
 import Link from "next/link";
-import type { FocusPage } from "@/content";
+import type { FocusRouteCard } from "@/content";
 
-export function CareerTrackCard({ track }: { track: FocusPage }) {
+export function CareerTrackCard({ track }: { track: FocusRouteCard }) {
   return (
     <Link
       href={`/focus/${track.slug}`}

@@ -21,9 +21,8 @@ export default async function AdminSkillsPage() {
           <h2 className="font-serif text-2xl text-ink">All skill groups</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
             Skills are stored as the <code>competencies</code> array on{" "}
-            <code>focus_pages</code>. There is no separate skills table. Drafts
-            stay in the admin. Public pages still use local content until a
-            later step switches them to the Supabase adapter.
+            <code>focus_pages</code>. Public Focus, Home track cards, and
+            Resume track cards read published hosted Focus records.
           </p>
         </div>
         <Link

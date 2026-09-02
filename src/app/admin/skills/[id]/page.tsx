@@ -7,7 +7,15 @@ import {
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { requireAdminMutation } from "@/lib/admin/authorization";
 import { isUuid } from "@/lib/admin/ids";
-import { getAdminFocusPage } from "@/lib/admin/skills/queries";
+import {
+  getAdminFocusPage,
+  listAdminFocusCredentialChoices,
+  listAdminFocusCredentialLinks,
+  listAdminFocusExperienceChoices,
+  listAdminFocusExperienceLinks,
+  listAdminFocusProjectChoices,
+  listAdminFocusPublicationChoices,
+} from "@/lib/admin/skills/queries";
 
 export default async function EditSkillGroupPage({
   params,
@@ -32,6 +40,30 @@ export default async function EditSkillGroupPage({
     notFound();
   }
 
+  const [
+    experienceLinks,
+    credentialLinks,
+    experienceChoices,
+    credentialChoices,
+    projectChoices,
+    publicationChoices,
+  ] = await Promise.all([
+    listAdminFocusExperienceLinks(auth.supabase, id),
+    listAdminFocusCredentialLinks(auth.supabase, id),
+    listAdminFocusExperienceChoices(auth.supabase),
+    listAdminFocusCredentialChoices(auth.supabase),
+    listAdminFocusProjectChoices(auth.supabase),
+    listAdminFocusPublicationChoices(auth.supabase),
+  ]);
+
+  const loadError =
+    experienceLinks.error ||
+    credentialLinks.error ||
+    experienceChoices.error ||
+    credentialChoices.error ||
+    projectChoices.error ||
+    publicationChoices.error;
+
   return (
     <div className="space-y-10">
       <div className="flex flex-wrap items-center gap-3">
@@ -42,11 +74,26 @@ export default async function EditSkillGroupPage({
       <section className="max-w-2xl rounded-xl border border-line bg-paper-elevated p-6">
         <h3 className="font-serif text-xl text-ink">Focus page</h3>
         <p className="mt-2 text-sm leading-6 text-ink-soft">
-          Resume media is not edited here. Storage is out of scope.
+          Core copy and supporting evidence use hosted records and UUID
+          relationships. Resume media is not edited here.
         </p>
-        <div className="mt-6">
-          <SkillFocusForm page={result.data} />
-        </div>
+        {loadError ? (
+          <p role="alert" className="mt-4 text-sm text-danger">
+            Evidence choices could not be loaded.
+          </p>
+        ) : (
+          <div className="mt-6">
+            <SkillFocusForm
+              page={result.data}
+              experienceLinks={experienceLinks.data ?? []}
+              credentialLinks={credentialLinks.data ?? []}
+              experienceChoices={experienceChoices.data ?? []}
+              credentialChoices={credentialChoices.data ?? []}
+              projectChoices={projectChoices.data ?? []}
+              publicationChoices={publicationChoices.data ?? []}
+            />
+          </div>
+        )}
       </section>
 
       <section className="max-w-2xl rounded-xl border border-line bg-paper-elevated p-6">

@@ -13,42 +13,13 @@ import {
 /**
  * Public Home reads from hosted `home_page` and UUID relationships.
  *
- * Focus/Resume track cards remain a temporary static dependency until
- * Step 52D. Mutable Home editorial copy and evidence selection do not
- * read `home.ts` constants.
+ * Focus track cards consume hosted Focus records via
+ * `getPublishedFocusPages()`. Home editorial copy stays on `home_page`.
  */
 
 export type { PublishedHomePageResult };
 
 export const HOME_PAGE_SINGLETON_KEY = "default" as const;
-
-export const homeTracks = [
-  {
-    id: "cyber",
-    resumeLabel: "Resume A",
-    title: "Cybersecurity / GRC",
-    summary:
-      "For cybersecurity, GRC, and IT-risk work that needs controls, audit readiness, and technology-risk translation.",
-    chips: ["IT risk", "GRC", "Controls", "Audit readiness"] as const,
-    ctaLabel: "View this track",
-    href: "/focus/cybersecurity-grc",
-  },
-  {
-    id: "privacy",
-    resumeLabel: "Resume B",
-    title: "Privacy / AI Governance",
-    summary:
-      "For privacy and AI-governance work that needs privacy operations, risk assessment, and responsible human review.",
-    chips: [
-      "Data privacy",
-      "Privacy-risk assessment",
-      "AI governance",
-      "Human review",
-    ] as const,
-    ctaLabel: "View this track",
-    href: "/focus/privacy-ai-governance",
-  },
-] as const;
 
 const HOME_COLUMNS =
   "id, status, featured_project_id, headline, lede, primary_cta_label, primary_cta_href, secondary_cta_label, secondary_cta_href, project_kicker, project_heading, project_problem, project_body, project_cta_label, project_cta_href, project_proof_points, experience_kicker, experience_heading, experience_lede, experience_cta_label, experience_cta_href, credentials_kicker, credentials_heading, credentials_lede, credentials_cta_label, credentials_cta_href, focus_kicker, focus_heading, focus_lede, closing_heading, closing_body, closing_primary_cta_label, closing_primary_cta_href, closing_secondary_cta_label, closing_secondary_cta_href, seo_title, seo_description";
