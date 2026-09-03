@@ -1,6 +1,9 @@
--- Step 52J-A.1: public release label + evergreen Resume page chrome.
+-- Step 52J-A.1 / 52J-A.1R: public release label, evergreen Resume chrome,
+-- and evergreen Home Focus/credentials chrome. Removes count-specific
+-- resume-option copy from public Home and Resume chrome.
 -- Does not publish Google AI, Graduation, Resume files, or the contact form.
 -- Idempotent: safe to re-run. Preserves existing hosted rows.
+-- Resume A / Resume B home_kicker values stay hosted and mutable.
 
 ALTER TABLE public.site_settings
   ADD COLUMN IF NOT EXISTS release_label text;
@@ -55,6 +58,18 @@ BEGIN
 
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Step 52J-A.1 refused: resume_page singleton missing';
+  END IF;
+
+  UPDATE public.home_page
+  SET
+    focus_kicker = 'Resume options',
+    focus_heading = 'One professional record. Focused recruiter packets.',
+    focus_lede = 'Choose the focus that best matches the opportunity. The employers, dates, and underlying professional record remain the same.',
+    credentials_lede = 'Formal credentials that support the public focus areas.'
+  WHERE singleton_key = 'default';
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Step 52J-A.1 refused: home_page singleton missing';
   END IF;
 END
 $$;

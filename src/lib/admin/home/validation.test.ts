@@ -32,7 +32,7 @@ const required = [
   ["credentials_lede", "Lede"],
   ["credentials_cta_label", "View credentials"],
   ["credentials_cta_href", "/credentials"],
-  ["focus_kicker", "Two tracks"],
+  ["focus_kicker", "Resume options"],
   ["focus_heading", "One record"],
   ["focus_lede", "Lede"],
   ["closing_heading", "Review"],
