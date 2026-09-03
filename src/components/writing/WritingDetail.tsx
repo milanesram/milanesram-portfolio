@@ -45,14 +45,20 @@ export function WritingDetail({
           <p className="mt-5 max-w-2xl text-lg leading-8 text-ink-soft">
             {publication.publisher}
           </p>
-          <p className="mt-2 max-w-2xl text-sm text-ink-faint">
-            {publication.author}
-          </p>
+          {publication.author ? (
+            <p className="mt-2 max-w-2xl text-sm text-ink-faint">
+              {publication.author}
+            </p>
+          ) : null}
         </div>
       </header>
       <Container narrow className="py-16">
         <p className="text-base leading-8 text-ink-soft">{publication.abstract}</p>
-        <p className="mt-8 text-sm text-ink-faint">{publication.trackRelevance}</p>
+        {publication.trackRelevance ? (
+          <p className="mt-8 text-sm font-medium text-ink">
+            {publication.trackRelevance}
+          </p>
+        ) : null}
         <AvailabilityCta publication={publication} />
         {publication.availability === "pdf" ? (
           <p className="mt-6 text-sm text-ink-faint">
@@ -72,12 +78,17 @@ export function WritingDetail({
             </a>
           </p>
         ) : null}
-        {publication.relatedFocus ? (
+        {publication.relatedFocuses.length > 0 ? (
           <p className="mt-8 text-sm text-ink-soft">
             Related focus:{" "}
-            <ButtonLink href={publication.relatedFocus.href} variant="text">
-              {publication.relatedFocus.label}
-            </ButtonLink>
+            {publication.relatedFocuses.map((focus, index) => (
+              <span key={focus.href}>
+                {index > 0 ? " · " : null}
+                <ButtonLink href={focus.href} variant="text">
+                  {focus.label}
+                </ButtonLink>
+              </span>
+            ))}
           </p>
         ) : null}
         <div className="mt-16">

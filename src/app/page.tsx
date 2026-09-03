@@ -96,7 +96,6 @@ export default async function HomePage() {
   return (
     <>
       <HomeHero
-        eyebrow={profile?.displayName}
         headline={home.headline}
         lede={home.lede}
         chips={home.chips}
@@ -159,7 +158,7 @@ export default async function HomePage() {
                 <Link
                   key={track.id}
                   href={`/focus/${track.slug}`}
-                  className="group flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-shadow hover:shadow-md"
+                  className="group flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-[border-color,box-shadow] duration-200 hover:border-ink/15 hover:shadow-[var(--shadow-hover)]"
                 >
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
                     {homeKickerByFocusSlug.get(track.slug) ?? "Pathway"}

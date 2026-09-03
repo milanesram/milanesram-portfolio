@@ -7,9 +7,11 @@ import { SiteShell } from "./SiteShell";
 export function AppChrome({
   children,
   profile,
+  releaseLabel = null,
 }: {
   children: React.ReactNode;
   profile: PublicSiteProfile | null;
+  releaseLabel?: string | null;
 }) {
   const pathname = usePathname();
 
@@ -17,5 +19,9 @@ export function AppChrome({
     return <>{children}</>;
   }
 
-  return <SiteShell profile={profile}>{children}</SiteShell>;
+  return (
+    <SiteShell profile={profile} releaseLabel={releaseLabel}>
+      {children}
+    </SiteShell>
+  );
 }

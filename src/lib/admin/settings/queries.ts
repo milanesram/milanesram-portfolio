@@ -19,6 +19,7 @@ export type AdminSiteSettings = {
   id: string;
   contact_form_enabled: boolean;
   site_indexable: boolean;
+  release_label: string;
   updated_at: string;
 };
 
@@ -26,7 +27,7 @@ const PROFILE_COLUMNS =
   "id, display_name, headline, summary, work_authorization, location_display, linkedin_url, public_email, hero_cta_primary_label, status, updated_at";
 
 const SETTINGS_COLUMNS =
-  "id, contact_form_enabled, site_indexable, updated_at";
+  "id, contact_form_enabled, site_indexable, release_label, updated_at";
 
 export const SETTINGS_SINGLETON_KEY = "default" as const;
 

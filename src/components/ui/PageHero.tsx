@@ -7,14 +7,14 @@ type PageHeroProps = {
 
 export function PageHero({ kicker, title, lede, children }: PageHeroProps) {
   return (
-    <header className="border-b border-line bg-paper-elevated py-16 sm:py-20">
+    <header className="border-b border-line bg-paper-elevated py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-[72rem] px-5 sm:px-8">
         {kicker ? (
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-copper">
             {kicker}
           </p>
         ) : null}
-        <h1 className="max-w-3xl font-serif text-4xl font-medium tracking-tight text-ink sm:text-5xl">
+        <h1 className="max-w-3xl font-serif text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl">
           {title}
         </h1>
         {lede ? (

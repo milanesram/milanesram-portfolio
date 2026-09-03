@@ -17,13 +17,16 @@ export function SiteHeader({ profile }: { profile: PublicSiteProfile | null }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const menuId = useId();
-  const { shortName } = selectHeaderIdentity(profile);
+  const { displayName, href } = selectHeaderIdentity(profile);
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-paper-elevated/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-[72rem] items-center justify-between gap-4 px-5 sm:px-8">
-        <Link href="/" className="font-serif text-lg font-medium tracking-tight text-ink">
-          {shortName}
+        <Link
+          href={href}
+          className="min-w-0 font-serif text-[0.95rem] font-medium uppercase leading-tight tracking-[0.08em] text-ink sm:text-lg sm:tracking-[0.1em]"
+        >
+          {displayName}
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex">
@@ -31,7 +34,7 @@ export function SiteHeader({ profile }: { profile: PublicSiteProfile | null }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`text-sm ${
+              className={`text-sm transition-colors ${
                 isActive(pathname, item.href)
                   ? "font-semibold text-ink underline decoration-accent decoration-2 underline-offset-8"
                   : "text-ink-soft hover:text-ink"
@@ -43,12 +46,15 @@ export function SiteHeader({ profile }: { profile: PublicSiteProfile | null }) {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <Link href="/resume" className="text-sm font-medium text-ink-soft hover:text-ink">
+          <Link
+            href="/resume"
+            className="text-sm font-medium text-ink-soft transition-colors hover:text-ink"
+          >
             Resume
           </Link>
           <Link
             href="/contact"
-            className="inline-flex min-h-10 items-center rounded-full bg-accent px-4 text-sm font-medium text-paper-elevated"
+            className="inline-flex min-h-10 items-center rounded-full bg-accent px-4 text-sm font-medium text-paper-elevated transition-colors hover:bg-[#164743]"
           >
             Contact
           </Link>

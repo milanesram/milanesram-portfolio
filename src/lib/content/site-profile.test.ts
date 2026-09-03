@@ -164,7 +164,8 @@ describe("public footer and shared chrome", () => {
     const footer = selectFooterIdentity(null);
     const header = selectHeaderIdentity(null);
 
-    expect(header.shortName).toBe(SITE_CHROME_FALLBACK.shortName);
+    expect(header.displayName).toBe(SITE_CHROME_FALLBACK.displayName);
+    expect(header.href).toBe("/");
     expect(footer.displayName).toBe(SITE_CHROME_FALLBACK.displayName);
     expect(footer.headline).toBeNull();
     expect(footer.contact).toBeNull();
@@ -174,9 +175,16 @@ describe("public footer and shared chrome", () => {
     );
   });
 
-  it("uses the hosted short name in the header", () => {
+  it("uses the hosted display name as the header Home brand", () => {
     expect(selectHeaderIdentity(toPublicSiteProfile(HOSTED_PUBLISHED_ROW))).toEqual({
-      shortName: "Ram Milanes",
+      displayName: "Rainier (Ram) Milanes",
+      href: "/",
     });
+  });
+
+  it("does not keep a separate hardcoded header name", () => {
+    const header = selectHeaderIdentity(toPublicSiteProfile(HOSTED_PUBLISHED_ROW));
+    expect(header.displayName).not.toBe("Ram Milanes");
+    expect(header.href).toBe("/");
   });
 });

@@ -161,6 +161,7 @@ export async function saveSiteSettingsAction(
   const values = {
     contact_form_enabled: input.contactFormEnabled,
     site_indexable: input.siteIndexable,
+    release_label: input.releaseLabel,
   };
 
   if (!existing.data) {
@@ -177,6 +178,7 @@ export async function saveSiteSettingsAction(
     }
 
     revalidateAdminSettings();
+    revalidatePublicSiteProfile();
     revalidatePath("/robots.txt");
     revalidatePath("/sitemap.xml");
     revalidatePath("/contact");
@@ -195,6 +197,7 @@ export async function saveSiteSettingsAction(
   }
 
   revalidateAdminSettings();
+  revalidatePublicSiteProfile();
   revalidatePath("/robots.txt");
   revalidatePath("/sitemap.xml");
   revalidatePath("/contact");

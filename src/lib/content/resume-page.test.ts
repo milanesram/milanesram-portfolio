@@ -64,6 +64,41 @@ describe("resume track mapping", () => {
     expect(mapped?.href).toBe("/focus/cybersecurity-grc");
   });
 
+  it("maps one, two, or three hosted tracks without assuming a pair", () => {
+    const first = mapResumeTrack(track(), () => null);
+    const second = mapResumeTrack(
+      track({
+        id: "22222222-2222-4222-8222-222222222222",
+        slug: "privacy-ai-governance",
+        title: "Privacy / AI Governance",
+        focus_pages: { slug: "privacy-ai-governance", status: "published" },
+      }),
+      () => null,
+    );
+    const third = mapResumeTrack(
+      track({
+        id: "33333333-3333-4333-8333-333333333333",
+        slug: "technology-risk",
+        title: "Technology / IT Risk",
+        focus_pages: { slug: "technology-risk", status: "published" },
+      }),
+      () => null,
+    );
+
+    const tracks = [first, second, third].filter(
+      (item): item is NonNullable<typeof item> => item !== null,
+    );
+
+    expect(tracks).toHaveLength(3);
+    expect(tracks.map((item) => item.slug)).toEqual([
+      "cybersecurity-grc",
+      "privacy-ai-governance",
+      "technology-risk",
+    ]);
+    expect(tracks.every((item) => item.deliveryMode === "request")).toBe(true);
+    expect(tracks.every((item) => item.media === null)).toBe(true);
+  });
+
   it("requires published public resume PDFs", () => {
     expect(
       isEligibleResumeMedia(ASSET, "https://example.test/file.pdf"),

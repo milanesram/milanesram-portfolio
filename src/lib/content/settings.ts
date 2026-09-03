@@ -3,9 +3,9 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 /**
  * Public site-settings reads from Supabase.
  *
- * `site_settings` is intentionally fully public website flags. RLS SELECT
- * is `USING (true)` because every column is safe to expose. Never store
- * secrets or unpublished values in this table.
+ * `site_settings` is intentionally fully public website flags and the
+ * release label. RLS SELECT is `USING (true)` because every column is
+ * safe to expose. Never store secrets or unpublished values in this table.
  *
  * `/contact` may read `contactFormEnabled` for form activation only.
  * Submission still requires the server-only `CONTACT_INTAKE_ENABLED`
@@ -15,9 +15,17 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export type PublicSiteSettings = {
   contactFormEnabled: boolean;
   siteIndexable: boolean;
+  releaseLabel: string;
 };
 
-const SETTINGS_COLUMNS = "contact_form_enabled, site_indexable";
+const SETTINGS_COLUMNS = "contact_form_enabled, site_indexable, release_label";
+
+export function selectReleaseLabel(
+  settings: PublicSiteSettings | null,
+): string | null {
+  const label = settings?.releaseLabel.trim() ?? "";
+  return label.length > 0 ? label : null;
+}
 
 export async function getPublicSiteSettings(): Promise<PublicSiteSettings | null> {
   const supabase = await createSupabaseServerClient();
@@ -34,5 +42,6 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings | null
   return {
     contactFormEnabled: data.contact_form_enabled,
     siteIndexable: data.site_indexable,
+    releaseLabel: data.release_label.trim(),
   };
 }

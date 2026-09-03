@@ -12,6 +12,7 @@ const LIMITS = {
   linkedinUrl: 500,
   publicEmail: 160,
   heroCtaPrimaryLabel: 80,
+  releaseLabel: 80,
 } as const;
 
 export type ProfileIntent =
@@ -38,6 +39,7 @@ export type ParsedSiteSettingsInput = {
   id: string | null;
   contactFormEnabled: boolean;
   siteIndexable: boolean;
+  releaseLabel: string;
 };
 
 export type ParseResult<T> =
@@ -272,12 +274,21 @@ export function parseSiteSettingsFormData(
   const id = parseOptionalId(formData);
   if (!id.ok) return id;
 
+  const releaseLabel = requiredText(
+    formData,
+    "release_label",
+    LIMITS.releaseLabel,
+    "Release label",
+  );
+  if (!releaseLabel.ok) return releaseLabel;
+
   return {
     ok: true,
     value: {
       id: id.value,
       contactFormEnabled: formData.get("contact_form_enabled") === "on",
       siteIndexable: formData.get("site_indexable") === "on",
+      releaseLabel: releaseLabel.value,
     },
   };
 }

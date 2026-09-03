@@ -5,7 +5,13 @@ import {
   type PublicSiteProfile,
 } from "@/lib/content/site-profile";
 
-export function SiteFooter({ profile }: { profile: PublicSiteProfile | null }) {
+export function SiteFooter({
+  profile,
+  releaseLabel = null,
+}: {
+  profile: PublicSiteProfile | null;
+  releaseLabel?: string | null;
+}) {
   const identity = selectFooterIdentity(profile);
 
   return (
@@ -19,6 +25,11 @@ export function SiteFooter({ profile }: { profile: PublicSiteProfile | null }) {
           {identity.workAuthorization ? (
             <p className="mt-4 text-sm text-ink-faint">{identity.workAuthorization}</p>
           ) : null}
+          {releaseLabel ? (
+            <p className="mt-5 text-xs tracking-[0.08em] text-ink-faint">
+              {releaseLabel}
+            </p>
+          ) : null}
         </div>
 
         <div>
@@ -28,13 +39,19 @@ export function SiteFooter({ profile }: { profile: PublicSiteProfile | null }) {
           <ul className="mt-3 space-y-2">
             {navPrimary.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="text-sm text-ink-soft hover:text-ink">
+                <Link
+                  href={item.href}
+                  className="text-sm text-ink-soft transition-colors hover:text-ink"
+                >
                   {item.label}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href="/resume" className="text-sm text-ink-soft hover:text-ink">
+              <Link
+                href="/resume"
+                className="text-sm text-ink-soft transition-colors hover:text-ink"
+              >
                 Resume
               </Link>
             </li>
@@ -50,7 +67,7 @@ export function SiteFooter({ profile }: { profile: PublicSiteProfile | null }) {
               <li key={track.slug}>
                 <Link
                   href={track.href}
-                  className="text-sm text-ink-soft hover:text-ink"
+                  className="text-sm text-ink-soft transition-colors hover:text-ink"
                 >
                   {track.navLabel}
                 </Link>
@@ -68,7 +85,7 @@ export function SiteFooter({ profile }: { profile: PublicSiteProfile | null }) {
               <li>
                 <a
                   href={identity.contact.mailtoHref}
-                  className="text-sm text-ink-soft hover:text-ink"
+                  className="text-sm text-ink-soft transition-colors hover:text-ink"
                 >
                   {identity.contact.email}
                 </a>
@@ -76,7 +93,7 @@ export function SiteFooter({ profile }: { profile: PublicSiteProfile | null }) {
               <li>
                 <a
                   href={identity.contact.linkedinUrl}
-                  className="text-sm text-ink-soft hover:text-ink"
+                  className="text-sm text-ink-soft transition-colors hover:text-ink"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -89,10 +106,6 @@ export function SiteFooter({ profile }: { profile: PublicSiteProfile | null }) {
               Public contact channels are temporarily unavailable.
             </p>
           )}
-          <p className="mt-6 text-xs leading-5 text-ink-faint">
-            Licensed to Practice Law in the Philippines. Not licensed to practice law
-            in the United States.
-          </p>
         </div>
       </div>
     </footer>

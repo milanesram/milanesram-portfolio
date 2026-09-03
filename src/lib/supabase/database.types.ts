@@ -121,6 +121,7 @@ export type Database = {
           singleton_key: "default";
           contact_form_enabled: boolean;
           site_indexable: boolean;
+          release_label: string;
         };
         Insert: Partial<Database["public"]["Tables"]["site_settings"]["Row"]>;
         Update: Partial<Database["public"]["Tables"]["site_settings"]["Insert"]>;

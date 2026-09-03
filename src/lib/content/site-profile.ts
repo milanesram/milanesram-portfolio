@@ -124,9 +124,12 @@ export function profileFromPublishedResult(
   return result.ok ? result.profile : null;
 }
 
+export const HEADER_HOME_HREF = "/" as const;
+
 export function selectHeaderIdentity(profile: PublicSiteProfile | null) {
   return {
-    shortName: profile?.shortName ?? SITE_CHROME_FALLBACK.shortName,
+    displayName: profile?.displayName ?? SITE_CHROME_FALLBACK.displayName,
+    href: HEADER_HOME_HREF,
   };
 }
 

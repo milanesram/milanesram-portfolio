@@ -2,12 +2,21 @@ import "server-only";
 import { createPublicSupabaseClient } from "@/lib/supabase/public";
 import { getPublishedPublicMediaAssetById } from "@/lib/content/media";
 import type { PublishedPublicMedia } from "@/lib/content/media";
+import {
+  formatFocusRelevanceLabels,
+  selectRelatedPublishedFocuses,
+  toRelatedFocuses,
+  type PublishedFocusLabel,
+  type RelatedFocus,
+} from "@/lib/content/writing-focus";
 import type {
   ContentStatus,
   DocumentKind,
   PublicationRightsStatus,
   TrackTag,
 } from "@/lib/supabase/database.types";
+
+export type { RelatedFocus };
 
 /**
  * Public publication reads from Supabase.
@@ -35,14 +44,7 @@ const DOCUMENT_KIND_LABELS: Record<DocumentKind, string> = {
   other: "Other",
 };
 
-const DEFAULT_PUBLICATION_BYLINE = "Rainier (Ram) Milanes";
-
 export type PublicationAvailability = "pdf" | "external" | "html_only";
-
-export type RelatedFocus = {
-  href: "/focus/cybersecurity-grc" | "/focus/privacy-ai-governance";
-  label: string;
-};
 
 export type PublishedPublication = {
   slug: string;
@@ -56,8 +58,8 @@ export type PublishedPublication = {
   externalUrl: string | null;
   author: string;
   track: TrackTag;
-  trackRelevance: string;
-  relatedFocus: RelatedFocus | null;
+  trackRelevance: string | null;
+  relatedFocuses: RelatedFocus[];
   sortOrder: number;
   availability: PublicationAvailability;
   pdfUrl: string | null;
@@ -134,39 +136,17 @@ export function groupPublishedWriting(
   };
 }
 
-export function getTrackRelevance(track: TrackTag): string {
-  if (track === "cybersecurity_grc") {
-    return "Cybersecurity / GRC";
-  }
-
-  if (track === "privacy_ai") {
-    return "Privacy / AI Governance";
-  }
-
-  return "Relevant to both tracks";
-}
-
-function getRelatedFocus(track: TrackTag): RelatedFocus | null {
-  if (track === "cybersecurity_grc") {
-    return {
-      href: "/focus/cybersecurity-grc",
-      label: "Cybersecurity / GRC",
-    };
-  }
-
-  if (track === "privacy_ai") {
-    return {
-      href: "/focus/privacy-ai-governance",
-      label: "Privacy / AI Governance",
-    };
-  }
-
-  return null;
+function featuredSlugsForPublication(
+  publicationId: string,
+  focuses: Array<PublishedFocusLabel & { featuredPublicationId: string | null }>,
+): string[] {
+  return focuses
+    .filter((focus) => focus.featuredPublicationId === publicationId)
+    .map((focus) => focus.slug);
 }
 
 function mapByline(author: string | null): string {
-  const trimmed = author?.trim();
-  return trimmed || DEFAULT_PUBLICATION_BYLINE;
+  return author?.trim() ?? "";
 }
 
 function normalizeExternalUrl(value: string | null): string | null {
@@ -206,6 +186,9 @@ function isQualifiedPublicationPdf(
 function mapPublication(
   row: PublicationRow,
   media: PublishedPublicMedia | null,
+  hostedFocuses: Array<
+    PublishedFocusLabel & { featuredPublicationId: string | null }
+  >,
 ): PublishedPublication | null {
   if (!isPubliclyEligible(row)) {
     return null;
@@ -226,6 +209,12 @@ function mapPublication(
     availability = "html_only";
   }
 
+  const relatedFocuses = selectRelatedPublishedFocuses({
+    track: row.track,
+    publishedFocuses: hostedFocuses,
+    featuredOnSlugs: featuredSlugsForPublication(row.id, hostedFocuses),
+  });
+
   return {
     slug: row.slug,
     title: row.title,
@@ -238,12 +227,38 @@ function mapPublication(
     externalUrl,
     author: mapByline(row.author),
     track: row.track,
-    trackRelevance: getTrackRelevance(row.track),
-    relatedFocus: getRelatedFocus(row.track),
+    trackRelevance: formatFocusRelevanceLabels(relatedFocuses),
+    relatedFocuses: toRelatedFocuses(relatedFocuses),
     sortOrder: row.sort_order,
     availability,
     pdfUrl: availability === "pdf" ? pdfUrl : null,
   };
+}
+
+async function loadPublishedFocusLabels(): Promise<
+  Array<PublishedFocusLabel & { featuredPublicationId: string | null }>
+> {
+  const supabase = createPublicSupabaseClient();
+  const { data, error } = await supabase
+    .from("focus_pages")
+    .select("slug, nav_label, sort_order, status, featured_publication_id")
+    .eq("status", "published")
+    .order("sort_order", { ascending: true })
+    .order("nav_label", { ascending: true });
+
+  if (error || !data) {
+    return [];
+  }
+
+  return data
+    .filter((row) => row.status === "published")
+    .map((row) => ({
+      slug: row.slug.trim(),
+      label: row.nav_label.trim(),
+      sortOrder: row.sort_order,
+      featuredPublicationId: row.featured_publication_id,
+    }))
+    .filter((row) => row.slug && row.label);
 }
 
 async function resolvePublicationMedia(
@@ -269,10 +284,11 @@ export async function getPublishedPublications(): Promise<PublishedPublicationsR
     return { ok: false };
   }
 
+  const hostedFocuses = await loadPublishedFocusLabels();
   const mapped = await Promise.all(
     data.filter(isPubliclyEligible).map(async (row) => {
       const media = await resolvePublicationMedia(row);
-      return mapPublication(row, media);
+      return mapPublication(row, media, hostedFocuses);
     }),
   );
 
@@ -305,8 +321,11 @@ export async function getPublishedPublicationBySlug(
     return { ok: true, publication: null };
   }
 
-  const media = await resolvePublicationMedia(data);
-  const mapped = mapPublication(data, media);
+  const [media, hostedFocuses] = await Promise.all([
+    resolvePublicationMedia(data),
+    loadPublishedFocusLabels(),
+  ]);
+  const mapped = mapPublication(data, media, hostedFocuses);
 
   if (!mapped) {
     return { ok: true, publication: null };

@@ -3,6 +3,8 @@ import { CallToAction } from "@/components/ui/CallToAction";
 import { PageHero } from "@/components/ui/PageHero";
 import { AboutJourney } from "@/components/about/AboutJourney";
 import { AboutPortrait } from "@/components/about/AboutPortrait";
+import { AboutProfessionalContext } from "@/components/about/AboutProfessionalContext";
+import { aboutAlreadyIncludesLawDisclaimer } from "@/lib/content/professional-context";
 import { Container } from "@/components/layout/Container";
 import { getPublishedAboutPage } from "@/lib/content/about";
 import {
@@ -115,6 +117,13 @@ export default async function AboutPage() {
             <li key={item.id}>{item.body}</li>
           ))}
         </ul>
+
+        {aboutAlreadyIncludesLawDisclaimer({
+          paragraphs: about.paragraphs,
+          boundaryItems: about.boundaryItems,
+        }) ? null : (
+          <AboutProfessionalContext />
+        )}
 
         <div className="mt-14">
           <CallToAction />

@@ -15,7 +15,7 @@ export function WritingIndexCard({
 
   return (
     <article
-      className={`rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] ${featured ? "sm:p-8" : ""}`}
+      className={`rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-[border-color,box-shadow] duration-200 hover:border-ink/15 hover:shadow-[var(--shadow-hover)] ${featured ? "sm:p-8" : ""}`}
     >
       <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
         {publication.documentKindLabel} · {publication.yearLabel}
@@ -31,7 +31,9 @@ export function WritingIndexCard({
       >
         {publication.abstract}
       </p>
-      <p className="mt-4 text-sm text-ink-faint">{publication.trackRelevance}</p>
+      {publication.trackRelevance ? (
+        <p className="mt-5 text-sm font-medium text-ink">{publication.trackRelevance}</p>
+      ) : null}
       <p className="mt-2 text-sm text-ink-faint">
         {getAvailabilityLabel(publication.availability)}
       </p>

@@ -5,9 +5,11 @@ import { SiteHeader } from "./SiteHeader";
 export function SiteShell({
   children,
   profile,
+  releaseLabel = null,
 }: {
   children: React.ReactNode;
   profile: PublicSiteProfile | null;
+  releaseLabel?: string | null;
 }) {
   return (
     <>
@@ -18,7 +20,7 @@ export function SiteShell({
       <main id="main" className="flex-1">
         {children}
       </main>
-      <SiteFooter profile={profile} />
+      <SiteFooter profile={profile} releaseLabel={releaseLabel} />
     </>
   );
 }

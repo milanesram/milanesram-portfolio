@@ -18,12 +18,14 @@ export function CareerTrackCard({
   const body = (
     <>
       <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
-        Pathway
+        Resume option
       </p>
-      <h2 className="mt-3 font-serif text-2xl font-medium text-ink">{title}</h2>
+      <h2 className="mt-3 font-serif text-2xl font-medium tracking-tight text-ink">
+        {title}
+      </h2>
       <p className="mt-3 flex-1 text-base leading-7 text-ink-soft">{summary}</p>
       {href ? (
-        <span className="mt-6 text-sm font-medium text-accent group-hover:underline">
+        <span className="mt-6 text-sm font-medium text-accent transition-colors group-hover:underline">
           {ctaLabel}
         </span>
       ) : null}
@@ -31,7 +33,7 @@ export function CareerTrackCard({
   );
 
   const className =
-    "group flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-shadow hover:shadow-md";
+    "group flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-[border-color,box-shadow] duration-200 hover:border-ink/15 hover:shadow-[var(--shadow-hover)]";
 
   if (!href) {
     return <article className={className}>{body}</article>;

@@ -305,9 +305,29 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
       {!settings ? (
         <p className="text-sm text-ink-soft">
           No settings row yet. The first save creates the singleton. These
-          flags are public website configuration, not secrets.
+          values are public website configuration, not secrets.
         </p>
       ) : null}
+
+      <label className={labelClass}>
+        Release label
+        <input
+          name="release_label"
+          required
+          maxLength={80}
+          defaultValue={settings?.release_label ?? "Version 1.0"}
+          disabled={pending}
+          className={fieldClass}
+          aria-describedby="release-label-hint"
+        />
+        <span
+          id="release-label-hint"
+          className="mt-1 block text-xs font-normal text-ink-faint"
+        >
+          Public footer version. Example: Version 1.0. This is website
+          configuration, not a secret.
+        </span>
+      </label>
 
       <label className="flex items-start gap-3 text-sm font-medium text-ink">
         <input

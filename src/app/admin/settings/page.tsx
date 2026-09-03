@@ -27,9 +27,8 @@ export default async function AdminSettingsPage() {
         <h2 className="font-serif text-2xl text-ink">Site settings</h2>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
           Two singleton rows: <code>site_profile</code> (public identity when
-          published) and <code>site_settings</code> (public website flags).
-          There is no delete action. Public pages still use local content
-          until a later step switches them to the Supabase adapters.
+          published) and <code>site_settings</code> (public website flags and
+          the release label). There is no delete action.
         </p>
       </div>
 
@@ -63,8 +62,8 @@ export default async function AdminSettingsPage() {
           Website flags
         </h3>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
-          These two booleans are readable by anonymous visitors by design.
-          Do not add secrets to this table.
+          Contact, indexing, and the public version label are readable by
+          anonymous visitors by design. Do not add secrets to this table.
         </p>
         {settingsResult.error ? (
           <p role="alert" className="mt-6 text-sm text-danger">
