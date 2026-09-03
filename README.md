@@ -1,36 +1,269 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# milanesram.com — Professional Portfolio
 
-## Getting Started
+**Live site:** [https://milanesram.com](https://milanesram.com)
 
-First, run the development server:
+**Production Version 1.0** is the current public release.
+
+This repository contains the production portfolio and hosted content-management platform behind [milanesram.com](https://milanesram.com). It is published for professional review as a technical artifact relevant to cybersecurity, GRC, privacy, AI governance, information security, IT risk, and technology roles.
+
+---
+
+## Production Status
+
+| Item | Value |
+|---|---|
+| Production domain | [https://milanesram.com](https://milanesram.com) |
+| Canonical hostname | `milanesram.com` |
+| Release tag | `v1.0.0` |
+| Production release commit | `43b745ee546f68f5bc9d302dd2d0ace33cd9e019` |
+| Hosting | Vercel |
+| Database / content platform | Supabase |
+| Framework | Next.js + TypeScript |
+
+`v1.0.0` is the production-validated Version 1.0 release. Later commits on `main` may contain documentation or subsequent development work and should not be assumed to be the frozen production snapshot.
+
+---
+
+## Portfolio Areas
+
+The public site presents:
+
+- professional overview and biography
+- cybersecurity, GRC, and IT risk
+- privacy and AI governance
+- professional experience
+- projects
+- professional writing and publications
+- education
+- credentials
+- resume presentation
+
+An authenticated owner administration interface manages hosted portfolio content. Public visitors do not have access to that interface.
+
+---
+
+## Technology Stack
+
+- Next.js 16
+- TypeScript
+- React
+- Tailwind CSS
+- Supabase
+  - PostgreSQL
+  - Authentication
+  - Row-Level Security
+  - Storage
+- Vercel
+- Cloudflare DNS
+
+---
+
+## Architecture
+
+Public pages render published portfolio content through a Next.js application hosted on Vercel. The application reads and writes hosted records through Supabase. Public reads are constrained by PostgreSQL Row-Level Security. Owner administration uses authenticated server sessions. Privileged database procedures and server-only environment variables stay off the public client path.
+
+```mermaid
+flowchart LR
+  Visitor[Public Visitor]
+  Owner[Portfolio Owner]
+  App[Vercel / Next.js]
+  Auth[Supabase Auth]
+  DataAPI[Supabase Data API]
+  DB[PostgreSQL + RLS]
+  Storage[Supabase Storage]
+
+  Visitor --> App
+  Owner --> App
+  App --> Auth
+  App --> DataAPI
+  App --> Storage
+  DataAPI --> DB
+```
+
+This diagram describes the public architecture only. It does not include credentials, project IDs, internal URLs, or private infrastructure data.
+
+---
+
+## Security Design
+
+Security was treated as an architectural requirement, not a post-launch overlay.
+
+- PostgreSQL Row-Level Security is enabled on application tables.
+- Public data access is limited to published records.
+- Parent/child publication state is enforced so child records are not publicly readable unless the parent is also published.
+- Administration is restricted to an authenticated owner session.
+- Browser-safe and privileged Supabase clients are separated. The privileged client is server-only.
+- Privileged environment variables remain server-only and must never use a `NEXT_PUBLIC_` prefix.
+- No service-role credential is included in browser or client bundles.
+- Privileged database procedures have restricted execute grants.
+- `.env` files are excluded from Git.
+- Contact and public inquiry functionality remains disabled unless deliberately enabled through both hosted settings and server-only configuration.
+- SQL migrations are retained as source-controlled security and infrastructure history.
+
+The repository may document environment-variable names. It does not store production secret values.
+
+See [docs/SECURITY.md](docs/SECURITY.md).
+
+---
+
+## Content Architecture
+
+Version 1.0 moved substantial portfolio content into hosted Supabase-backed records. Representative managed areas include:
+
+- site profile
+- site settings
+- projects
+- project sections
+- professional experience
+- education
+- certifications
+- credentials
+- focus pages
+- publications
+- media assets
+
+Content can be revised through the owner CMS without a major application redesign, while publication behavior remains controlled by status fields and RLS.
+
+---
+
+## Supabase and Database Design
+
+Schema and policy history lives in [`supabase/migrations/`](supabase/migrations/).
+
+Migration history documents the evolution of:
+
+- content tables
+- owner authorization
+- Row-Level Security
+- public read policies
+- administrative access
+- project and experience relationships
+- publications
+- media
+- public inquiry safeguards
+- release-oriented content changes
+
+See [docs/SUPABASE_ARCHITECTURE.md](docs/SUPABASE_ARCHITECTURE.md).
+
+---
+
+## Administrative CMS
+
+The owner CMS is available only after authenticated sign-in. There is no public registration path.
+
+Representative management capabilities include:
+
+- projects
+- experience
+- education
+- certifications
+- credentials
+- publications
+- site settings
+- other hosted portfolio content such as home/about chrome, resume presentation, media metadata, and SEO
+
+See [docs/ADMIN_GUIDE.md](docs/ADMIN_GUIDE.md).
+
+---
+
+## Deployment
+
+Production is hosted on Vercel at the custom domain `milanesram.com`.
+
+Deployment practice includes:
+
+- environment-variable separation between browser-safe and server-only values
+- a controlled Supabase migration process
+- a canonical production domain
+- generated sitemap and robots configuration
+- production route validation
+- release tagging and source-control reconciliation against the frozen Version 1.0 commit
+
+See [docs/PRODUCTION_DEPLOYMENT_RUNBOOK.md](docs/PRODUCTION_DEPLOYMENT_RUNBOOK.md).
+
+---
+
+## Repository Structure
+
+```text
+.
+├── src/app                 # App Router: public pages, admin, sitemap, robots
+├── src/components          # Public and owner-admin UI
+├── src/lib                 # Content adapters, admin logic, Supabase clients
+├── supabase/migrations     # Schema, RLS, and content-history SQL
+├── docs                    # Architecture, security, admin, and deployment notes
+└── public                  # Static assets
+```
+
+---
+
+## Local Development
+
+Use Node.js and npm. Install dependencies from the repository root:
+
+```bash
+npm install
+```
+
+Create a local `.env.local` file. Do not commit it.
+
+Browser-safe environment names:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+Server-only environment names, if used:
+
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `CONTACT_RATE_LIMIT_SECRET`
+- `CONTACT_INTAKE_ENABLED`
+
+Privileged and server-only variables must never use the `NEXT_PUBLIC_` prefix.
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Documentation
 
-## Learn More
+- [docs/ADMIN_GUIDE.md](docs/ADMIN_GUIDE.md)
+- [docs/SECURITY.md](docs/SECURITY.md)
+- [docs/SUPABASE_ARCHITECTURE.md](docs/SUPABASE_ARCHITECTURE.md)
+- [docs/PRODUCTION_DEPLOYMENT_RUNBOOK.md](docs/PRODUCTION_DEPLOYMENT_RUNBOOK.md)
+- [docs/PRE_MIGRATION_READINESS_AUDIT.md](docs/PRE_MIGRATION_READINESS_AUDIT.md)
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Versioning
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### v1.0.0
 
-## Deploy on Vercel
+`v1.0.0` is the first production-validated public release.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Immutable production commit:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`43b745ee546f68f5bc9d302dd2d0ace33cd9e019`
+
+---
+
+## Security Reporting
+
+Do not disclose security issues through public GitHub issues.
+
+See [SECURITY.md](SECURITY.md).
+
+---
+
+## Copyright and Reuse
+
+This repository is publicly visible primarily for professional review, portfolio presentation, and technical demonstration. It is not an open-source software grant.
+
+See [COPYRIGHT.md](COPYRIGHT.md).
+
+**Production site:** [https://milanesram.com](https://milanesram.com)
