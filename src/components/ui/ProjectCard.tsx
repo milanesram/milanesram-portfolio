@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Project } from "@/content";
+import { projectCardEvidence } from "@/lib/content/project-card-evidence";
 
 export function ProjectCard({
   project,
@@ -8,10 +9,7 @@ export function ProjectCard({
   project: Project;
   featured?: boolean;
 }) {
-  const href =
-    project.slug === "privai-guard"
-      ? "/projects/privai-guard"
-      : `/projects#${project.slug}`;
+  const evidence = projectCardEvidence(project);
 
   return (
     <article
@@ -27,14 +25,42 @@ export function ProjectCard({
         {featured ? ` · ${project.yearLabel}` : null}
       </p>
       <p className="mt-4 text-base leading-7 text-ink-soft">{project.summary}</p>
+      {evidence.contribution ? (
+        <p className="mt-4 text-sm leading-6 text-ink">
+          <span className="font-medium">Role / contribution.</span>{" "}
+          {evidence.contribution}
+        </p>
+      ) : null}
+      {evidence.stack.length > 0 ? (
+        <ul className="mt-4 flex flex-wrap gap-2" aria-label="Stack">
+          {evidence.stack.map((item) => (
+            <li
+              key={item}
+              className="rounded-full border border-line px-3 py-1 font-mono text-xs text-ink-soft"
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      ) : null}
       <p className="mt-4 text-sm leading-6 text-ink">{project.limits}</p>
-      {project.slug === "privai-guard" ? (
+      {evidence.caseStudyCta ? (
         <Link
-          href={href}
+          href={evidence.href}
           className="mt-6 inline-flex text-sm font-medium text-accent hover:underline"
         >
           Read the PrivAI Guard case study
         </Link>
+      ) : null}
+      {evidence.source ? (
+        <a
+          href={evidence.source.href}
+          className="mt-6 inline-flex text-sm font-medium text-accent hover:underline"
+          target="_blank"
+          rel="noreferrer"
+        >
+          {evidence.source.label}
+        </a>
       ) : null}
     </article>
   );
