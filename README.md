@@ -2,7 +2,7 @@
 
 **Live site:** [https://milanesram.com](https://milanesram.com)
 
-**Production Version 1.0** is the current public release.
+**Production `v1.0.1`** is the current public release.
 
 This repository contains the production portfolio and hosted content-management platform behind [milanesram.com](https://milanesram.com). It is published for professional review as a technical artifact relevant to cybersecurity, GRC, privacy, AI governance, information security, IT risk, and technology roles.
 
@@ -14,13 +14,13 @@ This repository contains the production portfolio and hosted content-management 
 |---|---|
 | Production domain | [https://milanesram.com](https://milanesram.com) |
 | Canonical hostname | `milanesram.com` |
-| Release tag | `v1.0.0` |
-| Production release commit | `43b745ee546f68f5bc9d302dd2d0ace33cd9e019` |
+| Release tag | [`v1.0.1`](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.0.1) |
+| Production release commit | `0e850a906f8055923cbe0e88baf39114bfa4787b` |
 | Hosting | Vercel |
 | Database / content platform | Supabase |
 | Framework | Next.js + TypeScript |
 
-`v1.0.0` is the production-validated Version 1.0 release. Later commits on `main` may contain documentation or subsequent development work and should not be assumed to be the frozen production snapshot.
+`v1.0.1` is the current production-validated release. Later commits on `main` may contain documentation or subsequent development work and should not be assumed to be the frozen production snapshot. The initial Production release remains `v1.0.0`.
 
 ---
 
@@ -177,7 +177,7 @@ Deployment practice includes:
 - a canonical production domain
 - generated sitemap and robots configuration
 - production route validation
-- release tagging and source-control reconciliation against the frozen Version 1.0 commit
+- release tagging and source-control reconciliation against the frozen production release commit
 
 See [docs/PRODUCTION_DEPLOYMENT_RUNBOOK.md](docs/PRODUCTION_DEPLOYMENT_RUNBOOK.md).
 
@@ -242,6 +242,18 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Versioning
 
+### v1.0.1
+
+`v1.0.1` is the current Production release.
+
+Immutable production application commit:
+
+`0e850a906f8055923cbe0e88baf39114bfa4787b`
+
+GitHub Release: [v1.0.1](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.0.1)
+
+This is a focused SEO and canonical-metadata maintenance release. Optional CMS-backed publication SEO titles were added so eight Writing pages can emit concise search-result titles. Visible formal publication titles remain unchanged, as do Open Graph and Twitter titles. Public canonical URLs are pinned to `https://milanesram.com`. Vercel Preview hostnames are not used as SEO canonicals. Preview deployments remain `noindex`. Production remains indexable. Published PDF files were not modified.
+
 ### v1.0.0
 
 `v1.0.0` is the first production-validated public release.
@@ -249,6 +261,8 @@ Open [http://localhost:3000](http://localhost:3000).
 Immutable production commit:
 
 `43b745ee546f68f5bc9d302dd2d0ace33cd9e019`
+
+The historical Version 1.0 release branch is `release/portfolio-v1-preview`. It is not the current Production branch.
 
 ---
 
