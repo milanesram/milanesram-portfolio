@@ -10,6 +10,8 @@ import {
   parseHomePageFormData,
   statusFromIntent,
 } from "@/lib/admin/home/validation";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import { isPublishedStatus, singletonPagePaths } from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -246,7 +248,14 @@ export async function saveHomePageAction(
     }
   }
 
-  revalidateHome();
+  await completePublicCmsMutation({
+    revalidate: () => revalidateHome(),
+    paths: singletonPagePaths({
+      wasPublished: isPublishedStatus(existing.data?.status),
+      isPublished: isPublishedStatus(values.status),
+      path: "/",
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",

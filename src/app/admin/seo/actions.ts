@@ -7,6 +7,8 @@ import {
   statusFromIntent,
 } from "@/lib/admin/seo/validation";
 import { revalidateSeoSurfaces } from "@/lib/admin/seo/revalidate";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import { isPublishedStatus, seoPagePaths } from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -59,7 +61,16 @@ export async function savePageSeoAction(
     return { error: SAVE_FAILED, message: null };
   }
 
-  revalidateSeoSurfaces(input.pageKey);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateSeoSurfaces(input.pageKey),
+    paths: seoPagePaths({
+      pageKey: input.pageKey,
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: isPublishedStatus(
+        statusFromIntent(input.intent, existing.data.status),
+      ),
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",

@@ -23,6 +23,13 @@ import {
 } from "@/lib/admin/projects/validation";
 import { parseIndexChromeFormData } from "@/lib/admin/page-chrome/validation";
 import { revalidateProjectSurfaces } from "@/lib/admin/projects/revalidate";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import {
+  isPublishedStatus,
+  projectChildPaths,
+  projectPaths,
+  singletonPagePaths,
+} from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -72,6 +79,7 @@ export async function saveProjectAction(
 
   const input = parsed.value;
   let currentStatus: "draft" | "published" | "archived" | null = null;
+  let currentSlug: string | null = null;
 
   if (input.id) {
     const existing = await getAdminProject(auth.supabase, input.id);
@@ -81,6 +89,7 @@ export async function saveProjectAction(
     }
 
     currentStatus = existing.data.status;
+    currentSlug = existing.data.slug;
   }
 
   const status = statusFromIntent(input.intent, currentStatus);
@@ -109,7 +118,14 @@ export async function saveProjectAction(
       return { error: mapWriteError(error?.code), message: null };
     }
 
-    revalidateAdminProjects(data.id, input.slug);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateAdminProjects(data.id, input.slug),
+      paths: projectPaths({
+        wasPublished: false,
+        isPublished: isPublishedStatus(status),
+        slug: input.slug,
+      }),
+    });
     redirect(`/admin/projects/${data.id}`);
   }
 
@@ -122,7 +138,15 @@ export async function saveProjectAction(
     return { error: mapWriteError(error.code), message: null };
   }
 
-  revalidateAdminProjects(input.id, input.slug);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminProjects(input.id ?? undefined, input.slug),
+    paths: projectPaths({
+      wasPublished: isPublishedStatus(currentStatus),
+      isPublished: isPublishedStatus(status),
+      slug: input.slug,
+      oldSlug: currentSlug,
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -160,7 +184,14 @@ export async function deleteProjectAction(formData: FormData) {
     return;
   }
 
-  revalidateAdminProjects(id, existing.data.slug);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminProjects(id, existing.data?.slug),
+    paths: projectPaths({
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: false,
+      oldSlug: existing.data.slug,
+    }),
+  });
   redirect("/admin/projects");
 }
 
@@ -203,7 +234,15 @@ export async function saveProjectSectionAction(
       return { error: SECTION_FAILED, message: null };
     }
 
-    revalidateAdminProjects(input.projectId, project.data.slug);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateAdminProjects(input.projectId, project.data?.slug),
+      paths: projectChildPaths({
+        parentPublished: isPublishedStatus(project.data.status),
+        wasChildPublished: false,
+        isChildPublished: isPublishedStatus(input.status),
+        projectSlug: project.data.slug,
+      }),
+    });
     return { error: null, message: "Section added." };
   }
 
@@ -233,7 +272,15 @@ export async function saveProjectSectionAction(
     return { error: SECTION_FAILED, message: null };
   }
 
-  revalidateAdminProjects(input.projectId, project.data.slug);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminProjects(input.projectId, project.data?.slug),
+    paths: projectChildPaths({
+      parentPublished: isPublishedStatus(project.data.status),
+      wasChildPublished: isPublishedStatus(existing.data.status),
+      isChildPublished: isPublishedStatus(values.status),
+      projectSlug: project.data.slug,
+    }),
+  });
   return { error: null, message: "Section saved." };
 }
 
@@ -271,7 +318,16 @@ export async function deleteProjectSectionAction(formData: FormData) {
     .eq("project_id", parsed.value.projectId);
 
   const project = await getAdminProject(auth.supabase, parsed.value.projectId);
-  revalidateAdminProjects(parsed.value.projectId, project.data?.slug);
+  await completePublicCmsMutation({
+    revalidate: () =>
+      revalidateAdminProjects(parsed.value.projectId, project.data?.slug),
+    paths: projectChildPaths({
+      parentPublished: isPublishedStatus(project.data?.status),
+      wasChildPublished: isPublishedStatus(existing.data.status),
+      isChildPublished: false,
+      projectSlug: project.data?.slug,
+    }),
+  });
   redirect(`/admin/projects/${projectId}`);
 }
 
@@ -341,7 +397,18 @@ export async function moveProjectSectionAction(formData: FormData) {
     .eq("project_id", parsed.value.projectId);
 
   const project = await getAdminProject(auth.supabase, parsed.value.projectId);
-  revalidateAdminProjects(parsed.value.projectId, project.data?.slug);
+  await completePublicCmsMutation({
+    revalidate: () =>
+      revalidateAdminProjects(parsed.value.projectId, project.data?.slug),
+    paths: projectChildPaths({
+      parentPublished: isPublishedStatus(project.data?.status),
+      wasChildPublished:
+        isPublishedStatus(current.status) || isPublishedStatus(neighbor.status),
+      isChildPublished:
+        isPublishedStatus(current.status) || isPublishedStatus(neighbor.status),
+      projectSlug: project.data?.slug,
+    }),
+  });
   redirect(`/admin/projects/${parsed.value.projectId}`);
 }
 
@@ -436,7 +503,15 @@ export async function saveProjectMediaAction(
       return { error: mapMediaWriteError(error.code), message: null };
     }
 
-    revalidateAdminProjects(input.projectId, project.data.slug);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateAdminProjects(input.projectId, project.data?.slug),
+      paths: projectChildPaths({
+        parentPublished: isPublishedStatus(project.data.status),
+        wasChildPublished: false,
+        isChildPublished: isPublishedStatus(input.status),
+        projectSlug: project.data.slug,
+      }),
+    });
     return { error: null, message: "Screenshot attached." };
   }
 
@@ -466,7 +541,15 @@ export async function saveProjectMediaAction(
     return { error: mapMediaWriteError(error.code), message: null };
   }
 
-  revalidateAdminProjects(input.projectId, project.data.slug);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminProjects(input.projectId, project.data?.slug),
+    paths: projectChildPaths({
+      parentPublished: isPublishedStatus(project.data.status),
+      wasChildPublished: isPublishedStatus(existing.data.status),
+      isChildPublished: isPublishedStatus(values.status),
+      projectSlug: project.data.slug,
+    }),
+  });
   return { error: null, message: "Screenshot saved." };
 }
 
@@ -503,7 +586,16 @@ export async function deleteProjectMediaAction(formData: FormData) {
     .eq("project_id", parsed.value.projectId);
 
   const project = await getAdminProject(auth.supabase, parsed.value.projectId);
-  revalidateAdminProjects(parsed.value.projectId, project.data?.slug);
+  await completePublicCmsMutation({
+    revalidate: () =>
+      revalidateAdminProjects(parsed.value.projectId, project.data?.slug),
+    paths: projectChildPaths({
+      parentPublished: isPublishedStatus(project.data?.status),
+      wasChildPublished: isPublishedStatus(existing.data.status),
+      isChildPublished: false,
+      projectSlug: project.data?.slug,
+    }),
+  });
   redirect(`/admin/projects/${parsed.value.projectId}`);
 }
 
@@ -582,7 +674,18 @@ export async function moveProjectMediaAction(formData: FormData) {
     .eq("project_id", parsed.value.projectId);
 
   const project = await getAdminProject(auth.supabase, parsed.value.projectId);
-  revalidateAdminProjects(parsed.value.projectId, project.data?.slug);
+  await completePublicCmsMutation({
+    revalidate: () =>
+      revalidateAdminProjects(parsed.value.projectId, project.data?.slug),
+    paths: projectChildPaths({
+      parentPublished: isPublishedStatus(project.data?.status),
+      wasChildPublished:
+        isPublishedStatus(current.status) || isPublishedStatus(neighbor.status),
+      isChildPublished:
+        isPublishedStatus(current.status) || isPublishedStatus(neighbor.status),
+      projectSlug: project.data?.slug,
+    }),
+  });
   redirect(`/admin/projects/${parsed.value.projectId}`);
 }
 
@@ -642,8 +745,17 @@ export async function saveProjectsPageAction(
     }
   }
 
-  revalidatePath("/admin/projects");
-  revalidatePath("/projects");
+  await completePublicCmsMutation({
+    revalidate: () => {
+      revalidatePath("/admin/projects");
+      revalidatePath("/projects");
+    },
+    paths: singletonPagePaths({
+      wasPublished: isPublishedStatus(existing.data?.status),
+      isPublished: isPublishedStatus(values.status),
+      path: "/projects",
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",

@@ -5,9 +5,11 @@ import {
   INDEXNOW_KEY_LOCATION,
   INDEXNOW_MAX_URLS,
   canonicalIndexNowUrls,
+  completePublicCmsMutation,
   indexNowKeyTextResponse,
   normalizeIndexNowPath,
   normalizeIndexNowPaths,
+  notifyIndexNowAfterCmsMutation,
   submitIndexNowPaths,
 } from "./indexnow";
 
@@ -243,5 +245,91 @@ describe("IndexNow response handling", () => {
         fetchImpl: vi.fn().mockRejectedValue(new Error("offline")),
       }),
     ).resolves.toMatchObject({ ok: false, reason: "network-error" });
+  });
+});
+
+describe("CMS IndexNow notification wrapper", () => {
+  const production = {
+    VERCEL_ENV: "production",
+    INDEXNOW_KEY: "test-indexnow-key-0001",
+  };
+
+  it("does not submit an empty path list", async () => {
+    const fetchImpl = vi.fn();
+    const result = await notifyIndexNowAfterCmsMutation([], {
+      env: production,
+      fetchImpl,
+    });
+
+    expect(result).toMatchObject({ skipped: true, reason: "empty-paths" });
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("keeps CMS success when IndexNow returns 403", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response(null, { status: 403 }));
+    const cms = { error: null, message: "Published." };
+
+    await completePublicCmsMutation({
+      revalidate: () => undefined,
+      paths: ["/writing"],
+      notifyOptions: { env: production, fetchImpl },
+    });
+
+    expect(cms).toEqual({ error: null, message: "Published." });
+    expect(fetchImpl).toHaveBeenCalled();
+  });
+
+  it("does not fetch when given no paths after a failed write", async () => {
+    const fetchImpl = vi.fn();
+
+    await completePublicCmsMutation({
+      revalidate: () => undefined,
+      paths: [],
+      notifyOptions: { env: production, fetchImpl },
+    });
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("revalidates before notifying and isolates notifier exceptions", async () => {
+    const order: string[] = [];
+    const notify = vi.fn(async () => {
+      order.push("notify");
+      throw new Error("unexpected");
+    });
+
+    await expect(
+      completePublicCmsMutation({
+        revalidate: () => {
+          order.push("revalidate");
+        },
+        paths: ["/about"],
+        notify,
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(order).toEqual(["revalidate", "notify"]);
+  });
+
+  it("does not fetch in Preview through the CMS wrapper", async () => {
+    const fetchImpl = vi.fn();
+
+    await notifyIndexNowAfterCmsMutation(["/about"], {
+      env: { VERCEL_ENV: "preview", INDEXNOW_KEY: "test-indexnow-key-0001" },
+      fetchImpl,
+    });
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("does not fetch when the Production key is missing", async () => {
+    const fetchImpl = vi.fn();
+
+    await notifyIndexNowAfterCmsMutation(["/about"], {
+      env: { VERCEL_ENV: "production" },
+      fetchImpl,
+    });
+
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 });

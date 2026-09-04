@@ -10,6 +10,8 @@ import {
   statusFromIntent,
 } from "@/lib/admin/contact/validation";
 import { revalidateContactSurfaces } from "@/lib/admin/contact/revalidate";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import { isPublishedStatus, singletonPagePaths } from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -79,7 +81,14 @@ export async function saveContactPageAction(
     }
   }
 
-  revalidateContactSurfaces();
+  await completePublicCmsMutation({
+    revalidate: () => revalidateContactSurfaces(),
+    paths: singletonPagePaths({
+      wasPublished: isPublishedStatus(existing.data?.status),
+      isPublished: isPublishedStatus(values.status),
+      path: "/contact",
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",

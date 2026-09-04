@@ -12,6 +12,8 @@ import {
   parseSiteSettingsFormData,
   statusFromIntent,
 } from "@/lib/admin/settings/validation";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import { isPublishedStatus, profilePaths, settingsPaths } from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -93,8 +95,16 @@ export async function saveSiteProfileAction(
       return { error: mapWriteError(error.code, PROFILE_SAVE_FAILED), message: null };
     }
 
-    revalidateAdminSettings();
-    revalidatePublicSiteProfile();
+    await completePublicCmsMutation({
+      revalidate: () => {
+        revalidateAdminSettings();
+        revalidatePublicSiteProfile();
+      },
+      paths: profilePaths({
+        wasPublished: false,
+        isPublished: isPublishedStatus(values.status),
+      }),
+    });
 
     const messages: Record<typeof input.intent, string> = {
       draft: "Saved as draft.",
@@ -117,8 +127,16 @@ export async function saveSiteProfileAction(
     return { error: mapWriteError(error.code, PROFILE_SAVE_FAILED), message: null };
   }
 
-  revalidateAdminSettings();
-  revalidatePublicSiteProfile();
+  await completePublicCmsMutation({
+    revalidate: () => {
+      revalidateAdminSettings();
+      revalidatePublicSiteProfile();
+    },
+    paths: profilePaths({
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: isPublishedStatus(values.status),
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -164,6 +182,15 @@ export async function saveSiteSettingsAction(
     release_label: input.releaseLabel,
   };
 
+  const revalidateSettings = () => {
+    revalidateAdminSettings();
+    revalidatePublicSiteProfile();
+    revalidatePath("/robots.txt");
+    revalidatePath("/sitemap.xml");
+    revalidatePath("/contact");
+    revalidatePath("/admin/contact");
+  };
+
   if (!existing.data) {
     const { error } = await auth.supabase.from("site_settings").insert({
       ...values,
@@ -177,12 +204,10 @@ export async function saveSiteSettingsAction(
       };
     }
 
-    revalidateAdminSettings();
-    revalidatePublicSiteProfile();
-    revalidatePath("/robots.txt");
-    revalidatePath("/sitemap.xml");
-    revalidatePath("/contact");
-    revalidatePath("/admin/contact");
+    await completePublicCmsMutation({
+      revalidate: revalidateSettings,
+      paths: settingsPaths(),
+    });
     return { error: null, message: "Saved." };
   }
 
@@ -196,11 +221,9 @@ export async function saveSiteSettingsAction(
     return { error: mapWriteError(error.code, SETTINGS_SAVE_FAILED), message: null };
   }
 
-  revalidateAdminSettings();
-  revalidatePublicSiteProfile();
-  revalidatePath("/robots.txt");
-  revalidatePath("/sitemap.xml");
-  revalidatePath("/contact");
-  revalidatePath("/admin/contact");
+  await completePublicCmsMutation({
+    revalidate: revalidateSettings,
+    paths: settingsPaths(),
+  });
   return { error: null, message: "Saved." };
 }

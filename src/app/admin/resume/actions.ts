@@ -19,6 +19,12 @@ import {
   revalidateResumeSurfaces,
   revalidateResumeTrackSurfaces,
 } from "@/lib/admin/resume/revalidate";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import {
+  isPublishedStatus,
+  resumeTrackPaths,
+  singletonPagePaths,
+} from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -86,7 +92,14 @@ export async function saveResumePageAction(
     }
   }
 
-  revalidateResumeSurfaces();
+  await completePublicCmsMutation({
+    revalidate: () => revalidateResumeSurfaces(),
+    paths: singletonPagePaths({
+      wasPublished: isPublishedStatus(existing.data?.status),
+      isPublished: isPublishedStatus(values.status),
+      path: "/resume",
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -187,7 +200,13 @@ export async function saveResumeTrackAction(
       return { error: TRACK_FAILED, message: null };
     }
 
-    revalidateResumeTrackSurfaces(data.id);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateResumeTrackSurfaces(data.id),
+      paths: resumeTrackPaths({
+        wasPublished: false,
+        isPublished: isPublishedStatus(values.status),
+      }),
+    });
     redirect(`/admin/resume/${data.id}`);
   }
 
@@ -207,7 +226,13 @@ export async function saveResumeTrackAction(
     return { error: TRACK_FAILED, message: null };
   }
 
-  revalidateResumeTrackSurfaces(input.id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateResumeTrackSurfaces(input.id ?? undefined),
+    paths: resumeTrackPaths({
+      wasPublished: isPublishedStatus(currentStatus),
+      isPublished: isPublishedStatus(values.status),
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -245,6 +270,12 @@ export async function deleteResumeTrackAction(formData: FormData) {
     return;
   }
 
-  revalidateResumeTrackSurfaces();
+  await completePublicCmsMutation({
+    revalidate: () => revalidateResumeTrackSurfaces(),
+    paths: resumeTrackPaths({
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: false,
+    }),
+  });
   redirect("/admin/resume");
 }

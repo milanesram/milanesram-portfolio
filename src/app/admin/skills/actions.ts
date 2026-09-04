@@ -14,6 +14,8 @@ import {
   replaceCompetency,
   statusFromIntent,
 } from "@/lib/admin/skills/validation";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import { focusPagePaths, isPublishedStatus } from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -65,6 +67,7 @@ export async function saveFocusPageAction(
 
   const input = parsed.value;
   let currentStatus: "draft" | "published" | "archived" | null = null;
+  let currentSlug: string | null = null;
 
   if (input.id) {
     const existing = await getAdminFocusPage(auth.supabase, input.id);
@@ -74,6 +77,7 @@ export async function saveFocusPageAction(
     }
 
     currentStatus = existing.data.status;
+    currentSlug = existing.data.slug;
   }
 
   const experienceIds = input.experienceLinks.map((link) => link.experienceItemId);
@@ -221,7 +225,15 @@ export async function saveFocusPageAction(
     }
   }
 
-  revalidateFocusSurfaces(pageId);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateFocusSurfaces(pageId),
+    paths: focusPagePaths({
+      wasPublished: isPublishedStatus(currentStatus),
+      isPublished: isPublishedStatus(values.status),
+      slug: values.slug,
+      oldSlug: currentSlug,
+    }),
+  });
 
   if (!input.id) {
     redirect(`/admin/skills/${pageId}`);
@@ -263,7 +275,14 @@ export async function deleteFocusPageAction(formData: FormData) {
     return;
   }
 
-  revalidateFocusSurfaces(id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateFocusSurfaces(id),
+    paths: focusPagePaths({
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: false,
+      oldSlug: existing.data.slug,
+    }),
+  });
   redirect("/admin/skills");
 }
 
@@ -296,7 +315,14 @@ async function updateCompetencies(
     return { error: mapWriteError(error?.code), message: null };
   }
 
-  revalidateFocusSurfaces(pageId);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateFocusSurfaces(pageId),
+    paths: focusPagePaths({
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: isPublishedStatus(existing.data.status),
+      slug: existing.data.slug,
+    }),
+  });
   return { error: null, message: "Saved." };
 }
 
@@ -397,7 +423,14 @@ export async function deleteCompetencyAction(formData: FormData) {
     return;
   }
 
-  revalidateFocusSurfaces(parsed.value.pageId);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateFocusSurfaces(parsed.value.pageId),
+    paths: focusPagePaths({
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: isPublishedStatus(existing.data.status),
+      slug: existing.data.slug,
+    }),
+  });
 }
 
 export async function moveCompetencyAction(formData: FormData) {
@@ -438,5 +471,12 @@ export async function moveCompetencyAction(formData: FormData) {
     return;
   }
 
-  revalidateFocusSurfaces(parsed.value.pageId);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateFocusSurfaces(parsed.value.pageId),
+    paths: focusPagePaths({
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: isPublishedStatus(existing.data.status),
+      slug: existing.data.slug,
+    }),
+  });
 }

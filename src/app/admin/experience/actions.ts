@@ -19,6 +19,13 @@ import {
 import {
   parseIndexChromeFormData,
 } from "@/lib/admin/page-chrome/validation";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import {
+  experienceItemPaths,
+  experiencePaths,
+  isPublishedStatus,
+  singletonPagePaths,
+} from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -106,7 +113,13 @@ export async function saveExperienceAction(
       return { error: mapWriteError(error?.code), message: null };
     }
 
-    revalidateAdminExperience(data.id);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateAdminExperience(data.id),
+      paths: experiencePaths({
+        wasPublished: false,
+        isPublished: isPublishedStatus(values.status),
+      }),
+    });
     redirect(`/admin/experience/${data.id}`);
   }
 
@@ -119,7 +132,13 @@ export async function saveExperienceAction(
     return { error: mapWriteError(error.code), message: null };
   }
 
-  revalidateAdminExperience(input.id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminExperience(input.id ?? undefined),
+    paths: experiencePaths({
+      wasPublished: isPublishedStatus(currentStatus),
+      isPublished: isPublishedStatus(values.status),
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -157,7 +176,13 @@ export async function deleteExperienceAction(formData: FormData) {
     return;
   }
 
-  revalidateAdminExperience(id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminExperience(id),
+    paths: experiencePaths({
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: false,
+    }),
+  });
   redirect("/admin/experience");
 }
 
@@ -201,7 +226,14 @@ export async function saveExperienceItemAction(
       return { error: ITEM_FAILED, message: null };
     }
 
-    revalidateAdminExperience(input.experienceId);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateAdminExperience(input.experienceId),
+      paths: experienceItemPaths({
+        parentPublished: isPublishedStatus(experience.data.status),
+        wasPublished: false,
+        isPublished: isPublishedStatus(input.status),
+      }),
+    });
     return { error: null, message: "Item added." };
   }
 
@@ -232,7 +264,14 @@ export async function saveExperienceItemAction(
     return { error: ITEM_FAILED, message: null };
   }
 
-  revalidateAdminExperience(input.experienceId);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminExperience(input.experienceId),
+    paths: experienceItemPaths({
+      parentPublished: isPublishedStatus(experience.data.status),
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: isPublishedStatus(values.status),
+    }),
+  });
   return { error: null, message: "Item saved." };
 }
 
@@ -269,7 +308,18 @@ export async function deleteExperienceItemAction(formData: FormData) {
     .eq("id", parsed.value.itemId)
     .eq("experience_id", parsed.value.experienceId);
 
-  revalidateAdminExperience(parsed.value.experienceId);
+  const parent = await getAdminExperience(
+    auth.supabase,
+    parsed.value.experienceId,
+  );
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminExperience(parsed.value.experienceId),
+    paths: experienceItemPaths({
+      parentPublished: isPublishedStatus(parent.data?.status),
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: false,
+    }),
+  });
   redirect(`/admin/experience/${experienceId}`);
 }
 
@@ -338,7 +388,20 @@ export async function moveExperienceItemAction(formData: FormData) {
     .eq("id", neighbor.id)
     .eq("experience_id", parsed.value.experienceId);
 
-  revalidateAdminExperience(parsed.value.experienceId);
+  const parent = await getAdminExperience(
+    auth.supabase,
+    parsed.value.experienceId,
+  );
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminExperience(parsed.value.experienceId),
+    paths: experienceItemPaths({
+      parentPublished: isPublishedStatus(parent.data?.status),
+      wasPublished:
+        isPublishedStatus(current.status) || isPublishedStatus(neighbor.status),
+      isPublished:
+        isPublishedStatus(current.status) || isPublishedStatus(neighbor.status),
+    }),
+  });
   redirect(`/admin/experience/${parsed.value.experienceId}`);
 }
 
@@ -399,8 +462,17 @@ export async function saveExperiencePageAction(
     }
   }
 
-  revalidatePath("/admin/experience");
-  revalidatePath("/experience");
+  await completePublicCmsMutation({
+    revalidate: () => {
+      revalidatePath("/admin/experience");
+      revalidatePath("/experience");
+    },
+    paths: singletonPagePaths({
+      wasPublished: isPublishedStatus(existing.data?.status),
+      isPublished: isPublishedStatus(values.status),
+      path: "/experience",
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",

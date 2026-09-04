@@ -9,6 +9,8 @@ import {
   getAdminEducation,
 } from "@/lib/admin/education/queries";
 import { revalidateCredentialSurfaces } from "@/lib/admin/credentials/revalidate";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import { credentialPaths, isPublicCredential } from "@/lib/indexnow-content-map";
 import {
   parseEducationFormData,
   statusFromIntent,
@@ -56,6 +58,7 @@ export async function saveEducationAction(
 
   const input = parsed.value;
   let currentStatus: "draft" | "published" | "archived" | null = null;
+  let currentNeedsVerification = false;
 
   if (input.id) {
     const existing = await getAdminEducation(auth.supabase, input.id);
@@ -65,6 +68,7 @@ export async function saveEducationAction(
     }
 
     currentStatus = existing.data.status;
+    currentNeedsVerification = existing.data.needs_verification;
   }
 
   const values = {
@@ -93,7 +97,17 @@ export async function saveEducationAction(
       return { error: mapWriteError(error?.code), message: null };
     }
 
-    revalidateAdminEducation(data.id);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateAdminEducation(data.id),
+      paths: credentialPaths({
+        wasPublic: false,
+        isPublic: isPublicCredential({
+          status: values.status,
+          needsVerification: values.needs_verification,
+        }),
+        affectsAbout: true,
+      }),
+    });
     redirect(`/admin/education/${data.id}`);
   }
 
@@ -107,7 +121,20 @@ export async function saveEducationAction(
     return { error: mapWriteError(error.code), message: null };
   }
 
-  revalidateAdminEducation(input.id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminEducation(input.id ?? undefined),
+    paths: credentialPaths({
+      wasPublic: isPublicCredential({
+        status: currentStatus,
+        needsVerification: currentNeedsVerification,
+      }),
+      isPublic: isPublicCredential({
+        status: values.status,
+        needsVerification: values.needs_verification,
+      }),
+      affectsAbout: true,
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -149,6 +176,16 @@ export async function deleteEducationAction(formData: FormData) {
     return;
   }
 
-  revalidateAdminEducation(id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminEducation(id),
+    paths: credentialPaths({
+      wasPublic: isPublicCredential({
+        status: existing.data.status,
+        needsVerification: existing.data.needs_verification,
+      }),
+      isPublic: false,
+      affectsAbout: true,
+    }),
+  });
   redirect("/admin/education");
 }

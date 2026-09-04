@@ -12,6 +12,8 @@ import {
   statusFromIntent,
 } from "@/lib/admin/about/validation";
 import { revalidateAboutEducationSurfaces } from "@/lib/admin/credentials/revalidate";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import { isPublishedStatus, singletonPagePaths } from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -187,7 +189,14 @@ export async function saveAboutPageAction(
     }
   }
 
-  revalidateAbout();
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAbout(),
+    paths: singletonPagePaths({
+      wasPublished: isPublishedStatus(existing.data?.status),
+      isPublished: isPublishedStatus(values.status),
+      path: "/about",
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",

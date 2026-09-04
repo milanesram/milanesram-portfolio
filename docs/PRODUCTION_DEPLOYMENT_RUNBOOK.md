@@ -25,7 +25,7 @@ Do not treat this file as authorization to push, deploy, or enable search indexi
 | `SUPABASE_SERVICE_ROLE_KEY` | Only if contact intake is enabled | Never prefix `NEXT_PUBLIC_`. Used only for `submit_public_inquiry`. |
 | `CONTACT_INTAKE_ENABLED` | Optional | Must stay unset/false for Version 1.0 |
 | `CONTACT_RATE_LIMIT_SECRET` | Only with intake | Server-only HMAC secret |
-| `INDEXNOW_KEY` | Optional | Server-only IndexNow verification key. Served at `/indexnow-key.txt` when set. Automatic CMS URL submission is not enabled yet. Never `NEXT_PUBLIC_`. |
+| `INDEXNOW_KEY` | Optional | Server-only IndexNow verification key. Served at `/indexnow-key.txt` when set. Public CMS mutations notify IndexNow in source, but Production activation requires this key. Never `NEXT_PUBLIC_`. |
 
 ### Platform-provided
 

@@ -9,6 +9,8 @@ import {
   getAdminTraining,
 } from "@/lib/admin/training/queries";
 import { revalidateCredentialSurfaces } from "@/lib/admin/credentials/revalidate";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import { credentialPaths, isPublicCredential } from "@/lib/indexnow-content-map";
 import {
   parseTrainingFormData,
   statusFromIntent,
@@ -56,6 +58,7 @@ export async function saveTrainingAction(
 
   const input = parsed.value;
   let currentStatus: "draft" | "published" | "archived" | null = null;
+  let currentNeedsVerification = false;
 
   if (input.id) {
     const existing = await getAdminTraining(auth.supabase, input.id);
@@ -65,6 +68,7 @@ export async function saveTrainingAction(
     }
 
     currentStatus = existing.data.status;
+    currentNeedsVerification = existing.data.needs_verification;
   }
 
   const values = {
@@ -93,7 +97,16 @@ export async function saveTrainingAction(
       return { error: mapWriteError(error?.code), message: null };
     }
 
-    revalidateAdminTraining(data.id);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateAdminTraining(data.id),
+      paths: credentialPaths({
+        wasPublic: false,
+        isPublic: isPublicCredential({
+          status: values.status,
+          needsVerification: values.needs_verification,
+        }),
+      }),
+    });
     redirect(`/admin/training/${data.id}`);
   }
 
@@ -107,7 +120,19 @@ export async function saveTrainingAction(
     return { error: mapWriteError(error.code), message: null };
   }
 
-  revalidateAdminTraining(input.id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminTraining(input.id ?? undefined),
+    paths: credentialPaths({
+      wasPublic: isPublicCredential({
+        status: currentStatus,
+        needsVerification: currentNeedsVerification,
+      }),
+      isPublic: isPublicCredential({
+        status: values.status,
+        needsVerification: values.needs_verification,
+      }),
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -149,6 +174,15 @@ export async function deleteTrainingAction(formData: FormData) {
     return;
   }
 
-  revalidateAdminTraining(id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminTraining(id),
+    paths: credentialPaths({
+      wasPublic: isPublicCredential({
+        status: existing.data.status,
+        needsVerification: existing.data.needs_verification,
+      }),
+      isPublic: false,
+    }),
+  });
   redirect("/admin/training");
 }

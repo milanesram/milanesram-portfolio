@@ -20,6 +20,12 @@ import {
   revalidateWritingFocusSurfaces,
   revalidateWritingSurfaces,
 } from "@/lib/admin/writing/revalidate";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import {
+  isPublishedStatus,
+  publicationPaths,
+  singletonPagePaths,
+} from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -83,7 +89,14 @@ export async function saveWritingPageAction(
     }
   }
 
-  revalidateWritingSurfaces();
+  await completePublicCmsMutation({
+    revalidate: () => revalidateWritingSurfaces(),
+    paths: singletonPagePaths({
+      wasPublished: isPublishedStatus(existing.data?.status),
+      isPublished: isPublishedStatus(values.status),
+      path: "/writing",
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -214,7 +227,15 @@ export async function savePublicationAction(
       return { error: SAVE_FAILED, message: null };
     }
 
-    revalidateWritingSurfaces(values.slug);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateWritingSurfaces(values.slug),
+      paths: publicationPaths({
+        wasPublished: false,
+        isPublished: isPublishedStatus(values.status),
+        newSlug: values.slug,
+        track: values.track,
+      }),
+    });
     redirect(`/admin/writing/${data.id}`);
   }
 
@@ -235,13 +256,27 @@ export async function savePublicationAction(
     auth.supabase,
     input.id,
   );
-  revalidateWritingSurfaces(values.slug);
-  if (currentSlug && currentSlug !== values.slug) {
-    revalidateWritingSurfaces(currentSlug);
-  }
-  revalidateWritingFocusSurfaces(
-    (featured.data ?? []).map((row) => row.slug).filter(Boolean),
-  );
+  const featuredFocusSlugs = (featured.data ?? [])
+    .map((row) => row.slug)
+    .filter(Boolean);
+
+  await completePublicCmsMutation({
+    revalidate: () => {
+      revalidateWritingSurfaces(values.slug);
+      if (currentSlug && currentSlug !== values.slug) {
+        revalidateWritingSurfaces(currentSlug);
+      }
+      revalidateWritingFocusSurfaces(featuredFocusSlugs);
+    },
+    paths: publicationPaths({
+      wasPublished: isPublishedStatus(currentStatus),
+      isPublished: isPublishedStatus(values.status),
+      oldSlug: currentSlug,
+      newSlug: values.slug,
+      featuredFocusSlugs,
+      track: values.track,
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -280,9 +315,22 @@ export async function deletePublicationAction(formData: FormData) {
     return;
   }
 
-  revalidateWritingSurfaces(existing.data.slug);
-  revalidateWritingFocusSurfaces(
-    (featured.data ?? []).map((row) => row.slug).filter(Boolean),
-  );
+  const featuredFocusSlugs = (featured.data ?? [])
+    .map((row) => row.slug)
+    .filter(Boolean);
+
+  await completePublicCmsMutation({
+    revalidate: () => {
+      revalidateWritingSurfaces(existing.data?.slug);
+      revalidateWritingFocusSurfaces(featuredFocusSlugs);
+    },
+    paths: publicationPaths({
+      wasPublished: isPublishedStatus(existing.data.status),
+      isPublished: false,
+      oldSlug: existing.data.slug,
+      featuredFocusSlugs,
+      track: existing.data.track,
+    }),
+  });
   redirect("/admin/writing");
 }

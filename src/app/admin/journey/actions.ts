@@ -12,6 +12,8 @@ import {
   statusFromIntent,
 } from "@/lib/admin/journey/validation";
 import { canPublishJourneyMilestone } from "@/lib/content/about-page";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import { isPublishedStatus, journeyPaths } from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -106,7 +108,13 @@ export async function saveJourneyMilestoneAction(
       return { error: SAVE_FAILED, message: null };
     }
 
-    revalidateJourney(data.id);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateJourney(data.id),
+      paths: journeyPaths({
+        wasPublished: false,
+        isPublished: isPublishedStatus(nextStatus),
+      }),
+    });
     redirect(`/admin/journey/${data.id}`);
   }
 
@@ -119,7 +127,13 @@ export async function saveJourneyMilestoneAction(
     return { error: SAVE_FAILED, message: null };
   }
 
-  revalidateJourney(input.id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateJourney(input.id ?? undefined),
+    paths: journeyPaths({
+      wasPublished: isPublishedStatus(currentStatus),
+      isPublished: isPublishedStatus(nextStatus),
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",

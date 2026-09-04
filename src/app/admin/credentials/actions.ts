@@ -17,6 +17,13 @@ import {
   revalidateCredentialSurfaces,
   revalidateCredentialsPageSurfaces,
 } from "@/lib/admin/credentials/revalidate";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import {
+  credentialPaths,
+  isPublicCredential,
+  isPublishedStatus,
+  singletonPagePaths,
+} from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -52,6 +59,7 @@ export async function saveCredentialAction(
 
   const input = parsed.value;
   let currentStatus: "draft" | "published" | "archived" | null = null;
+  let currentNeedsVerification = false;
 
   if (input.id) {
     const existing = await getAdminCredential(auth.supabase, input.id);
@@ -61,6 +69,7 @@ export async function saveCredentialAction(
     }
 
     currentStatus = existing.data.status;
+    currentNeedsVerification = existing.data.needs_verification;
   }
 
   const values = {
@@ -89,7 +98,17 @@ export async function saveCredentialAction(
       return { error: mapWriteError(error?.code), message: null };
     }
 
-    revalidateCredentialSurfaces(data.id);
+    await completePublicCmsMutation({
+      revalidate: () => revalidateCredentialSurfaces(data.id),
+      paths: credentialPaths({
+        wasPublic: false,
+        isPublic: isPublicCredential({
+          status: values.status,
+          needsVerification: values.needs_verification,
+        }),
+        affectsAbout: input.kind === "degree",
+      }),
+    });
     redirect(`/admin/credentials/${data.id}`);
   }
 
@@ -102,7 +121,20 @@ export async function saveCredentialAction(
     return { error: mapWriteError(error.code), message: null };
   }
 
-  revalidateCredentialSurfaces(input.id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateCredentialSurfaces(input.id ?? undefined),
+    paths: credentialPaths({
+      wasPublic: isPublicCredential({
+        status: currentStatus,
+        needsVerification: currentNeedsVerification,
+      }),
+      isPublic: isPublicCredential({
+        status: values.status,
+        needsVerification: values.needs_verification,
+      }),
+      affectsAbout: input.kind === "degree",
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
@@ -140,7 +172,17 @@ export async function deleteCredentialAction(formData: FormData) {
     return;
   }
 
-  revalidateCredentialSurfaces(id);
+  await completePublicCmsMutation({
+    revalidate: () => revalidateCredentialSurfaces(id),
+    paths: credentialPaths({
+      wasPublic: isPublicCredential({
+        status: existing.data.status,
+        needsVerification: existing.data.needs_verification,
+      }),
+      isPublic: false,
+      affectsAbout: existing.data.kind === "degree",
+    }),
+  });
   redirect("/admin/credentials");
 }
 
@@ -203,7 +245,14 @@ export async function saveCredentialsPageAction(
     }
   }
 
-  revalidateCredentialsPageSurfaces();
+  await completePublicCmsMutation({
+    revalidate: () => revalidateCredentialsPageSurfaces(),
+    paths: singletonPagePaths({
+      wasPublished: isPublishedStatus(existing.data?.status),
+      isPublished: isPublishedStatus(values.status),
+      path: "/credentials",
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",

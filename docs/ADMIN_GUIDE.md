@@ -411,9 +411,9 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ---
 
-## 25b. IndexNow foundation
+## 25b. IndexNow
 
-Server-only `INDEXNOW_KEY` configures the public verification file at `/indexnow-key.txt`. Automatic CMS URL submission is not enabled in this foundation. Configure the key in Production before later activation. Never use `NEXT_PUBLIC_INDEXNOW_KEY`.
+Server-only `INDEXNOW_KEY` configures the public verification file at `/indexnow-key.txt`. Successful public CMS writes notify IndexNow after cache revalidation. Notification is Production-only, best-effort, and is not yet active because the Production key has not been configured. Never use `NEXT_PUBLIC_INDEXNOW_KEY`. IndexNow status is not shown in the CMS.
 
 ---
 

@@ -22,6 +22,8 @@ import {
 } from "@/lib/admin/media/upload";
 import { PUBLIC_MEDIA_BUCKET } from "@/lib/content/media-bucket";
 import type { MediaKind, MediaPurpose } from "@/lib/supabase/database.types";
+import { completePublicCmsMutation } from "@/lib/indexnow";
+import { isPublishedStatus, mediaPaths } from "@/lib/indexnow-content-map";
 
 export type MutationState = {
   error: string | null;
@@ -102,7 +104,23 @@ export async function saveMediaAction(
     return { error: mapWriteError(error.code), message: null };
   }
 
-  revalidateAdminMedia(existing.data.id);
+  const usage = await getMediaUsageCounts(
+    auth.supabase,
+    existing.data.id,
+    existing.data.purpose,
+  );
+  const nextStatus = statusFromIntent(input.intent, existing.data.status);
+
+  await completePublicCmsMutation({
+    revalidate: () => revalidateAdminMedia(existing.data?.id),
+    paths: mediaPaths({
+      wasPublic:
+        isPublishedStatus(existing.data.status) && existing.data.is_public,
+      isPublic: isPublishedStatus(nextStatus) && input.isPublic,
+      purpose: existing.data.purpose,
+      usage,
+    }),
+  });
 
   const messages: Record<typeof input.intent, string> = {
     draft: "Saved as draft.",
