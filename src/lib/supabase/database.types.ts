@@ -440,6 +440,7 @@ export type Database = {
           id: string;
           slug: string;
           title: string;
+          seo_title: string | null;
           document_kind: DocumentKind;
           rights_status: PublicationRightsStatus;
           author: string | null;
@@ -457,6 +458,7 @@ export type Database = {
           id?: string;
           slug: string;
           title: string;
+          seo_title?: string | null;
           document_kind: DocumentKind;
           rights_status?: PublicationRightsStatus;
           author?: string | null;

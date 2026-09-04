@@ -19,6 +19,7 @@ export type AdminPublication = {
   id: string;
   slug: string;
   title: string;
+  seo_title: string | null;
   document_kind: DocumentKind;
   rights_status: PublicationRightsStatus;
   author: string | null;
@@ -46,7 +47,7 @@ export type AdminPublicationMediaChoice = {
 
 const PAGE_COLUMNS = "id, status, kicker, headline, lede, updated_at";
 const PUBLICATION_COLUMNS =
-  "id, slug, title, document_kind, rights_status, author, publisher, published_on, year_label, abstract, external_url, track, status, sort_order, media_id, updated_at";
+  "id, slug, title, seo_title, document_kind, rights_status, author, publisher, published_on, year_label, abstract, external_url, track, status, sort_order, media_id, updated_at";
 
 export async function getAdminWritingPage(client: AdminClient) {
   return client

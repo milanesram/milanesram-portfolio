@@ -30,6 +30,7 @@ const TRACKS = new Set<TrackTag>(["all", "cybersecurity_grc", "privacy_ai"]);
 const LIMITS = {
   slug: 80,
   title: 200,
+  seoTitle: 70,
   publisher: 160,
   yearLabel: 32,
   abstract: 4000,
@@ -49,6 +50,7 @@ export type ParsedPublicationInput = {
   id: string | null;
   slug: string;
   title: string;
+  seoTitle: string | null;
   documentKind: DocumentKind;
   rightsStatus: PublicationRightsStatus;
   author: string | null;
@@ -144,6 +146,15 @@ export function parsePublicationFormData(
 
   const title = requiredText(formData, "title", LIMITS.title, "Title");
   if (!title.ok) return title;
+
+  const seoTitle = optionalText(
+    formData,
+    "seo_title",
+    LIMITS.seoTitle,
+    "SEO title",
+  );
+  if (!seoTitle.ok) return seoTitle;
+
   const publisher = requiredText(
     formData,
     "publisher",
@@ -248,6 +259,7 @@ export function parsePublicationFormData(
       id,
       slug: slug.value,
       title: title.value,
+      seoTitle: seoTitle.value,
       documentKind: kindRaw as DocumentKind,
       rightsStatus,
       author: author.value,

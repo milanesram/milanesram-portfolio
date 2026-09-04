@@ -95,4 +95,46 @@ describe("publication validation", () => {
       }).ok,
     ).toBe(true);
   });
+
+  it("treats omitted or blank SEO titles as null", () => {
+    const omitted = parsePublicationFormData(form(required));
+    expect(omitted.ok).toBe(true);
+    if (omitted.ok) {
+      expect(omitted.value.seoTitle).toBeNull();
+    }
+
+    const blank = parsePublicationFormData(form([...required, ["seo_title", "   "]]));
+    expect(blank.ok).toBe(true);
+    if (blank.ok) {
+      expect(blank.value.seoTitle).toBeNull();
+    }
+  });
+
+  it("trims a valid SEO title and accepts 70 characters", () => {
+    const parsed = parsePublicationFormData(
+      form([...required, ["seo_title", "  Privacy-Preserving ML for Global Healthcare AI  "]]),
+    );
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.value.seoTitle).toBe(
+        "Privacy-Preserving ML for Global Healthcare AI",
+      );
+      expect(parsed.value.title).toBe("NCSP Localization");
+    }
+
+    const atLimit = parsePublicationFormData(
+      form([...required, ["seo_title", "a".repeat(70)]]),
+    );
+    expect(atLimit.ok).toBe(true);
+    if (atLimit.ok) {
+      expect(atLimit.value.seoTitle).toBe("a".repeat(70));
+    }
+  });
+
+  it("rejects SEO titles longer than 70 characters", () => {
+    const parsed = parsePublicationFormData(
+      form([...required, ["seo_title", "a".repeat(71)]]),
+    );
+    expect(parsed.ok).toBe(false);
+  });
 });

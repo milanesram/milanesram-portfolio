@@ -65,6 +65,20 @@ export function PublicationForm({
         />
       </label>
       <label className={labelClass}>
+        SEO title
+        <input
+          name="seo_title"
+          maxLength={70}
+          defaultValue={publication?.seo_title ?? ""}
+          disabled={pending}
+          className={fieldClass}
+        />
+      </label>
+      <p className="text-sm leading-6 text-ink-soft">
+        Optional search/browser title. The published work title shown on the
+        site remains unchanged. Aim for 60 characters or fewer; maximum 70.
+      </p>
+      <label className={labelClass}>
         Slug
         <input
           name={slugLocked ? undefined : "slug"}

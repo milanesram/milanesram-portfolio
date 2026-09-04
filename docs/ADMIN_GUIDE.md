@@ -288,7 +288,7 @@ Approved types only: JPEG/PNG/WebP/AVIF images (8 MB) and PDFs (12 MB). Unsafe f
 
 1. Upload the PDF in Media when hosting a file. Keep it draft until the publication is ready.
 2. Open **Writing** (`/admin/writing`). Edit index kicker/headline/lede if needed.
-3. Create or edit publication metadata: title, type, year, summary, publisher, delivery mode, sort order.
+3. Create or edit publication metadata: title, optional SEO title (browser/search title only; the published work title stays unchanged), type, year, summary, publisher, delivery mode, sort order.
 4. Hosted PDF: relate an existing publication PDF. Link-only: HTTPS URL, no local PDF. The NCSP item stays external.
 5. Keep draft, review, then publish.
 6. Published slugs are locked because they are public URLs. Version 1.0 does not create silent redirects.

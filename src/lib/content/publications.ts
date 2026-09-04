@@ -33,7 +33,7 @@ export type { RelatedFocus };
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const PUBLICATION_SELECT =
-  "id, slug, title, document_kind, rights_status, author, publisher, published_on, year_label, abstract, external_url, track, status, sort_order, media_id" as const;
+  "id, slug, title, seo_title, document_kind, rights_status, author, publisher, published_on, year_label, abstract, external_url, track, status, sort_order, media_id" as const;
 
 const DOCUMENT_KIND_LABELS: Record<DocumentKind, string> = {
   publication: "Publication",
@@ -49,6 +49,7 @@ export type PublicationAvailability = "pdf" | "external" | "html_only";
 export type PublishedPublication = {
   slug: string;
   title: string;
+  seoTitle: string | null;
   documentKind: DocumentKind;
   documentKindLabel: string;
   publisher: string;
@@ -84,6 +85,7 @@ type PublicationRow = {
   id: string;
   slug: string;
   title: string;
+  seo_title: string | null;
   document_kind: DocumentKind;
   rights_status: PublicationRightsStatus;
   author: string | null;
@@ -218,6 +220,7 @@ function mapPublication(
   return {
     slug: row.slug,
     title: row.title,
+    seoTitle: row.seo_title?.trim() || null,
     documentKind: row.document_kind,
     documentKindLabel: getDocumentKindLabel(row.document_kind),
     publisher: row.publisher,

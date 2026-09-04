@@ -184,6 +184,7 @@ export async function savePublicationAction(
   const values = {
     slug: input.slug,
     title: input.title,
+    seo_title: input.seoTitle,
     document_kind: input.documentKind,
     rights_status: input.rightsStatus,
     author: input.author,

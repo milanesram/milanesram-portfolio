@@ -4,7 +4,11 @@ import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
 import { WritingDetail } from "@/components/writing/WritingDetail";
 import { getPublishedPublicationBySlug } from "@/lib/content/publications";
-import { createPageMetadata, withPublicRobots } from "@/lib/metadata";
+import {
+  createPageMetadata,
+  createPublicationDetailMetadata,
+  withPublicRobots,
+} from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -33,11 +37,12 @@ export async function generateMetadata({
   }
 
   return withPublicRobots(
-    createPageMetadata(
-      result.publication.title,
-      result.publication.abstract,
-      `/writing/${result.publication.slug}`,
-    ),
+    createPublicationDetailMetadata({
+      title: result.publication.title,
+      seoTitle: result.publication.seoTitle,
+      abstract: result.publication.abstract,
+      slug: result.publication.slug,
+    }),
   );
 }
 
