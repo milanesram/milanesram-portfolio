@@ -1,15 +1,32 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { isEligibleResumeMedia, mapResumeTrack } from "./resume-page";
-import type { ResumeTrackRow } from "./resume-page";
+import {
+  isEligibleResumeMedia,
+  mapResumeTrack,
+  resumeTracksHavePublicFiles,
+  PUBLIC_RESUME_CTA_LABEL,
+  UNAVAILABLE_RESUME_LABEL,
+} from "./resume-page";
+import type { ResumeMediaRow, ResumeTrackRow } from "./resume-page";
 
-const ASSET = {
+const ASSET: ResumeMediaRow = {
   id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
   kind: "resume_pdf",
   purpose: "resume",
   title: "Resume A",
   mime_type: "application/pdf",
   bucket_path: "resume/a/resume-a.pdf",
-  status: "published" as const,
+  status: "published",
+  is_public: true,
+};
+
+const PRIVACY_ASSET: ResumeMediaRow = {
+  id: "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
+  kind: "resume_pdf",
+  purpose: "resume",
+  title: "Resume B",
+  mime_type: "application/pdf",
+  bucket_path: "resume/b/resume-b.pdf",
+  status: "published",
   is_public: true,
 };
 
@@ -30,6 +47,9 @@ function track(overrides: Partial<ResumeTrackRow> = {}): ResumeTrackRow {
   };
 }
 
+const publicUrlFor = (bucketPath: string) =>
+  `https://example.supabase.co/storage/v1/object/public/public-media/${bucketPath}`;
+
 describe("resume track mapping", () => {
   const previous = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
@@ -47,6 +67,7 @@ describe("resume track mapping", () => {
     expect(mapped?.deliveryMode).toBe("request");
     expect(mapped?.href).toBe("/focus/cybersecurity-grc");
     expect(mapped?.media).toBeNull();
+    expect(mapped?.unavailable).toBe(false);
     expect(mapped?.homeKicker).toBe("Resume A");
     expect(mapped?.focusSlug).toBe("cybersecurity-grc");
   });
@@ -61,7 +82,108 @@ describe("resume track mapping", () => {
     );
 
     expect(mapped?.media).toBeNull();
-    expect(mapped?.href).toBe("/focus/cybersecurity-grc");
+    expect(mapped?.href).toBeNull();
+    expect(mapped?.unavailable).toBe(true);
+    expect(mapped?.ctaLabel).toBe(UNAVAILABLE_RESUME_LABEL);
+  });
+
+  it("maps the Cybersecurity / GRC track to its public resume PDF", () => {
+    const mapped = mapResumeTrack(
+      track({
+        delivery_mode: "public_file",
+        media_assets: ASSET,
+      }),
+      publicUrlFor,
+    );
+
+    expect(mapped?.slug).toBe("cybersecurity-grc");
+    expect(mapped?.ctaLabel).toBe(PUBLIC_RESUME_CTA_LABEL);
+    expect(mapped?.unavailable).toBe(false);
+    expect(mapped?.href).toBe(publicUrlFor(ASSET.bucket_path));
+    expect(mapped?.media).toEqual({
+      id: ASSET.id,
+      title: ASSET.title,
+      publicUrl: publicUrlFor(ASSET.bucket_path),
+      mimeType: "application/pdf",
+    });
+  });
+
+  it("maps the Privacy / AI Governance track to its public resume PDF", () => {
+    const mapped = mapResumeTrack(
+      track({
+        id: "22222222-2222-4222-8222-222222222222",
+        slug: "privacy-ai-governance",
+        title: "Privacy / AI Governance",
+        home_kicker: "Resume B",
+        delivery_mode: "public_file",
+        focus_pages: { slug: "privacy-ai-governance", status: "published" },
+        media_assets: PRIVACY_ASSET,
+      }),
+      publicUrlFor,
+    );
+
+    expect(mapped?.slug).toBe("privacy-ai-governance");
+    expect(mapped?.ctaLabel).toBe(PUBLIC_RESUME_CTA_LABEL);
+    expect(mapped?.href).toBe(publicUrlFor(PRIVACY_ASSET.bucket_path));
+    expect(mapped?.media?.id).toBe(PRIVACY_ASSET.id);
+    expect(mapped?.href).not.toBe(publicUrlFor(ASSET.bucket_path));
+  });
+
+  it("does not return a comprehensive CV or other non-resume document", () => {
+    const mapped = mapResumeTrack(
+      track({
+        delivery_mode: "public_file",
+        media_assets: {
+          ...ASSET,
+          kind: "document",
+          purpose: "publication",
+          title: "Comprehensive CV",
+          bucket_path: "private-source/RAMilanes_CV_08292026.docx",
+        },
+      }),
+      publicUrlFor,
+    );
+
+    expect(mapped?.media).toBeNull();
+    expect(mapped?.href).toBeNull();
+    expect(mapped?.unavailable).toBe(true);
+  });
+
+  it("does not create a broken URL when the public URL helper returns null", () => {
+    const mapped = mapResumeTrack(
+      track({
+        delivery_mode: "public_file",
+        media_assets: ASSET,
+      }),
+      () => null,
+    );
+
+    expect(mapped?.media).toBeNull();
+    expect(mapped?.href).toBeNull();
+    expect(mapped?.ctaLabel).toBe(UNAVAILABLE_RESUME_LABEL);
+    expect(mapped?.unavailable).toBe(true);
+  });
+
+  it("does not expose unpublished or private resume media as a download", () => {
+    const unpublished = mapResumeTrack(
+      track({
+        delivery_mode: "public_file",
+        media_assets: { ...ASSET, status: "draft" },
+      }),
+      publicUrlFor,
+    );
+    const privateAsset = mapResumeTrack(
+      track({
+        delivery_mode: "public_file",
+        media_assets: { ...ASSET, is_public: false },
+      }),
+      publicUrlFor,
+    );
+
+    expect(unpublished?.href).toBeNull();
+    expect(unpublished?.media).toBeNull();
+    expect(privateAsset?.href).toBeNull();
+    expect(privateAsset?.media).toBeNull();
   });
 
   it("maps one, two, or three hosted tracks without assuming a pair", () => {
@@ -97,6 +219,7 @@ describe("resume track mapping", () => {
     ]);
     expect(tracks.every((item) => item.deliveryMode === "request")).toBe(true);
     expect(tracks.every((item) => item.media === null)).toBe(true);
+    expect(resumeTracksHavePublicFiles(tracks)).toBe(false);
   });
 
   it("requires published public resume PDFs", () => {
@@ -109,5 +232,22 @@ describe("resume track mapping", () => {
         "https://example.test/file.pdf",
       ),
     ).toBe(false);
+  });
+
+  it("treats tracks with a public file as recruiter-ready", () => {
+    const cyber = mapResumeTrack(
+      track({ delivery_mode: "public_file", media_assets: ASSET }),
+      publicUrlFor,
+    );
+    const privacy = mapResumeTrack(
+      track({
+        slug: "privacy-ai-governance",
+        delivery_mode: "public_file",
+        media_assets: PRIVACY_ASSET,
+      }),
+      publicUrlFor,
+    );
+
+    expect(resumeTracksHavePublicFiles([cyber!, privacy!])).toBe(true);
   });
 });

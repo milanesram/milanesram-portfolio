@@ -76,6 +76,38 @@ describe("formatExperienceDateRange", () => {
     });
   });
 
+  it("renders an active month-level leadership role as Present", () => {
+    expect(
+      formatExperienceDateRange({
+        date_precision: "month",
+        start_date: "2026-01-01",
+        end_date: null,
+        start_year: null,
+        end_year: null,
+        is_current: true,
+      }),
+    ).toEqual({
+      startLabel: "January 2026",
+      endLabel: "Present",
+    });
+  });
+
+  it("uses Present for a current role even if an end date remains stored", () => {
+    expect(
+      formatExperienceDateRange({
+        date_precision: "month",
+        start_date: "2026-01-01",
+        end_date: "2026-12-01",
+        start_year: null,
+        end_year: null,
+        is_current: true,
+      }),
+    ).toEqual({
+      startLabel: "January 2026",
+      endLabel: "Present",
+    });
+  });
+
   it("preserves month-level closed roles", () => {
     expect(
       formatExperienceDateRange({

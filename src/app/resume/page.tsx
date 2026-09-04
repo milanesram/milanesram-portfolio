@@ -6,6 +6,7 @@ import {
   getPublishedResumePage,
   getPublishedResumeTracks,
 } from "@/lib/content/resume";
+import { resumeTracksHavePublicFiles } from "@/lib/content/resume-page";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import {
   profileFromPublishedResult,
@@ -31,6 +32,7 @@ export default async function ResumePage() {
   const workAuthorization = visibleWorkAuthorization(profile?.workAuthorization);
   const page = pageResult.ok ? pageResult.page : null;
   const tracks = tracksResult.ok ? tracksResult.tracks : [];
+  const hasPublicFiles = resumeTracksHavePublicFiles(tracks);
 
   if (!pageResult.ok || !page) {
     return (
@@ -50,34 +52,61 @@ export default async function ResumePage() {
       <Container className="py-16">
         <ResumeTracks tracks={tracks} />
         <p className="mt-8 text-sm leading-6 text-ink-soft">
-          {page.requestIntro}
-          {contact ? (
-            <>
-              {" "}
-              by email at{" "}
-              <a className="text-accent hover:underline" href={contact.mailtoHref}>
-                {contact.email}
-              </a>{" "}
-              or via{" "}
-              <a
-                className="text-accent hover:underline"
-                href={contact.linkedinUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                LinkedIn
-              </a>
-            </>
+          {hasPublicFiles ? (
+            contact ? (
+              <>
+                <a className="text-accent hover:underline" href={contact.mailtoHref}>
+                  {contact.email}
+                </a>
+                {" · "}
+                <a
+                  className="text-accent hover:underline"
+                  href={contact.linkedinUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  LinkedIn
+                </a>
+                . {page.requestFootnote}
+              </>
+            ) : (
+              page.requestFootnote
+            )
           ) : (
-            " through the contact page"
+            <>
+              {page.requestIntro}
+              {contact ? (
+                <>
+                  {" "}
+                  by email at{" "}
+                  <a className="text-accent hover:underline" href={contact.mailtoHref}>
+                    {contact.email}
+                  </a>{" "}
+                  or via{" "}
+                  <a
+                    className="text-accent hover:underline"
+                    href={contact.linkedinUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    LinkedIn
+                  </a>
+                </>
+              ) : (
+                " through the contact page"
+              )}
+              . {page.requestFootnote}
+            </>
           )}
-          . {page.requestFootnote}
         </p>
         {workAuthorization ? (
           <p className="mt-4 text-sm text-ink-faint">{workAuthorization}</p>
         ) : null}
         <div className="mt-12">
-          <CallToAction title={page.closingHeading} lede={page.closingLede} />
+          <CallToAction
+            title={hasPublicFiles ? undefined : page.closingHeading}
+            lede={hasPublicFiles ? undefined : page.closingLede}
+          />
         </div>
       </Container>
     </>

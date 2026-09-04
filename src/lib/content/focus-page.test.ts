@@ -185,7 +185,7 @@ describe("experience UUID relationships", () => {
     ]);
   });
 
-  it("omits unpublished items and does not match bodies at runtime", () => {
+  it("omits unpublished items and does not invent fallback copy", () => {
     const page = toPublicFocusPage({
       row: CYBER_ROW,
       experienceLinks: [
@@ -203,7 +203,41 @@ describe("experience UUID relationships", () => {
     expect(page.experience[0]?.bullets).toEqual([
       { body: "Second selected bullet.", tracks: ["all"] },
     ]);
+    expect(page.experience[0]?.bullets.length).toBeGreaterThan(0);
     expect(toPublicFocusPage.toString()).not.toMatch(/bulletBodies|=== body/);
+    expect(toPublicFocusPage.toString()).not.toMatch(
+      /Assessed cybersecurity, privacy-compliance/,
+    );
+  });
+
+  it("keeps only the remaining hosted bullet when a duplicate link is omitted", () => {
+    const page = toPublicFocusPage({
+      row: {
+        ...CYBER_ROW,
+        slug: "privacy-ai-governance",
+        nav_label: "Privacy / AI Governance",
+      },
+      experienceLinks: [
+        { experience_item_id: ITEM_A.id, sort_order: 10 },
+      ],
+      experienceItems: [
+        {
+          ...ITEM_A,
+          body: "Assessed cybersecurity, privacy-compliance, and technology-risk issues and advised on control implementation and critical-infrastructure protection.",
+        },
+      ],
+      experienceParents: [PARENT],
+      credentialLinks: [],
+      credentials: [],
+      featuredProject: null,
+      featuredPublication: null,
+    });
+
+    expect(page.experience).toHaveLength(1);
+    expect(page.experience[0]?.bullets).toHaveLength(1);
+    expect(page.experience[0]?.bullets[0]?.body).toBe(
+      "Assessed cybersecurity, privacy-compliance, and technology-risk issues and advised on control implementation and critical-infrastructure protection.",
+    );
   });
 });
 

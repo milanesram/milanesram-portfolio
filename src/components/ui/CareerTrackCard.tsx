@@ -6,6 +6,7 @@ type CareerTrackCardProps = {
   href?: string | null;
   ctaLabel?: string;
   external?: boolean;
+  unavailable?: boolean;
 };
 
 export function CareerTrackCard({
@@ -14,6 +15,7 @@ export function CareerTrackCard({
   href,
   ctaLabel = "View this profile",
   external = false,
+  unavailable = false,
 }: CareerTrackCardProps) {
   const body = (
     <>
@@ -24,10 +26,12 @@ export function CareerTrackCard({
         {title}
       </h2>
       <p className="mt-3 flex-1 text-base leading-7 text-ink-soft">{summary}</p>
-      {href ? (
+      {href && !unavailable ? (
         <span className="mt-6 text-sm font-medium text-accent transition-colors group-hover:underline">
           {ctaLabel}
         </span>
+      ) : unavailable ? (
+        <span className="mt-6 text-sm text-ink-faint">{ctaLabel}</span>
       ) : null}
     </>
   );
@@ -35,7 +39,7 @@ export function CareerTrackCard({
   const className =
     "group flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-[border-color,box-shadow] duration-200 hover:border-ink/15 hover:shadow-[var(--shadow-hover)]";
 
-  if (!href) {
+  if (!href || unavailable) {
     return <article className={className}>{body}</article>;
   }
 

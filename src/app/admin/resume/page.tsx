@@ -27,8 +27,8 @@ export default async function AdminResumePage() {
         <div>
           <h2 className="font-serif text-2xl text-ink">Resume page</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft">
-            Headline, request copy, and closing CTA. Public SEO is managed
-            separately. Version 1.0 delivery stays request-based.
+            Headline, contact copy, and closing CTA. Public SEO is managed
+            separately. Public-file tracks can attach an approved recruiter PDF.
           </p>
         </div>
         {pageResult.error ? (

@@ -29,9 +29,13 @@ export type PublicResumeTrack = {
   ctaLabel: string;
   deliveryMode: ResumeDeliveryMode;
   media: PublicResumeMedia | null;
+  unavailable: boolean;
   homeKicker: string | null;
   focusSlug: string | null;
 };
+
+export const PUBLIC_RESUME_CTA_LABEL = "View resume";
+export const UNAVAILABLE_RESUME_LABEL = "Resume PDF being updated";
 
 export type ResumePageRow = {
   status: ContentStatus;
@@ -102,6 +106,12 @@ export function isEligibleResumeMedia(
   );
 }
 
+export function resumeTracksHavePublicFiles(
+  tracks: PublicResumeTrack[],
+): boolean {
+  return tracks.some((track) => track.media !== null);
+}
+
 export function mapResumePage(row: ResumePageRow): PublicResumePage | null {
   if (!isPublishedStatus(row.status)) {
     return null;
@@ -160,21 +170,37 @@ export function mapResumeTrack(
       : null;
 
   const deliveryMode = row.delivery_mode;
-  const downloadable = deliveryMode === "public_file" && media;
+  const downloadable = deliveryMode === "public_file" && media !== null;
+  const unavailable = deliveryMode === "public_file" && !downloadable;
+  const focusSlug =
+    focus && isPublishedStatus(focus.status) && focus.slug.trim()
+      ? focus.slug.trim()
+      : null;
+
+  let trackHref = href;
+  let ctaLabel = row.request_cta_label.trim();
+  let publicMedia: PublicResumeMedia | null = null;
+
+  if (downloadable && media) {
+    trackHref = media.publicUrl;
+    ctaLabel = PUBLIC_RESUME_CTA_LABEL;
+    publicMedia = media;
+  } else if (unavailable) {
+    trackHref = null;
+    ctaLabel = UNAVAILABLE_RESUME_LABEL;
+  }
 
   return {
     id: row.id,
     slug: row.slug,
     title,
     summary,
-    href: downloadable ? media.publicUrl : href,
-    ctaLabel: downloadable ? "Download resume" : row.request_cta_label.trim(),
+    href: trackHref,
+    ctaLabel,
     deliveryMode,
-    media: downloadable ? media : null,
+    media: publicMedia,
+    unavailable,
     homeKicker: row.home_kicker?.trim() || null,
-    focusSlug:
-      focus && isPublishedStatus(focus.status) && focus.slug.trim()
-        ? focus.slug.trim()
-        : null,
+    focusSlug,
   };
 }

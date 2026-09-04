@@ -37,4 +37,14 @@ describe("resume page copy assumptions", () => {
     expect(RESUME_PAGE_SOURCE).not.toMatch(/Resume A|Resume B/);
     expect(RESUME_PAGE_SOURCE).toContain("ResumeTracks");
   });
+
+  it("does not require recruiter authentication", () => {
+    expect(RESUME_PAGE_SOURCE).not.toContain("requireAdminMutation");
+    expect(RESUME_PAGE_SOURCE).not.toContain("/admin/login");
+  });
+
+  it("hides request-first copy once a public resume file exists", () => {
+    expect(RESUME_PAGE_SOURCE).toContain("resumeTracksHavePublicFiles");
+    expect(RESUME_PAGE_SOURCE).not.toContain("Download resume");
+  });
 });

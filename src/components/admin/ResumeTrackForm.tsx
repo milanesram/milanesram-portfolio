@@ -114,8 +114,9 @@ export function ResumeTrackForm({
         </select>
       </label>
       <p className="text-sm leading-6 text-ink-soft">
-        Public-file mode only renders a download when the selected media is a
-        published, public resume PDF. Version 1.0 tracks should stay on request.
+        Public-file mode opens the selected published, public resume PDF in a
+        new tab as View resume. Unpublished, private, or non-PDF files do not
+        become downloadable. The comprehensive CV must stay off these tracks.
       </p>
       <label className={labelClass}>
         Resume file

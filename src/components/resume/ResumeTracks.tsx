@@ -17,6 +17,7 @@ export function ResumeTracks({ tracks }: { tracks: PublicResumeTrack[] }) {
           href={track.href}
           ctaLabel={track.ctaLabel}
           external={Boolean(track.media)}
+          unavailable={track.unavailable}
         />
       ))}
     </div>
