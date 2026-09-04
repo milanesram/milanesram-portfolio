@@ -2,7 +2,7 @@
 
 **Live site:** [https://milanesram.com](https://milanesram.com)
 
-**Production `v1.0.1`** is the current public release.
+**Production `v1.0.2`** is the current public release.
 
 This repository contains the production portfolio and hosted content-management platform behind [milanesram.com](https://milanesram.com). It is published for professional review as a technical artifact relevant to cybersecurity, GRC, privacy, AI governance, information security, IT risk, and technology roles.
 
@@ -14,13 +14,13 @@ This repository contains the production portfolio and hosted content-management 
 |---|---|
 | Production domain | [https://milanesram.com](https://milanesram.com) |
 | Canonical hostname | `milanesram.com` |
-| Release tag | [`v1.0.1`](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.0.1) |
-| Production release commit | `0e850a906f8055923cbe0e88baf39114bfa4787b` |
+| Release tag | [`v1.0.2`](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.0.2) |
+| Production release commit | `8f467892e7851d79cba1a983f08506df4aa767f0` |
 | Hosting | Vercel |
 | Database / content platform | Supabase |
 | Framework | Next.js + TypeScript |
 
-`v1.0.1` is the current production-validated release. Later commits on `main` may contain documentation or subsequent development work and should not be assumed to be the frozen production snapshot. The initial Production release remains `v1.0.0`.
+`v1.0.2` is the current production-validated release. Later commits on `main` may contain documentation or subsequent development work and should not be assumed to be the frozen production snapshot. The previous Production release remains `v1.0.1`. The initial Production release remains `v1.0.0`.
 
 ---
 
@@ -219,6 +219,8 @@ Server-only environment names, if used:
 - `CONTACT_INTAKE_ENABLED`
 - `INDEXNOW_KEY`
 
+Production uses `INDEXNOW_KEY` for IndexNow. Preview and Development do not need it under the current deployment policy. Never use `NEXT_PUBLIC_INDEXNOW_KEY`.
+
 Privileged and server-only variables must never use the `NEXT_PUBLIC_` prefix.
 
 Start the development server:
@@ -243,9 +245,21 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Versioning
 
+### v1.0.2
+
+`v1.0.2` is the current Production release.
+
+Immutable production application commit:
+
+`8f467892e7851d79cba1a983f08506df4aa767f0`
+
+GitHub Release: [v1.0.2](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.0.2)
+
+This is a focused IndexNow and SEO-discovery infrastructure release. A server-only IndexNow helper maps public CMS mutations to canonical `https://milanesram.com` routes and sends best-effort notifications after successful publish, update, unpublish, and delete writes. Submissions run only when `VERCEL_ENV` is `production`. Preview, local development, and local production builds do not submit. IndexNow failures cannot cause a successful CMS write to fail. `INDEXNOW_KEY` is Production-only. The public verification endpoint is `/indexnow-key.txt`. Search-engine receipt does not guarantee indexing. Canonical URLs, robots, sitemap behavior, publication content, PDFs, and formal publication titles remain as in `v1.0.1`.
+
 ### v1.0.1
 
-`v1.0.1` is the current Production release.
+`v1.0.1` is the previous SEO and canonical-metadata maintenance release.
 
 Immutable production application commit:
 
