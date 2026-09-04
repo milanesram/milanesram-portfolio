@@ -10,3 +10,9 @@ export function isVercelPreviewDeployment(
 ): boolean {
   return env.VERCEL_ENV === "preview";
 }
+
+export function isVercelProductionDeployment(
+  env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,
+): boolean {
+  return env.VERCEL_ENV === "production";
+}

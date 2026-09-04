@@ -217,6 +217,7 @@ Server-only environment names, if used:
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `CONTACT_RATE_LIMIT_SECRET`
 - `CONTACT_INTAKE_ENABLED`
+- `INDEXNOW_KEY`
 
 Privileged and server-only variables must never use the `NEXT_PUBLIC_` prefix.
 

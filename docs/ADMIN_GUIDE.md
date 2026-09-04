@@ -411,6 +411,12 @@ Use **Log out**. The session cookies are cleared and the browser returns to `/ad
 
 ---
 
+## 25b. IndexNow foundation
+
+Server-only `INDEXNOW_KEY` configures the public verification file at `/indexnow-key.txt`. Automatic CMS URL submission is not enabled in this foundation. Configure the key in Production before later activation. Never use `NEXT_PUBLIC_INDEXNOW_KEY`.
+
+---
+
 ## 26. Proposed content script
 
 `supabase/content/privai_guard_project.sql` inserts the approved public PrivAI Guard project and seven sections if they are absent.
