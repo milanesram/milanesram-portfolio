@@ -7,10 +7,8 @@ import {
 
 export function SiteFooter({
   profile,
-  releaseLabel = null,
 }: {
   profile: PublicSiteProfile | null;
-  releaseLabel?: string | null;
 }) {
   const identity = selectFooterIdentity(profile);
 
@@ -24,11 +22,6 @@ export function SiteFooter({
           ) : null}
           {identity.workAuthorization ? (
             <p className="mt-4 text-sm text-ink-faint">{identity.workAuthorization}</p>
-          ) : null}
-          {releaseLabel ? (
-            <p className="mt-5 text-xs tracking-[0.08em] text-ink-faint">
-              {releaseLabel}
-            </p>
           ) : null}
         </div>
 

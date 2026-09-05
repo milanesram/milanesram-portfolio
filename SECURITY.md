@@ -4,7 +4,7 @@
 
 The current production release is supported. Historical and development branches should not automatically be treated as supported production releases.
 
-The production-validated Version 1.0 release is tagged `v1.0.0`.
+The current production-validated release is tagged `v1.1.0`. The initial Production release remains `v1.0.0`.
 
 ## Reporting a Vulnerability
 

@@ -2,7 +2,7 @@
 
 **Live site:** [https://milanesram.com](https://milanesram.com)
 
-**Production `v1.0.2`** is the current public release.
+**Production `v1.1.0`** is the current public release.
 
 This repository contains the production portfolio and hosted content-management platform behind [milanesram.com](https://milanesram.com). It is published for professional review as a technical artifact relevant to cybersecurity, GRC, privacy, AI governance, information security, IT risk, and technology roles.
 
@@ -14,13 +14,13 @@ This repository contains the production portfolio and hosted content-management 
 |---|---|
 | Production domain | [https://milanesram.com](https://milanesram.com) |
 | Canonical hostname | `milanesram.com` |
-| Release tag | [`v1.0.2`](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.0.2) |
-| Production release commit | `8f467892e7851d79cba1a983f08506df4aa767f0` |
+| Public repository | [https://github.com/milanesram/milanesram-portfolio](https://github.com/milanesram/milanesram-portfolio) |
+| Release tag | [`v1.1.0`](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.1.0) |
 | Hosting | Vercel |
 | Database / content platform | Supabase |
 | Framework | Next.js + TypeScript |
 
-`v1.0.2` is the current production-validated release. Later commits on `main` may contain documentation or subsequent development work and should not be assumed to be the frozen production snapshot. The previous Production release remains `v1.0.1`. The initial Production release remains `v1.0.0`.
+`v1.1.0` is the current production-validated release. The previous Production release remains `v1.0.2`. `v1.0.1` and `v1.0.0` remain historical Production releases.
 
 ---
 
@@ -245,9 +245,17 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Versioning
 
+### v1.1.0
+
+`v1.1.0` is the current Production release.
+
+GitHub Release: [v1.1.0](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.1.0)
+
+This release improves recruiter-facing evidence on the live portfolio: two focused public resumes with direct PDF delivery, stronger project contribution statements, production portfolio/CMS engineering evidence with a public GitHub source CTA, supporting project evidence on Home, an evidence-first PrivAI Guard case-study presentation, and an accessibility correction for faint metadata contrast. PrivAI Guard remains a non-production capstone MVP.
+
 ### v1.0.2
 
-`v1.0.2` is the current Production release.
+`v1.0.2` is the previous IndexNow and SEO-discovery infrastructure release.
 
 Immutable production application commit:
 

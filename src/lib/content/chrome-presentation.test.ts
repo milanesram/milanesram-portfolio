@@ -39,11 +39,11 @@ describe("header brand chrome", () => {
 });
 
 describe("footer chrome", () => {
-  it("renders hosted identity and version without a law disclaimer", () => {
+  it("renders hosted identity without a public version label or law disclaimer", () => {
     expect(FOOTER_SOURCE).toContain("selectFooterIdentity");
     expect(FOOTER_SOURCE).toContain("identity.displayName");
     expect(FOOTER_SOURCE).toContain("identity.headline");
-    expect(FOOTER_SOURCE).toContain("releaseLabel");
+    expect(FOOTER_SOURCE).not.toContain("releaseLabel");
     expect(FOOTER_SOURCE).not.toContain("Licensed to Practice Law");
     expect(FOOTER_SOURCE).not.toContain("Rainier (Ram) Milanes");
     expect(FOOTER_SOURCE).not.toContain(
