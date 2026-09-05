@@ -2,7 +2,7 @@
 
 **Live site:** [https://milanesram.com](https://milanesram.com)
 
-**Production `v1.1.0`** is the current public release.
+**Production `v1.1.1`** is the current public release.
 
 This repository contains the production portfolio and hosted content-management platform behind [milanesram.com](https://milanesram.com). It is published for professional review as a technical artifact relevant to cybersecurity, GRC, privacy, AI governance, information security, IT risk, and technology roles.
 
@@ -15,12 +15,12 @@ This repository contains the production portfolio and hosted content-management 
 | Production domain | [https://milanesram.com](https://milanesram.com) |
 | Canonical hostname | `milanesram.com` |
 | Public repository | [https://github.com/milanesram/milanesram-portfolio](https://github.com/milanesram/milanesram-portfolio) |
-| Release tag | [`v1.1.0`](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.1.0) |
+| Release tag | [`v1.1.1`](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.1.1) |
 | Hosting | Vercel |
 | Database / content platform | Supabase |
 | Framework | Next.js + TypeScript |
 
-`v1.1.0` is the current production-validated release. The previous Production release remains `v1.0.2`. `v1.0.1` and `v1.0.0` remain historical Production releases.
+`v1.1.1` is the current production-validated release. The previous Production release remains `v1.1.0`. `v1.0.2`, `v1.0.1`, and `v1.0.0` remain historical Production releases.
 
 ---
 
@@ -245,9 +245,17 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Versioning
 
+### v1.1.1
+
+`v1.1.1` is the current Production release.
+
+GitHub Release: [v1.1.1](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.1.1)
+
+This patch adds baseline response-header hardening with `X-Content-Type-Options: nosniff` and an explicit `strict-origin-when-cross-origin` Referrer-Policy on Next.js-owned application responses, including public HTML and generated JavaScript/CSS. It does not add a Content Security Policy, and it does not apply these headers to externally hosted Supabase Storage PDFs or media objects.
+
 ### v1.1.0
 
-`v1.1.0` is the current Production release.
+`v1.1.0` is the previous employer-facing evidence and accessibility-contrast release.
 
 GitHub Release: [v1.1.0](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.1.0)
 

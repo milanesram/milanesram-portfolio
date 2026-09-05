@@ -4,7 +4,9 @@
 
 The current production release is supported. Historical and development branches should not automatically be treated as supported production releases.
 
-The current production-validated release is tagged `v1.1.0`. The initial Production release remains `v1.0.0`.
+The current production-validated release is tagged `v1.1.1`. The previous Production release remains `v1.1.0`. The initial Production release remains `v1.0.0`.
+
+`v1.1.1` adds two baseline browser response headers on Next.js-owned application responses: `X-Content-Type-Options: nosniff` and `Referrer-Policy: strict-origin-when-cross-origin`. This is not a Content Security Policy, frame-ancestors policy, or Permissions-Policy. Externally hosted Supabase Storage objects are not expected to inherit these application headers.
 
 ## Reporting a Vulnerability
 
