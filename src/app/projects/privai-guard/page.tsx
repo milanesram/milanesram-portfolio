@@ -3,7 +3,15 @@ import { CallToAction } from "@/components/ui/CallToAction";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
+import { PrivaiGuardEarlyEvidence } from "@/components/projects/PrivaiGuardEarlyEvidence";
 import { ProjectWorkflowGallery } from "@/components/projects/ProjectWorkflowGallery";
+import {
+  PRIVAI_PAGE_DESCRIPTION,
+  privaiHeroBoundary,
+  privaiSectionAnchorId,
+  selectPrivaiEarlyCapabilities,
+  selectPrivaiEarlyPreview,
+} from "@/lib/content/privai-evidence";
 import {
   getPublishedProjectBySlug,
   toPresentationProject,
@@ -19,7 +27,7 @@ export async function generateMetadata() {
   return withPublicRobots(
     createPageMetadata(
       "PrivAI Guard",
-      "Shadow AI privacy-risk triage capstone MVP — structured assessment, human review, remediation, and audit evidence. Non-production, synthetic data only.",
+      PRIVAI_PAGE_DESCRIPTION,
       "/projects/privai-guard",
     ),
   );
@@ -34,6 +42,12 @@ export default async function PrivaiGuardPage() {
 
   const view = toPresentationProject(project);
   const sections = project.sections.map(toPresentationSection);
+  const earlyCapabilities = selectPrivaiEarlyCapabilities(
+    project.sections,
+    project.media,
+  );
+  const earlyPreview = selectPrivaiEarlyPreview(project.media);
+  const hasWorkflowSection = sections.some((section) => section.id === "workflow");
 
   return (
     <>
@@ -42,46 +56,49 @@ export default async function PrivaiGuardPage() {
         title={view.name}
         lede={view.summary}
       >
-        <p className="max-w-2xl rounded-xl bg-accent-soft px-4 py-3 text-sm leading-6 text-ink">
-          {view.limits}
+        <p className="max-w-2xl text-base leading-7 text-ink">
+          <span className="font-medium">Role:</span> {view.role}
+        </p>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-soft">
+          {privaiHeroBoundary(view.limits)}
         </p>
       </PageHero>
       <Container narrow className="py-16">
-        <p className="text-sm text-ink-faint">Role: {view.role}</p>
+        <PrivaiGuardEarlyEvidence
+          capabilities={earlyCapabilities}
+          stack={view.stack}
+          preview={earlyPreview}
+        />
 
-        {sections.map((section) => (
-          <div key={section.id}>
-            <section className="mt-12">
-              <h2 className="font-serif text-2xl font-medium text-ink">
-                {section.heading}
-              </h2>
-              <p className="mt-4 whitespace-pre-line leading-8 text-ink-soft">
-                {section.body}
-              </p>
-            </section>
-            {section.id === "workflow" ? (
-              <ProjectWorkflowGallery items={project.media} />
-            ) : null}
-          </div>
-        ))}
+        {sections.map((section) => {
+          const anchorId = privaiSectionAnchorId(section.id);
 
-        {sections.every((section) => section.id !== "workflow") ? (
-          <ProjectWorkflowGallery items={project.media} />
+          return (
+            <div key={section.id}>
+              <section className="mt-12 scroll-mt-24" id={anchorId}>
+                <h2 className="font-serif text-2xl font-medium text-ink">
+                  {section.heading}
+                </h2>
+                <p className="mt-4 whitespace-pre-line leading-8 text-ink-soft">
+                  {section.body}
+                </p>
+              </section>
+              {section.id === "workflow" ? (
+                <ProjectWorkflowGallery
+                  items={project.media}
+                  preloadFirst={!earlyPreview}
+                />
+              ) : null}
+            </div>
+          );
+        })}
+
+        {!hasWorkflowSection ? (
+          <ProjectWorkflowGallery
+            items={project.media}
+            preloadFirst={!earlyPreview}
+          />
         ) : null}
-
-        <section className="mt-12">
-          <h2 className="font-serif text-2xl font-medium text-ink">Stack</h2>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {view.stack.map((item) => (
-              <li
-                key={item}
-                className="rounded-full border border-line px-3 py-1 font-mono text-xs text-ink-soft"
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
-        </section>
 
         <div className="mt-16 space-y-6">
           <ButtonLink href={MICROSITE_URL} variant="secondary" external>
