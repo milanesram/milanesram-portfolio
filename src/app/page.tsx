@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeFlagshipProject } from "@/components/home/HomeFlagshipProject";
+import { HomeSupportingProjects } from "@/components/home/HomeSupportingProjects";
 import { CredentialCard } from "@/components/ui/CredentialCard";
 import { ExperiencePreview } from "@/components/ui/ExperiencePreview";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -13,6 +14,7 @@ import {
   HOME_FOCUS_CARD_CTA_LABEL,
 } from "@/lib/content/focus";
 import { getPublishedHomePage } from "@/lib/content/home";
+import { getPublishedHomeSupportingProjects } from "@/lib/content/home-supporting-projects";
 import { getPublishedResumeTracks } from "@/lib/content/resume";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import {
@@ -32,14 +34,21 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [homeResult, portraitResult, profileResult, focusResult, tracksResult] =
-    await Promise.all([
-      getPublishedHomePage(),
-      getPublishedPublicMediaAssetsByPurpose("portrait"),
-      getPublishedSiteProfile(),
-      getPublishedFocusPages(),
-      getPublishedResumeTracks(),
-    ]);
+  const [
+    homeResult,
+    portraitResult,
+    profileResult,
+    focusResult,
+    tracksResult,
+    supportingProjects,
+  ] = await Promise.all([
+    getPublishedHomePage(),
+    getPublishedPublicMediaAssetsByPurpose("portrait"),
+    getPublishedSiteProfile(),
+    getPublishedFocusPages(),
+    getPublishedResumeTracks(),
+    getPublishedHomeSupportingProjects(),
+  ]);
 
   const portrait = selectPublishedPortrait(portraitResult);
   const profile = profileFromPublishedResult(profileResult);
@@ -133,7 +142,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section className="border-y border-line py-20">
+      <section className="border-y border-line py-20" aria-label="Selected work">
         <Container>
           {home.featuredProject ? (
             <HomeFlagshipProject flagship={home.featuredProject} />
@@ -142,6 +151,7 @@ export default async function HomePage() {
               Featured work is temporarily unavailable.
             </p>
           )}
+          <HomeSupportingProjects projects={supportingProjects} />
         </Container>
       </section>
 
