@@ -2,7 +2,7 @@
 
 **Live site:** [https://milanesram.com](https://milanesram.com)
 
-**Production `v1.1.1`** is the current public release.
+**Production `v1.2.0`** is the current public release.
 
 This repository contains the production portfolio and hosted content-management platform behind [milanesram.com](https://milanesram.com). It is published for professional review as a technical artifact relevant to cybersecurity, GRC, privacy, AI governance, information security, IT risk, and technology roles.
 
@@ -15,12 +15,12 @@ This repository contains the production portfolio and hosted content-management 
 | Production domain | [https://milanesram.com](https://milanesram.com) |
 | Canonical hostname | `milanesram.com` |
 | Public repository | [https://github.com/milanesram/milanesram-portfolio](https://github.com/milanesram/milanesram-portfolio) |
-| Release tag | [`v1.1.1`](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.1.1) |
+| Release tag | [`v1.2.0`](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.2.0) |
 | Hosting | Vercel |
 | Database / content platform | Supabase |
 | Framework | Next.js + TypeScript |
 
-`v1.1.1` is the current production-validated release. The previous Production release remains `v1.1.0`. `v1.0.2`, `v1.0.1`, and `v1.0.0` remain historical Production releases.
+`v1.2.0` is the current production-validated release. The previous Production release remains `v1.1.1`. `v1.1.0`, `v1.0.2`, `v1.0.1`, and `v1.0.0` remain historical Production releases.
 
 ---
 
@@ -245,9 +245,28 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Versioning
 
+### v1.2.0
+
+`v1.2.0` is the current Production release.
+
+GitHub Release: [v1.2.0](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.2.0)
+
+This is a public portfolio content/governance release, not a major product-feature release. It freezes the V3.1 career-content baseline after production verification: canonical employment titles and designations, Northwestern MSIS coursework, PrivAI Guard three-state positioning (validated non-production MVP; production-oriented re-engineering in progress; planned/unreleased functionality), practitioner footer positioning, public Resume A/B V3.1 PDFs, and resume media byte-size metadata.
+
+| Checkpoint | Value |
+|---|---|
+| Frozen Git commit | `79838b8df98759a36e52b18858d7ed3ed645bbf2` |
+| Production deployment | `dpl_9cRqNFoMfxyoJe8D4zUiVrdxGZtN` |
+| Canonical domain | `https://milanesram.com` |
+| Hosted migrations | through `20260906140000`; none pending |
+| Resume A SHA-256 | `0cddff39fc89ab5f2bcef98e90ded3d7273c37de802c26a5d269af8e4c70e939` |
+| Resume B SHA-256 | `3f1b2f863ccfd0a21772ce10fbe4142f1f52f4895d02a9c3d7eeef8b06341903` |
+
+**Portfolio V3.1 career-content baseline is frozen.** Future broad repositioning is not required. Later changes to this baseline should be event-driven, such as new employment, newly verified credentials, released project functionality, validated PrivAI Guard production milestones, new publications, or a materially changed professional direction.
+
 ### v1.1.1
 
-`v1.1.1` is the current Production release.
+`v1.1.1` is the previous baseline security-header release.
 
 GitHub Release: [v1.1.1](https://github.com/milanesram/milanesram-portfolio/releases/tag/v1.1.1)
 
