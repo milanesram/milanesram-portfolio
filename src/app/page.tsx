@@ -212,7 +212,6 @@ export default async function HomePage() {
                 <ExperiencePreview
                   key={experience.id}
                   experience={experience}
-                  showTitleSecondary={false}
                 />
               ))
             ) : (

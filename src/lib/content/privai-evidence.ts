@@ -40,7 +40,7 @@ export const PRIVAI_COMPACT_BOUNDARY =
   "Non-production MSIS capstone MVP. Synthetic demonstration data only. Human governance review — not automated legal or regulatory decisioning.";
 
 export const PRIVAI_PAGE_DESCRIPTION =
-  "Shadow AI privacy-risk triage MVP with structured assessment, human review, remediation, and audit evidence. Non-production capstone; synthetic data only.";
+  "Shadow AI governance MVP with structured assessment, human review, remediation, and audit evidence. Non-production capstone; synthetic data only.";
 
 export const PRIVAI_VISUAL_EVIDENCE_HEADING_ID =
   "project-visual-evidence-heading";

@@ -114,5 +114,23 @@ describe("project section presentation ids", () => {
         sortOrder: 60,
       }).id,
     ).toBe("professional-evidence");
+    expect(
+      toPresentationSection({
+        id: "section-3",
+        heading: "Current Development — Production-Oriented Re-engineering",
+        body: "Production-oriented re-engineering is in progress.",
+        track: "all",
+        sortOrder: 80,
+      }).id,
+    ).toBe("current-development");
+    expect(
+      toPresentationSection({
+        id: "section-4",
+        heading: "Planned / developing capabilities — not yet released",
+        body: "Unreleased capabilities remain identified as planned.",
+        track: "all",
+        sortOrder: 90,
+      }).id,
+    ).toBe("planned-capabilities");
   });
 });

@@ -15,7 +15,7 @@ import {
 
 const HOSTED_PUBLISHED_ROW: HostedSiteProfileFields = {
   display_name: "Rainier (Ram) Milanes",
-  headline: "Cybersecurity, GRC, IT risk, and privacy professional.",
+  headline: "Cybersecurity, GRC, IT risk, data privacy, and AI governance practitioner.",
   summary:
     "Cybersecurity, GRC, IT-risk, and privacy professional. I earned a Northwestern MSIS (Security Specialization) and combine governance and privacy experience with hands-on technical development through PrivAI Guard, a non-production Shadow AI governance capstone.",
   work_authorization: "",
@@ -30,7 +30,7 @@ describe("hosted profile mapping", () => {
       displayName: "Rainier (Ram) Milanes",
       shortName: "Ram Milanes",
       initials: "RM",
-      headline: "Cybersecurity, GRC, IT risk, and privacy professional.",
+      headline: "Cybersecurity, GRC, IT risk, data privacy, and AI governance practitioner.",
       summary: HOSTED_PUBLISHED_ROW.summary,
       email: "milanesram@gmail.com",
       linkedinUrl: "https://www.linkedin.com/in/milanesram/",
@@ -154,7 +154,7 @@ describe("public footer and shared chrome", () => {
 
     expect(footer.displayName).toBe("Rainier (Ram) Milanes");
     expect(footer.headline).toBe(
-      "Cybersecurity, GRC, IT risk, and privacy professional.",
+      "Cybersecurity, GRC, IT risk, data privacy, and AI governance practitioner.",
     );
     expect(footer.workAuthorization).toBeNull();
     expect(footer.contact?.email).toBe("milanesram@gmail.com");
@@ -171,7 +171,7 @@ describe("public footer and shared chrome", () => {
     expect(footer.contact).toBeNull();
     expect(footer.displayName).not.toBe("Rainier (Ram) Milanes");
     expect(footer.headline).not.toBe(
-      "Cybersecurity, GRC, IT risk, and privacy professional.",
+      "Cybersecurity, GRC, IT risk, data privacy, and AI governance practitioner.",
     );
   });
 

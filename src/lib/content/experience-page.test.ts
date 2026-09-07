@@ -30,8 +30,9 @@ const RAM: PublishedExperienceRow = {
 const SCIONETRADE: PublishedExperienceRow = {
   id: "c52e0001-0000-4000-8000-000000000001",
   organization: "Scionetrade Corporation",
-  title: "Legal Consultant — Cybersecurity & Data Privacy Advisory",
-  title_secondary: null,
+  title: "Legal Officer",
+  title_secondary:
+    "Additional designation: Data Protection Officer · Contract / Project – Part-Time",
   location_display: "Philippines",
   kind: "additional",
   start_date: null,
@@ -136,6 +137,22 @@ describe("formatExperienceDateRange", () => {
       /January|February|March|April|May|June|July|August|September|October|November|December|\d{4}-\d{2}-\d{2}/,
     );
   });
+
+  it("renders Scionetrade month-level dates as July 2018 – June 2020", () => {
+    expect(
+      formatExperienceDateRange({
+        date_precision: "month",
+        start_date: "2018-07-01",
+        end_date: "2020-06-01",
+        start_year: null,
+        end_year: null,
+        is_current: false,
+      }),
+    ).toEqual({
+      startLabel: "July 2018",
+      endLabel: "June 2020",
+    });
+  });
 });
 
 describe("hosted-only Experience mapping", () => {
@@ -171,7 +188,9 @@ describe("hosted-only Experience mapping", () => {
       expect.objectContaining({
         id: SCIONETRADE.id,
         organization: "Scionetrade Corporation",
-        title: "Legal Consultant — Cybersecurity & Data Privacy Advisory",
+        title: "Legal Officer",
+        titleSecondary:
+          "Additional designation: Data Protection Officer · Contract / Project – Part-Time",
         startLabel: "2018",
         endLabel: "2020",
         kind: "additional",

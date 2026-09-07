@@ -49,6 +49,9 @@ describe("footer chrome", () => {
     expect(FOOTER_SOURCE).not.toContain(
       "Cybersecurity, GRC, IT risk, and privacy professional.",
     );
+    expect(FOOTER_SOURCE).not.toContain(
+      "Cybersecurity, GRC, IT risk, data privacy, and AI governance practitioner.",
+    );
   });
 });
 
@@ -65,6 +68,7 @@ describe("home resume-count copy", () => {
     expect(HOME_PAGE_SOURCE).toContain("home.focusSection.title");
     expect(HOME_PAGE_SOURCE).toContain("home.focusSection.lede");
     expect(HOME_PAGE_SOURCE).not.toMatch(/Two tracks|Two recruiter packets|both tracks/i);
+    expect(HOME_PAGE_SOURCE).not.toContain("showTitleSecondary={false}");
   });
 
   it("updates hosted Home Focus chrome in the unapplied 52J-A.1 migration", () => {

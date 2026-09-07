@@ -100,7 +100,7 @@ describe("project form validation", () => {
       form([
         ["slug", "privai-guard"],
         ["name", "PrivAI Guard"],
-        ["tagline", "Shadow AI privacy-risk triage"],
+        ["tagline", "AI Governance, Privacy-Risk & Control Workflow Platform"],
         ["year_label", "2026"],
         ["role", "Designed and developed"],
         ["summary", "A Shadow AI governance MVP."],

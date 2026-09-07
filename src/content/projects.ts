@@ -5,7 +5,7 @@ export const projects: Project[] = [
     id: "privai-guard",
     slug: "privai-guard",
     name: "PrivAI Guard",
-    tagline: "Shadow AI privacy-risk triage",
+    tagline: "AI Governance, Privacy-Risk & Control Workflow Platform",
     yearLabel: "2026",
     role: "Designed and developed",
     summary:
@@ -76,7 +76,7 @@ export const privaiGuardSections: CaseStudySection[] = [
   {
     id: "implementation",
     heading: "Implementation",
-    body: "Designed and developed as a cloud-deployed full-stack application using Next.js, React, TypeScript, Supabase/PostgreSQL, Vercel, and GitHub. Security and governance controls include role-based access, PostgreSQL Row-Level Security, risk scoring, remediation workflows, audit logging, and privacy-by-design defaults.",
+    body: "Designed and developed as a cloud-deployed full-stack application using Next.js, React, TypeScript, Supabase/PostgreSQL, Vercel, and GitHub. Security and governance controls include role-based access, PostgreSQL Row-Level Security, risk scoring, remediation workflows, audit logging, and Privacy by Design and by Default.",
   },
   {
     id: "workflow",

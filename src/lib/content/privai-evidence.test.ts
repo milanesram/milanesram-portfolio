@@ -229,6 +229,12 @@ describe("privai section anchors", () => {
     expect(privaiSectionAnchorId("professional-evidence")).toBe(
       "professional-evidence",
     );
+    expect(privaiSectionAnchorId("current-development")).toBe(
+      "current-development",
+    );
+    expect(privaiSectionAnchorId("planned-capabilities")).toBe(
+      "planned-capabilities",
+    );
     expect(privaiSectionAnchorId("Implemented capabilities")).toBeUndefined();
   });
 });

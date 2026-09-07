@@ -14,6 +14,9 @@ const SECTION_PRESENTATION_IDS: Record<string, string> = {
   "Technical foundation": "architecture",
   "What this project demonstrates": "professional-evidence",
   "MVP boundary": "boundary",
+  "Current Development — Production-Oriented Re-engineering":
+    "current-development",
+  "Planned / developing capabilities — not yet released": "planned-capabilities",
 };
 
 export type PublishedProject = {

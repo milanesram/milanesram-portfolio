@@ -54,7 +54,7 @@ const NPCRS = {
 const PRIVAI = {
   slug: "privai-guard",
   name: "PrivAI Guard",
-  tagline: "Shadow AI privacy-risk triage",
+  tagline: "AI Governance, Privacy-Risk & Control Workflow Platform",
   role: "Designed and developed",
   stack: ["Next.js", "React", "TypeScript"],
 };
