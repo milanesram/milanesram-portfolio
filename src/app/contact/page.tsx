@@ -1,5 +1,6 @@
 import { ContactForm } from "@/components/contact/ContactForm";
 import { ContactFormPlaceholder } from "@/components/contact/ContactFormPlaceholder";
+import { LinkedInProfileBadge } from "@/components/contact/LinkedInProfileBadge";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
 import { getPublicContactFormToken } from "@/lib/contact/intake";
@@ -70,6 +71,9 @@ export default async function ContactPage() {
                 >
                   {channel.text}
                 </a>
+                {channel.href === channels.linkedin?.href ? (
+                  <LinkedInProfileBadge />
+                ) : null}
               </li>
             ))}
           </ul>
