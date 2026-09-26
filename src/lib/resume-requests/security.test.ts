@@ -76,8 +76,8 @@ describe("resume request database security", () => {
   it("does not expose requests through public content queries", () => {
     expect(CONTENT_RESUME).not.toContain("resume_requests");
     expect(source("src/lib/content/contact.ts")).not.toContain("resume_requests");
-    expect(ADMIN_LAYOUT).toContain('redirect("/admin/login")');
-    expect(ADMIN_LAYOUT).toContain("context.isAdmin");
+    expect(ADMIN_LAYOUT).toContain('context.gate !== "ready"');
+    expect(ADMIN_LAYOUT).toContain("redirect(context.redirectTo)");
   });
 
   it("does not place the service role in the browser form", () => {

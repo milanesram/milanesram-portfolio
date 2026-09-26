@@ -26,7 +26,7 @@ export default async function EditExperiencePage({
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const experienceResult = await getAdminExperience(auth.supabase, id);

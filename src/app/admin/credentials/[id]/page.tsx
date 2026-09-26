@@ -22,7 +22,7 @@ export default async function EditCredentialPage({
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const result = await getAdminCredential(auth.supabase, id);

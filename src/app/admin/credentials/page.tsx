@@ -20,7 +20,7 @@ export default async function AdminCredentialsPage() {
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const [pageResult, listResult] = await Promise.all([

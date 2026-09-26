@@ -22,7 +22,7 @@ export default async function EditLicensePage({
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const result = await getAdminLicense(auth.supabase, id);

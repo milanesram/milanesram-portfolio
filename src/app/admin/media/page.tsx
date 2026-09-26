@@ -17,7 +17,7 @@ export default async function AdminMediaPage() {
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const [assetsResult, usage] = await Promise.all([

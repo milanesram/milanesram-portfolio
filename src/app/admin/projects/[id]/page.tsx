@@ -27,7 +27,7 @@ export default async function EditProjectPage({
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const projectResult = await getAdminProject(auth.supabase, id);

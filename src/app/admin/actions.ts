@@ -1,7 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { getAdminContext } from "@/lib/admin/authorization";
 import { parseLoginFormData } from "@/lib/admin/login-input";
+import { adminRedirectFor, safeAdminNext } from "@/lib/admin/mfa-policy";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type LoginState = {
@@ -30,7 +32,14 @@ export async function signInAction(
     return { error: GENERIC_AUTH_ERROR };
   }
 
-  redirect("/admin");
+  const context = await getAdminContext();
+  const next = safeAdminNext(formData.get("next"));
+
+  if (context.gate === "ready" || context.gate === "challenge") {
+    redirect(adminRedirectFor(context.gate, next));
+  }
+
+  redirect(context.redirectTo);
 }
 
 export async function signOutAction() {

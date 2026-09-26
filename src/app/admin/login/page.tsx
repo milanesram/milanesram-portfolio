@@ -1,5 +1,6 @@
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
-import { getAdminContext } from "@/lib/admin/authorization";
+import { getAdminContext, loginRedirectFor } from "@/lib/admin/authorization";
+import { adminRedirectFor, safeAdminNext } from "@/lib/admin/mfa-policy";
 import { createPageMetadata } from "@/lib/metadata";
 import { redirect } from "next/navigation";
 
@@ -15,11 +16,23 @@ export const metadata = {
   },
 };
 
-export default async function AdminLoginPage() {
+export default async function AdminLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string | string[] }>;
+}) {
   const context = await getAdminContext();
+  const destination = loginRedirectFor(context);
+  const params = await searchParams;
+  const requested = Array.isArray(params.next) ? params.next[0] : params.next;
+  const next = safeAdminNext(requested);
 
-  if (context.isAdmin) {
-    redirect("/admin");
+  if (destination) {
+    if (context.gate === "ready" || context.gate === "challenge") {
+      redirect(adminRedirectFor(context.gate, next));
+    }
+
+    redirect(destination);
   }
 
   return (
@@ -32,7 +45,7 @@ export default async function AdminLoginPage() {
         Owner access only. There is no public registration.
       </p>
       <div className="mt-8 rounded-xl border border-line bg-paper-elevated p-6">
-        <AdminLoginForm />
+        <AdminLoginForm next={next} />
       </div>
     </div>
   );

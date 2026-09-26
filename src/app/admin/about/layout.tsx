@@ -10,12 +10,12 @@ export default async function AboutAdminLayout({
 }) {
   const context = await getAdminContext();
 
-  if (!context.signedIn) {
-    redirect("/admin/login");
+  if (context.gate === "denied") {
+    return <AdminAccessDenied email={context.email} />;
   }
 
-  if (!context.isAdmin) {
-    return <AdminAccessDenied email={context.email} />;
+  if (context.gate !== "ready") {
+    redirect(context.redirectTo);
   }
 
   return (

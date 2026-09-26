@@ -9,10 +9,18 @@ describe("media upload authorization contract", () => {
   it("rejects unauthenticated and non-admin callers before persistence", async () => {
     const mocked = vi.mocked(requireAdminMutation);
 
-    mocked.mockResolvedValueOnce({ ok: false, error: "Sign in required." });
+    mocked.mockResolvedValueOnce({
+      ok: false,
+      error: "Sign in required.",
+      redirectTo: "/admin/login",
+    });
     expect((await requireAdminMutation()).ok).toBe(false);
 
-    mocked.mockResolvedValueOnce({ ok: false, error: "Not authorized." });
+    mocked.mockResolvedValueOnce({
+      ok: false,
+      error: "Not authorized.",
+      redirectTo: "/admin/login",
+    });
     expect((await requireAdminMutation()).ok).toBe(false);
   });
 });

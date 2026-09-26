@@ -12,7 +12,7 @@ export default async function AdminSeoRecordPage({
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const { pageKey } = await params;

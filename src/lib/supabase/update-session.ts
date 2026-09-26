@@ -4,8 +4,13 @@ import type { Database } from "./database.types";
 import { getSupabasePublishableKey, getSupabaseUrl } from "./env";
 
 export async function updateSession(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+
   let response = NextResponse.next({
-    request,
+    request: {
+      headers: requestHeaders,
+    },
   });
 
   const supabase = createServerClient<Database>(
@@ -22,7 +27,9 @@ export async function updateSession(request: NextRequest) {
           });
 
           response = NextResponse.next({
-            request,
+            request: {
+              headers: requestHeaders,
+            },
           });
 
           cookiesToSet.forEach(({ name, value, options }) => {

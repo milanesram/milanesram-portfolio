@@ -14,7 +14,7 @@ export default async function AdminAboutPage() {
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const pageResult = await getAdminAboutPage(auth.supabase);

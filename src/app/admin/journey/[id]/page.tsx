@@ -15,7 +15,7 @@ export default async function EditJourneyPage({
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const { id: rawId } = await params;

@@ -25,7 +25,7 @@ export default async function AdminResumeRequestsPage() {
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const result = await listAdminResumeRequests(auth.supabase);

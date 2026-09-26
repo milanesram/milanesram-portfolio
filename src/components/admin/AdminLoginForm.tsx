@@ -5,11 +5,12 @@ import { signInAction, type LoginState } from "@/app/admin/actions";
 
 const initialState: LoginState = { error: null };
 
-export function AdminLoginForm() {
+export function AdminLoginForm({ next }: { next: string }) {
   const [state, formAction, pending] = useActionState(signInAction, initialState);
 
   return (
     <form action={formAction} className="space-y-5" noValidate>
+      <input type="hidden" name="next" value={next} />
       {state.error ? (
         <p
           role="alert"

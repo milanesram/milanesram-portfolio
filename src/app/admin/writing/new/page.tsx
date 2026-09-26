@@ -7,7 +7,7 @@ export default async function AdminNewWritingPage() {
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const mediaResult = await listAdminPublicationMediaChoices(auth.supabase);

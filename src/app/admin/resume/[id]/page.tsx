@@ -16,7 +16,7 @@ export default async function AdminResumeTrackPage({
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const { id: rawId } = await params;

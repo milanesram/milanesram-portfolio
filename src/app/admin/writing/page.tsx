@@ -19,7 +19,7 @@ export default async function AdminWritingPage() {
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const [pageResult, listResult] = await Promise.all([

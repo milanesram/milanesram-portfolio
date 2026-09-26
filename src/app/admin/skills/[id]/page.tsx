@@ -31,7 +31,7 @@ export default async function EditSkillGroupPage({
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const result = await getAdminFocusPage(auth.supabase, id);

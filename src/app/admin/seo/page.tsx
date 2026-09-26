@@ -9,7 +9,7 @@ export default async function AdminSeoPage() {
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const { data, error } = await listAdminPageSeo(auth.supabase);

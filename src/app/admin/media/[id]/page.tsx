@@ -23,7 +23,7 @@ export default async function EditMediaPage({
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const assetResult = await getAdminMediaAsset(auth.supabase, id);

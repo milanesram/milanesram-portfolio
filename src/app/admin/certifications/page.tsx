@@ -14,7 +14,7 @@ export default async function AdminCertificationsPage() {
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const { data, error } = await listAdminCertifications(auth.supabase);

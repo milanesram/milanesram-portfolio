@@ -8,7 +8,7 @@ export default async function AdminSkillsPage() {
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const { data, error } = await listAdminFocusPages(auth.supabase);

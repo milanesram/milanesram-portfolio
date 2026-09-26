@@ -42,7 +42,7 @@ export default async function InquiryDetailPage({
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const result = await getAdminInquiry(auth.supabase, id);

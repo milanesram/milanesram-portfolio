@@ -14,7 +14,7 @@ export default async function AdminEducationPage() {
   const auth = await requireAdminMutation();
 
   if (!auth.ok) {
-    redirect("/admin/login");
+    redirect(auth.redirectTo);
   }
 
   const { data, error } = await listAdminEducation(auth.supabase);
