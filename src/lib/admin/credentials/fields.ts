@@ -15,8 +15,8 @@ export const CREDENTIAL_FIELD_LIMITS = {
 
 /**
  * Optional public verification URL.
- * HTTPS only. Blank/null is allowed. HTTP, javascript:, data:,
- * protocol-relative, and malformed URLs are rejected.
+ * Blank is allowed. A value is accepted only when URL parsing
+ * identifies the https scheme. Every other scheme is rejected.
  */
 export function parseOptionalHttpsUrl(
   raw: string | null,
@@ -31,17 +31,6 @@ export function parseOptionalHttpsUrl(
 
   if (value.length > max) {
     return { ok: false, error: `${label} is too long.` };
-  }
-
-  const lower = value.toLowerCase();
-
-  if (
-    lower.startsWith("javascript:") ||
-    lower.startsWith("data:") ||
-    value.startsWith("//") ||
-    lower.startsWith("http://")
-  ) {
-    return { ok: false, error: `${label} must be an https URL.` };
   }
 
   let parsed: URL;

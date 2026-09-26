@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   parseOptionalDate,
@@ -39,31 +41,54 @@ describe("verification URL validation", () => {
     });
   });
 
-  it("accepts a valid HTTPS URL", () => {
-    const parsed = parseOptionalHttpsUrl(
+  it("accepts ordinary secure URLs and preserves the submitted value", () => {
+    const cases = [
       "https://verify.example.com/credential",
-      "Verification URL",
-    );
-    expect(parsed.ok).toBe(true);
-    if (parsed.ok) {
-      expect(parsed.value).toBe("https://verify.example.com/credential");
+      "https://verify.example.com/credential?id=1",
+      "https://verify.example.com/credential#section",
+      "HTTPS://verify.example.com/credential",
+    ];
+
+    for (const input of cases) {
+      expect(parseOptionalHttpsUrl(input, "Verification URL")).toEqual({
+        ok: true,
+        value: input,
+      });
     }
   });
 
-  it("rejects HTTP, javascript, data, protocol-relative, and malformed URLs", () => {
-    expect(parseOptionalHttpsUrl("http://example.com", "Verification URL").ok).toBe(
-      false,
+  it("rejects every scheme other than https", () => {
+    const rejected = [
+      "javascript:alert(1)",
+      "JAVASCRIPT:alert(1)",
+      " javascript:alert(1)",
+      "data:text/html,hi",
+      "DATA:text/html,hi",
+      "vbscript:msgbox(1)",
+      "VBSCRIPT:msgbox(1)",
+      " vbscript:msgbox(1)",
+      "http://example.com",
+      "//example.com",
+      "file:///tmp/example",
+      "ftp://example.com/file",
+      "custom:thing",
+      "not-a-url",
+    ];
+
+    for (const input of rejected) {
+      const parsed = parseOptionalHttpsUrl(input, "Verification URL");
+      expect(parsed.ok, input).toBe(false);
+    }
+  });
+
+  it("renders a verification link as an href, not as HTML", () => {
+    const card = readFileSync(
+      resolve(import.meta.dirname, "../../../components/ui/CredentialCard.tsx"),
+      "utf8",
     );
-    expect(
-      parseOptionalHttpsUrl("javascript:alert(1)", "Verification URL").ok,
-    ).toBe(false);
-    expect(parseOptionalHttpsUrl("data:text/html,hi", "Verification URL").ok).toBe(
-      false,
-    );
-    expect(parseOptionalHttpsUrl("//example.com", "Verification URL").ok).toBe(
-      false,
-    );
-    expect(parseOptionalHttpsUrl("not-a-url", "Verification URL").ok).toBe(false);
+
+    expect(card).toContain("href={credential.verificationUrl}");
+    expect(card).not.toContain("dangerouslySetInnerHTML");
   });
 });
 
