@@ -18,7 +18,10 @@ describe("content security policy", () => {
     const policy = contentSecurityPolicy(SUPABASE);
 
     expect(policy).toContain("https://platform.linkedin.com");
-    expect(policy).toContain("frame-src https://www.linkedin.com");
+    expect(policy).toContain("https://badges.linkedin.com");
+    expect(policy).toContain(
+      "frame-src https://www.linkedin.com https://badges.linkedin.com",
+    );
     expect(policy).toContain("https://itoctveqrtozdehoofoq.supabase.co");
     expect(policy).toContain("wss://itoctveqrtozdehoofoq.supabase.co");
   });

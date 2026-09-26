@@ -9,8 +9,9 @@
  * need a request-time proxy and is not used here. There is no `*` source.
  *
  * LinkedIn's profile badge runs only on the contact page, but these headers
- * are site-wide so that page can load `platform.linkedin.com` and frame
- * `www.linkedin.com`.
+ * are site-wide so that page can load `platform.linkedin.com`. That script
+ * then loads `https://badges.linkedin.com`, which is allowed as a script and
+ * as a frame. There is no wildcard host.
  */
 
 export function contentSecurityPolicy(
@@ -35,12 +36,12 @@ export function contentSecurityPolicy(
     "object-src 'none'",
     "frame-ancestors 'none'",
     "form-action 'self'",
-    "script-src 'self' 'unsafe-inline' https://platform.linkedin.com",
+    "script-src 'self' 'unsafe-inline' https://platform.linkedin.com https://badges.linkedin.com",
     "style-src 'self' 'unsafe-inline'",
     `img-src ${img.join(" ")}`,
     "font-src 'self'",
     `connect-src ${connect.join(" ")}`,
-    "frame-src https://www.linkedin.com",
+    "frame-src https://www.linkedin.com https://badges.linkedin.com",
   ].join("; ");
 }
 
