@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { PUBLIC_MEDIA_BUCKET } from "./src/lib/content/media-bucket";
+import { securityHeaders } from "./src/lib/security-headers";
 
 function supabasePublicMediaRemotePatterns(): NonNullable<
   NextConfig["images"]
@@ -45,16 +46,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/:path*",
-        headers: [
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
-          },
-        ],
+        headers: securityHeaders(process.env.NEXT_PUBLIC_SUPABASE_URL),
       },
     ];
   },
