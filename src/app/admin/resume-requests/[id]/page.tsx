@@ -1,9 +1,17 @@
 import { notFound, redirect } from "next/navigation";
+import { ResumeFulfillmentPanel } from "@/components/admin/ResumeFulfillmentPanel";
 import { ResumeRequestStatusForm } from "@/components/admin/ResumeRequestReview";
 import { requireAdminMutation } from "@/lib/admin/authorization";
 import { isUuid } from "@/lib/admin/ids";
-import { getAdminResumeRequest } from "@/lib/admin/resume-requests/queries";
+import {
+  getAdminResumeRequest,
+  listDocumentAvailability,
+} from "@/lib/admin/resume-requests/queries";
 import { resumeRequestMailto } from "@/lib/admin/resume-requests/validation";
+import {
+  defaultFulfillmentDocument,
+  FULFILLMENT_DOCUMENT_LABELS,
+} from "@/lib/admin/resume-fulfillment/policy";
 import { RESUME_REQUEST_LABELS } from "@/lib/resume-requests/choices";
 
 function formatTimestamp(iso: string) {
@@ -39,6 +47,10 @@ export default async function ResumeRequestDetailPage({
 
   const request = result.data;
   const mailto = resumeRequestMailto(request.email);
+  const availability = await listDocumentAvailability(auth.supabase);
+  const fulfilledLabel = request.fulfilled_document
+    ? FULFILLMENT_DOCUMENT_LABELS[request.fulfilled_document]
+    : null;
 
   return (
     <div className="space-y-10">
@@ -79,7 +91,7 @@ export default async function ResumeRequestDetailPage({
             </dd>
           </div>
           <div>
-            <dt className="font-medium text-ink">Requested resume</dt>
+            <dt className="font-medium text-ink">Requested</dt>
             <dd className="mt-1 text-ink-soft">
               {RESUME_REQUEST_LABELS[request.resume_choice]}
             </dd>
@@ -95,6 +107,27 @@ export default async function ResumeRequestDetailPage({
           </p>
         </section>
       ) : null}
+
+      <section className="max-w-2xl rounded-xl border border-line bg-paper-elevated p-6">
+        <h3 className="font-serif text-xl text-ink">Fulfillment</h3>
+        <p className="mt-2 text-sm leading-6 text-ink-soft">
+          Generate a short-lived link or download the private file, then send
+          it yourself. The site does not email the requester or store the link.
+        </p>
+        {fulfilledLabel && request.fulfilled_at ? (
+          <p className="mt-4 text-sm text-ink-soft">
+            Last prepared: {fulfilledLabel} at {formatTimestamp(request.fulfilled_at)} UTC.
+          </p>
+        ) : null}
+        <div className="mt-6">
+          <ResumeFulfillmentPanel
+            requestId={request.id}
+            resumeChoice={request.resume_choice}
+            defaultDocument={defaultFulfillmentDocument(request.resume_choice)}
+            availability={availability}
+          />
+        </div>
+      </section>
 
       <section className="max-w-2xl rounded-xl border border-line bg-paper-elevated p-6">
         <h3 className="font-serif text-xl text-ink">Status</h3>

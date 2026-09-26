@@ -34,6 +34,17 @@ describe("resume request validation", () => {
     });
   });
 
+  it("accepts a comprehensive CV request", () => {
+    const parsed = parsePublicResumeRequest({
+      ...validBody,
+      resumeChoice: "professional_cv",
+    });
+
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.value.resumeChoice).toBe("professional_cv");
+  });
+
   it("accepts a common mail provider and an empty optional message", () => {
     const parsed = parsePublicResumeRequest({
       ...validBody,
@@ -121,12 +132,14 @@ describe("resume request query preselection", () => {
     expect(parseResumeRequestQuery("privacy_compliance")).toBe(
       "privacy_compliance",
     );
+    expect(parseResumeRequestQuery("professional_cv")).toBe("professional_cv");
     expect(parseResumeRequestQuery(["not_sure"])).toBe("not_sure");
   });
 
   it("falls back when the query is missing or invalid", () => {
     expect(parseResumeRequestQuery(undefined)).toBe("not_sure");
     expect(parseResumeRequestQuery("public_file")).toBe("not_sure");
+    expect(parseResumeRequestQuery("cv")).toBe("not_sure");
     expect(parseResumeRequestQuery("")).toBe("not_sure");
   });
 

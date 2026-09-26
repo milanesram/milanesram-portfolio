@@ -92,11 +92,19 @@ function unwrap<T>(value: T | T[] | null): T | null {
   return Array.isArray(value) ? (value[0] ?? null) : value;
 }
 
+function isPrivateResumePath(bucketPath: string): boolean {
+  return (
+    bucketPath.includes("private-resumes") ||
+    bucketPath.startsWith("resume/v4/") ||
+    bucketPath.startsWith("resume/archive/")
+  );
+}
+
 export function isEligibleResumeMedia(
   asset: ResumeMediaRow | null,
   publicUrl: string | null,
 ): asset is ResumeMediaRow {
-  if (!asset || !publicUrl) {
+  if (!asset || !publicUrl || isPrivateResumePath(asset.bucket_path)) {
     return false;
   }
 

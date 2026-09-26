@@ -39,7 +39,12 @@ export type ResumeDeliveryMode = "request" | "public_file";
 export type ResumeRequestChoice =
   | "grc_it_risk"
   | "privacy_compliance"
+  | "professional_cv"
   | "not_sure";
+export type FulfillmentDocumentKey =
+  | "grc_it_risk"
+  | "privacy_compliance"
+  | "professional_cv";
 export type ResumeRequestStatus = "new" | "reviewed" | "closed";
 export type PageSeoKey =
   | "home"
@@ -1237,6 +1242,11 @@ export type Database = {
           resume_choice: ResumeRequestChoice;
           message: string | null;
           status: ResumeRequestStatus;
+          reviewed_at: string | null;
+          closed_at: string | null;
+          fulfilled_at: string | null;
+          fulfilled_document: FulfillmentDocumentKey | null;
+          fulfilled_by: string | null;
         };
         Insert: {
           id?: string;
@@ -1247,8 +1257,41 @@ export type Database = {
           resume_choice: ResumeRequestChoice;
           message?: string | null;
           status?: ResumeRequestStatus;
+          reviewed_at?: string | null;
+          closed_at?: string | null;
+          fulfilled_at?: string | null;
+          fulfilled_document?: FulfillmentDocumentKey | null;
+          fulfilled_by?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["resume_requests"]["Insert"]>;
+        Relationships: [];
+      };
+      private_document_assets: {
+        Row: {
+          document_key: FulfillmentDocumentKey;
+          title: string;
+          version_label: string;
+          storage_bucket: string;
+          object_path: string;
+          mime_type: string;
+          byte_size: number;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          document_key: FulfillmentDocumentKey;
+          title: string;
+          version_label: string;
+          storage_bucket?: string;
+          object_path: string;
+          mime_type?: string;
+          byte_size: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["private_document_assets"]["Insert"]
+        >;
         Relationships: [];
       };
       resume_request_submission_events: {
@@ -1288,6 +1331,14 @@ export type Database = {
           p_email_hash: string;
         };
         Returns: undefined;
+      };
+      count_expired_resume_requests: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
+      purge_expired_resume_requests: {
+        Args: Record<string, never>;
+        Returns: number;
       };
       submit_public_resume_request: {
         Args: {

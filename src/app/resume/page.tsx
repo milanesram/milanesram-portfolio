@@ -1,6 +1,7 @@
 import { CallToAction } from "@/components/ui/CallToAction";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
+import { ResumeCvRequest } from "@/components/resume/ResumeCvRequest";
 import { ResumeTracks } from "@/components/resume/ResumeTracks";
 import {
   getPublishedResumePage,
@@ -51,6 +52,7 @@ export default async function ResumePage() {
       <PageHero kicker={page.kicker} title={page.headline} lede={page.lede} />
       <Container className="py-16">
         <ResumeTracks tracks={tracks} />
+        <ResumeCvRequest />
         <p className="mt-8 text-sm leading-6 text-ink-soft">
           {hasPublicFiles ? (
             contact ? (

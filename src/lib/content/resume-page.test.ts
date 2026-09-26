@@ -111,6 +111,23 @@ describe("resume track mapping", () => {
     expect(mapped?.href).not.toContain("ramilanes_resume_privacy_compliance_v4.pdf");
   });
 
+  it("does not publish a private resume path as a public file", () => {
+    const mapped = mapResumeTrack(
+      track({
+        delivery_mode: "public_file",
+        media_assets: {
+          ...ASSET,
+          bucket_path: "resume/v4/resume-a/ramilanes_resume_grc_it_risk_v4.pdf",
+        },
+      }),
+      publicUrlFor,
+    );
+
+    expect(mapped?.media).toBeNull();
+    expect(mapped?.href).toBeNull();
+    expect(mapped?.ctaLabel).toBe(UNAVAILABLE_RESUME_LABEL);
+  });
+
   it("does not create a public download without eligible media", () => {
     const mapped = mapResumeTrack(
       track({

@@ -244,7 +244,7 @@ export function ResumeRequestForm({
 
       <div>
         <label htmlFor={fieldId("resumeChoice")} className={labelClass}>
-          Resume requested{" "}
+          Document requested{" "}
           <span className="font-normal text-ink-faint">(required)</span>
         </label>
         <select

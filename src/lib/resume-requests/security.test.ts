@@ -100,7 +100,8 @@ describe("resume request form", () => {
     expect(html).toContain("Full name");
     expect(html).toContain("Professional email");
     expect(html).toContain("Organization");
-    expect(html).toContain("Resume requested");
+    expect(html).toContain("Document requested");
+    expect(html).toContain("Comprehensive Professional CV");
     expect(html).toContain("Opportunity context or message (optional)");
     expect(html).toContain("(required)");
     expect(html).toContain(RESUME_REQUEST_PRIVACY_NOTE);

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { ResumeRetentionPanel } from "@/components/admin/ResumeRetentionPanel";
 import { requireAdminMutation } from "@/lib/admin/authorization";
 import { listAdminResumeRequests } from "@/lib/admin/resume-requests/queries";
 import { RESUME_REQUEST_LABELS } from "@/lib/resume-requests/choices";
+import { createPrivilegedSupabaseClient } from "@/lib/supabase/privileged";
 import type { ResumeRequestStatus } from "@/lib/supabase/database.types";
 import { redirect } from "next/navigation";
 
@@ -28,6 +30,7 @@ export default async function AdminResumeRequestsPage() {
 
   const result = await listAdminResumeRequests(auth.supabase);
   const records = result.error ? [] : (result.data ?? []);
+  const expiredCount = await countExpiredClosedRequests();
 
   return (
     <div>
@@ -38,6 +41,10 @@ export default async function AdminResumeRequestsPage() {
           after you decide whether and how to respond. This site does not send
           a resume automatically.
         </p>
+      </div>
+
+      <div className="mt-8">
+        <ResumeRetentionPanel count={expiredCount} />
       </div>
 
       {result.error ? (
@@ -60,7 +67,7 @@ export default async function AdminResumeRequestsPage() {
                 <th className="px-4 py-3 font-medium">Name</th>
                 <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 font-medium">Organization</th>
-                <th className="px-4 py-3 font-medium">Requested resume</th>
+                <th className="px-4 py-3 font-medium">Requested document</th>
                 <th className="px-4 py-3 font-medium">Status</th>
               </tr>
             </thead>
@@ -94,4 +101,19 @@ export default async function AdminResumeRequestsPage() {
       )}
     </div>
   );
+}
+
+async function countExpiredClosedRequests(): Promise<number | null> {
+  try {
+    const supabase = createPrivilegedSupabaseClient();
+    const { data, error } = await supabase.rpc("count_expired_resume_requests");
+
+    if (error || typeof data !== "number") {
+      return null;
+    }
+
+    return data;
+  } catch {
+    return null;
+  }
 }

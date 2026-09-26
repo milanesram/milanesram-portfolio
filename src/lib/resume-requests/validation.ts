@@ -182,7 +182,7 @@ export function resumeRequestFieldMessage(
   }
 
   if (field === "resumeChoice") {
-    return "Choose a resume option.";
+    return "Choose a document.";
   }
 
   return "Keep the message under 1,500 characters.";
