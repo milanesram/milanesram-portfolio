@@ -18,6 +18,8 @@ import {
   assertMediaNotReferenced,
   assertResumePdfStaysNonPublic,
   mediaStoragePath,
+  IMAGE_MAX_BYTES,
+  PDF_MAX_BYTES,
   resolveMediaUploadBucket,
   rollbackUploadedObjectIfInsertFailed,
   validateUploadFile,
@@ -178,18 +180,33 @@ export async function uploadMediaAction(
     return { error: "Alt text is too long.", message: null };
   }
 
-  const file = formData.get("file");
+  const files = formData.getAll("file").filter((item) => item instanceof File);
 
-  if (!(file instanceof File)) {
+  if (files.length !== 1) {
     return { error: "Choose a file to upload.", message: null };
   }
 
+  const file = files[0];
+  const maxBytes = kind === "image" ? IMAGE_MAX_BYTES : PDF_MAX_BYTES;
+
+  if (file.size > maxBytes) {
+    return {
+      error:
+        kind === "image"
+          ? "Images must be 8 MB or smaller."
+          : "PDFs must be 12 MB or smaller.",
+      message: null,
+    };
+  }
+
+  const bytes = new Uint8Array(await file.arrayBuffer());
   const validated = validateUploadFile({
     kind,
     purpose,
     filename: file.name,
     mimeType: file.type,
     byteSize: file.size,
+    bytes,
   });
 
   if (!validated.ok) {
@@ -207,7 +224,6 @@ export async function uploadMediaAction(
 
   const id = randomUUID();
   const bucketPath = mediaStoragePath(purpose, id, validated.value.safeFilename);
-  const bytes = Buffer.from(await file.arrayBuffer());
 
   const upload = await auth.supabase.storage
     .from(destination.value.bucket)

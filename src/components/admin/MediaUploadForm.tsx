@@ -5,6 +5,7 @@ import {
   uploadMediaAction,
   type MutationState,
 } from "@/app/admin/media/actions";
+import { UPLOAD_FILE_ACCEPT } from "@/lib/admin/media/upload";
 
 const initialState: MutationState = { error: null, message: null };
 const fieldClass =
@@ -79,7 +80,7 @@ export function MediaUploadForm() {
           type="file"
           required
           disabled={pending}
-          accept="image/jpeg,image/png,image/webp,image/avif,application/pdf"
+          accept={UPLOAD_FILE_ACCEPT}
           className={`${fieldClass} py-2`}
         />
       </label>

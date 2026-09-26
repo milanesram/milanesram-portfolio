@@ -1,5 +1,6 @@
 import { PUBLIC_MEDIA_BUCKET } from "@/lib/content/media-bucket";
 import type { MediaKind, MediaPurpose } from "@/lib/supabase/database.types";
+import { detectUploadContent, type DetectedUploadType } from "./content-signature";
 
 export const RESUME_PDF_UPLOAD_ERROR =
   "Private resume/CV documents must be managed through the private document workflow. Resume PDFs cannot be stored in public media.";
@@ -24,6 +25,11 @@ export const PDF_EXTENSIONS = new Set(["pdf"]);
 
 export const IMAGE_MAX_BYTES = 8 * 1024 * 1024;
 export const PDF_MAX_BYTES = 12 * 1024 * 1024;
+
+export const UPLOAD_CONTENT_MISMATCH =
+  "File type is not allowed or does not match its contents.";
+
+export const UPLOAD_FILE_ACCEPT = [...IMAGE_MIME_TYPES, ...PDF_MIME_TYPES].join(",");
 
 const KIND_PURPOSES: Record<MediaKind, readonly MediaPurpose[]> = {
   image: ["portrait", "journey", "project"],
@@ -80,12 +86,49 @@ export function sanitizeUploadFilename(filename: string): string | null {
   return `${stem}.${ext}`;
 }
 
+const DECLARED_TYPES: Record<
+  DetectedUploadType,
+  { extensions: readonly string[]; mimes: readonly string[]; kinds: readonly MediaKind[] }
+> = {
+  jpeg: {
+    extensions: ["jpg", "jpeg"],
+    mimes: ["image/jpeg"],
+    kinds: ["image"],
+  },
+  png: { extensions: ["png"], mimes: ["image/png"], kinds: ["image"] },
+  webp: { extensions: ["webp"], mimes: ["image/webp"], kinds: ["image"] },
+  avif: { extensions: ["avif"], mimes: ["image/avif"], kinds: ["image"] },
+  pdf: {
+    extensions: ["pdf"],
+    mimes: ["application/pdf", "application/x-pdf"],
+    kinds: ["document", "resume_pdf"],
+  },
+};
+
+function declaredUploadType(
+  kind: MediaKind,
+  extension: string,
+  mimeType: string,
+): DetectedUploadType | null {
+  const match = (Object.entries(DECLARED_TYPES) as Array<
+    [DetectedUploadType, (typeof DECLARED_TYPES)[DetectedUploadType]]
+  >).find(
+    ([, rule]) =>
+      rule.kinds.includes(kind) &&
+      rule.extensions.includes(extension) &&
+      rule.mimes.includes(mimeType),
+  );
+
+  return match?.[0] ?? null;
+}
+
 export function validateUploadFile(args: {
   kind: MediaKind;
   purpose: MediaPurpose;
   filename: string;
   mimeType: string;
   byteSize: number;
+  bytes: Uint8Array;
 }): ParseResult<{ safeFilename: string; mimeType: string }> {
   if (!isKindPurposeCompatible(args.kind, args.purpose)) {
     return { ok: false, error: "That file type is not allowed for this purpose." };
@@ -93,6 +136,14 @@ export function validateUploadFile(args: {
 
   if (!Number.isFinite(args.byteSize) || args.byteSize <= 0) {
     return { ok: false, error: "The file is empty." };
+  }
+
+  const maxBytes = args.kind === "image" ? IMAGE_MAX_BYTES : PDF_MAX_BYTES;
+  const sizeError =
+    args.kind === "image" ? "Images must be 8 MB or smaller." : "PDFs must be 12 MB or smaller.";
+
+  if (args.byteSize > maxBytes || args.bytes.byteLength > maxBytes) {
+    return { ok: false, error: sizeError };
   }
 
   const safeFilename = sanitizeUploadFilename(args.filename);
@@ -103,23 +154,20 @@ export function validateUploadFile(args: {
 
   const extension = safeFilename.slice(safeFilename.lastIndexOf(".") + 1);
   const mime = args.mimeType.trim().toLowerCase();
+  const typeError =
+    args.kind === "image" ? "Upload a JPEG, PNG, WebP, or AVIF image." : "Upload a PDF.";
+  const extensionAllowed =
+    args.kind === "image" ? IMAGE_EXTENSIONS.has(extension) : PDF_EXTENSIONS.has(extension);
+  const mimeAllowed = args.kind === "image" ? IMAGE_MIME_TYPES.has(mime) : PDF_MIME_TYPES.has(mime);
+  const declared =
+    extensionAllowed && mimeAllowed ? declaredUploadType(args.kind, extension, mime) : null;
 
-  if (args.kind === "image") {
-    if (!IMAGE_EXTENSIONS.has(extension) || !IMAGE_MIME_TYPES.has(mime)) {
-      return { ok: false, error: "Upload a JPEG, PNG, WebP, or AVIF image." };
-    }
+  if (!declared) {
+    return { ok: false, error: typeError };
+  }
 
-    if (args.byteSize > IMAGE_MAX_BYTES) {
-      return { ok: false, error: "Images must be 8 MB or smaller." };
-    }
-  } else {
-    if (!PDF_EXTENSIONS.has(extension) || !PDF_MIME_TYPES.has(mime)) {
-      return { ok: false, error: "Upload a PDF." };
-    }
-
-    if (args.byteSize > PDF_MAX_BYTES) {
-      return { ok: false, error: "PDFs must be 12 MB or smaller." };
-    }
+  if (args.bytes.byteLength !== args.byteSize || detectUploadContent(args.bytes) !== declared) {
+    return { ok: false, error: UPLOAD_CONTENT_MISMATCH };
   }
 
   return { ok: true, value: { safeFilename, mimeType: mime } };

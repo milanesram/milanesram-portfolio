@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { requireAdminMutation } from "@/lib/admin/authorization";
 
@@ -22,5 +24,19 @@ describe("media upload authorization contract", () => {
       redirectTo: "/admin/login",
     });
     expect((await requireAdminMutation()).ok).toBe(false);
+  });
+
+  it("keeps media upload behind the ready admin gate", () => {
+    const root = resolve(import.meta.dirname, "../../../..");
+    const actions = readFileSync(resolve(root, "src/app/admin/media/actions.ts"), "utf8");
+    const authorization = readFileSync(
+      resolve(root, "src/lib/admin/authorization.ts"),
+      "utf8",
+    );
+
+    expect(actions.indexOf("requireAdminMutation")).toBeLessThan(
+      actions.indexOf("arrayBuffer"),
+    );
+    expect(authorization).toContain('context.gate !== "ready"');
   });
 });
