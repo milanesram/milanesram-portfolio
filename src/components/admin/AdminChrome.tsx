@@ -139,6 +139,12 @@ export function AdminChrome({ email, title, children }: AdminChromeProps) {
               Inquiries
             </Link>
             <Link
+              href="/admin/resume-requests"
+              className="text-sm font-medium text-ink-soft hover:text-ink"
+            >
+              Resume requests
+            </Link>
+            <Link
               href="/"
               className="text-sm font-medium text-ink-soft hover:text-ink"
             >

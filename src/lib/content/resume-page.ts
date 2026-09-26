@@ -1,3 +1,7 @@
+import {
+  REQUEST_RESUME_CTA_LABEL,
+  resumeRequestHref,
+} from "@/lib/resume-requests/choices";
 import type {
   ContentStatus,
   ResumeDeliveryMode,
@@ -181,7 +185,11 @@ export function mapResumeTrack(
   let ctaLabel = row.request_cta_label.trim();
   let publicMedia: PublicResumeMedia | null = null;
 
-  if (downloadable && media) {
+  if (deliveryMode === "request") {
+    trackHref = resumeRequestHref(row.slug);
+    ctaLabel = REQUEST_RESUME_CTA_LABEL;
+    publicMedia = null;
+  } else if (downloadable && media) {
     trackHref = media.publicUrl;
     ctaLabel = PUBLIC_RESUME_CTA_LABEL;
     publicMedia = media;

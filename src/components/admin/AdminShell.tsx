@@ -198,6 +198,17 @@ export function AdminShell({ email }: AdminShellProps) {
               </p>
             </Link>
           </li>
+          <li>
+            <Link
+              href="/admin/resume-requests"
+              className="block rounded-xl border border-line bg-paper-elevated p-5 hover:border-ink/30"
+            >
+              <h3 className="text-base font-medium text-ink">Resume requests</h3>
+              <p className="mt-2 text-sm text-ink-soft">
+                Owner review of professional resume requests. Not public.
+              </p>
+            </Link>
+          </li>
         </ul>
       </section>
     </AdminChrome>

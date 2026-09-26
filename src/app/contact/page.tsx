@@ -1,10 +1,14 @@
-import { ContactForm } from "@/components/contact/ContactForm";
-import { ContactFormPlaceholder } from "@/components/contact/ContactFormPlaceholder";
 import { LinkedInProfileBadge } from "@/components/contact/LinkedInProfileBadge";
+import { ResumeRequestForm } from "@/components/contact/ResumeRequestForm";
 import { PageHero } from "@/components/ui/PageHero";
 import { Container } from "@/components/layout/Container";
-import { getPublicContactFormToken } from "@/lib/contact/intake";
 import { getPublishedContactPage, selectVisibleContactChannels } from "@/lib/content/contact";
+import {
+  RESUME_REQUEST_HEADING,
+  RESUME_REQUEST_LEDE,
+  parseResumeRequestQuery,
+} from "@/lib/resume-requests/choices";
+import { getResumeRequestFormToken } from "@/lib/resume-requests/intake";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import {
   profileFromPublishedResult,
@@ -18,9 +22,15 @@ export function generateMetadata() {
   return generateRouteMetadata("contact");
 }
 
-export default async function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ request?: string | string[] }>;
+}) {
+  const query = await searchParams;
+  const initialChoice = parseResumeRequestQuery(query.request);
   const [intakeToken, profileResult, pageResult] = await Promise.all([
-    getPublicContactFormToken(),
+    getResumeRequestFormToken(),
     getPublishedSiteProfile(),
     getPublishedContactPage(),
   ]);
@@ -54,38 +64,62 @@ export default async function ContactPage() {
   return (
     <>
       <PageHero kicker={page.kicker} title={page.headline} lede={page.lede} />
-      <Container narrow className="space-y-10 py-16">
-        {visible.length > 0 ? (
-          <ul className="space-y-3 text-ink">
-            {visible.map((channel) => (
-              <li key={channel.href}>
-                <span className="block text-xs uppercase tracking-[0.16em] text-copper">
-                  {channel.label}
-                </span>
-                <a
-                  className="text-lg text-accent hover:underline"
-                  href={channel.href}
-                  {...(channel.external
-                    ? { target: "_blank", rel: "noreferrer" }
-                    : {})}
-                >
-                  {channel.text}
-                </a>
-                {channel.href === channels.linkedin?.href ? (
-                  <LinkedInProfileBadge />
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        ) : null}
+      <Container narrow className="space-y-12 py-16">
+        <section aria-labelledby="resume-request-heading" className="space-y-4">
+          <h2
+            id="resume-request-heading"
+            className="font-serif text-3xl font-medium tracking-tight text-ink"
+          >
+            {RESUME_REQUEST_HEADING}
+          </h2>
+          <p className="text-base leading-7 text-ink-soft">{RESUME_REQUEST_LEDE}</p>
+          {intakeToken ? (
+            <ResumeRequestForm token={intakeToken} initialChoice={initialChoice} />
+          ) : (
+            <p className="rounded-xl border border-line bg-paper-elevated p-6 text-sm leading-6 text-ink-soft">
+              The resume request form is temporarily unavailable. Email and
+              LinkedIn remain open.
+            </p>
+          )}
+        </section>
+        <section aria-labelledby="direct-contact-heading" className="space-y-4">
+          <h2
+            id="direct-contact-heading"
+            className="font-serif text-3xl font-medium tracking-tight text-ink"
+          >
+            Direct contact
+          </h2>
+          {visible.length > 0 ? (
+            <ul className="space-y-3 text-ink">
+              {visible.map((channel) => (
+                <li key={channel.href}>
+                  <span className="block text-xs uppercase tracking-[0.16em] text-copper">
+                    {channel.label}
+                  </span>
+                  <a
+                    className="text-lg text-accent hover:underline"
+                    href={channel.href}
+                    {...(channel.external
+                      ? { target: "_blank", rel: "noreferrer" }
+                      : {})}
+                  >
+                    {channel.text}
+                  </a>
+                  {channel.href === channels.linkedin?.href ? (
+                    <LinkedInProfileBadge />
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm leading-6 text-ink-soft">
+              Public contact channels are temporarily unavailable.
+            </p>
+          )}
+        </section>
         {workAuthorization ? (
           <p className="text-sm text-ink-faint">{workAuthorization}</p>
         ) : null}
-        {intakeToken ? (
-          <ContactForm token={intakeToken} />
-        ) : (
-          <ContactFormPlaceholder intro={page.formIntro} />
-        )}
       </Container>
     </>
   );

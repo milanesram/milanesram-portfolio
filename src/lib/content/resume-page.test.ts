@@ -1,5 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
+  REQUEST_RESUME_CTA_LABEL,
+} from "@/lib/resume-requests/choices";
+import {
   isEligibleResumeMedia,
   mapResumeTrack,
   resumeTracksHavePublicFiles,
@@ -70,18 +73,42 @@ describe("resume track mapping", () => {
     expect(mapped?.title).toBe("Resume A — GRC, IT Risk & Security Compliance");
     expect(mapped?.slug).toBe("cybersecurity-grc");
     expect(mapped?.media).toBeNull();
-    expect(mapped?.href).toBe("/focus/cybersecurity-grc");
+    expect(mapped?.href).toBe("/contact?request=grc_it_risk");
+    expect(mapped?.ctaLabel).toBe(REQUEST_RESUME_CTA_LABEL);
+    expect(mapped?.href).not.toContain("ramilanes_resume_grc_it_risk_v4.pdf");
   });
 
-  it("keeps request tracks on the Focus href without a download", () => {
+  it("routes a request track to the contact form without a download", () => {
     const mapped = mapResumeTrack(track(), () => "https://example.test/file.pdf");
 
     expect(mapped?.deliveryMode).toBe("request");
-    expect(mapped?.href).toBe("/focus/cybersecurity-grc");
+    expect(mapped?.href).toBe("/contact?request=grc_it_risk");
+    expect(mapped?.ctaLabel).toBe(REQUEST_RESUME_CTA_LABEL);
     expect(mapped?.media).toBeNull();
     expect(mapped?.unavailable).toBe(false);
     expect(mapped?.homeKicker).toBe("Resume A");
     expect(mapped?.focusSlug).toBe("cybersecurity-grc");
+  });
+
+  it("routes Resume B requests to the privacy choice", () => {
+    const mapped = mapResumeTrack(
+      track({
+        slug: "privacy-ai-governance",
+        title: "Resume B — Privacy, Compliance & Assurance",
+        media_assets: {
+          ...PRIVACY_ASSET,
+          bucket_path:
+            "resume/29a9954b-5169-45dc-9b82-be04e041ba78/ramilanes_resume_privacy_compliance_v4.pdf",
+        },
+      }),
+      publicUrlFor,
+    );
+
+    expect(mapped?.deliveryMode).toBe("request");
+    expect(mapped?.href).toBe("/contact?request=privacy_compliance");
+    expect(mapped?.ctaLabel).toBe(REQUEST_RESUME_CTA_LABEL);
+    expect(mapped?.media).toBeNull();
+    expect(mapped?.href).not.toContain("ramilanes_resume_privacy_compliance_v4.pdf");
   });
 
   it("does not create a public download without eligible media", () => {
@@ -231,6 +258,11 @@ describe("resume track mapping", () => {
     ]);
     expect(tracks.every((item) => item.deliveryMode === "request")).toBe(true);
     expect(tracks.every((item) => item.media === null)).toBe(true);
+    expect(tracks.map((item) => item.href)).toEqual([
+      "/contact?request=grc_it_risk",
+      "/contact?request=privacy_compliance",
+      "/contact?request=not_sure",
+    ]);
     expect(resumeTracksHavePublicFiles(tracks)).toBe(false);
   });
 

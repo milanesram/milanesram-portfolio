@@ -36,6 +36,11 @@ export type MediaPurpose =
   | "resume";
 export type ProjectMediaDisplayRole = "hero" | "workflow" | "gallery";
 export type ResumeDeliveryMode = "request" | "public_file";
+export type ResumeRequestChoice =
+  | "grc_it_risk"
+  | "privacy_compliance"
+  | "not_sure";
+export type ResumeRequestStatus = "new" | "reviewed" | "closed";
 export type PageSeoKey =
   | "home"
   | "about"
@@ -1222,6 +1227,48 @@ export type Database = {
         >;
         Relationships: [];
       };
+      resume_requests: {
+        Row: {
+          id: string;
+          created_at: string;
+          full_name: string;
+          email: string;
+          organization: string;
+          resume_choice: ResumeRequestChoice;
+          message: string | null;
+          status: ResumeRequestStatus;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          full_name: string;
+          email: string;
+          organization: string;
+          resume_choice: ResumeRequestChoice;
+          message?: string | null;
+          status?: ResumeRequestStatus;
+        };
+        Update: Partial<Database["public"]["Tables"]["resume_requests"]["Insert"]>;
+        Relationships: [];
+      };
+      resume_request_submission_events: {
+        Row: {
+          id: string;
+          fingerprint_hash: string;
+          email_hash: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          fingerprint_hash: string;
+          email_hash: string;
+          created_at?: string;
+        };
+        Update: Partial<
+          Database["public"]["Tables"]["resume_request_submission_events"]["Insert"]
+        >;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -1242,6 +1289,18 @@ export type Database = {
         };
         Returns: undefined;
       };
+      submit_public_resume_request: {
+        Args: {
+          p_full_name: string;
+          p_email: string;
+          p_organization: string;
+          p_resume_choice: ResumeRequestChoice;
+          p_message: string | null;
+          p_fingerprint_hash: string;
+          p_email_hash: string;
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       content_status: ContentStatus;
@@ -1256,6 +1315,8 @@ export type Database = {
       media_purpose: MediaPurpose;
       project_media_display_role: ProjectMediaDisplayRole;
       resume_delivery_mode: ResumeDeliveryMode;
+      resume_request_choice: ResumeRequestChoice;
+      resume_request_status: ResumeRequestStatus;
       document_kind: DocumentKind;
       publication_rights_status: PublicationRightsStatus;
       admin_role: AdminRole;
