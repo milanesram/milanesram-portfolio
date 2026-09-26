@@ -46,6 +46,40 @@ describe("career positioning 2.0", () => {
     expect(HOME).toContain("eyebrow={home.heroKicker}");
   });
 
+  it("targets hosted rows by stable keys instead of seed child ids", () => {
+    const staleChildIds = [
+      "c52b0001-0000-4000-8000-000000000011",
+      "c52b0001-0000-4000-8000-000000000014",
+      "c52b0001-0000-4000-8000-000000000015",
+      "c52b0001-0000-4000-8000-000000000021",
+      "c52b0001-0000-4000-8000-000000000022",
+      "c52b0001-0000-4000-8000-000000000023",
+      "c52b0001-0000-4000-8000-000000000024",
+      "c52c0001-0000-4000-8000-000000000011",
+      "c52c0001-0000-4000-8000-000000000012",
+      "c52c0001-0000-4000-8000-000000000013",
+    ];
+
+    for (const id of staleChildIds) {
+      expect(MIGRATION, id).not.toContain(id);
+    }
+
+    expect(MIGRATION).not.toMatch(
+      /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i,
+    );
+    expect(MIGRATION).toContain("singleton_key = 'default'");
+    expect(MIGRATION).toContain("sort_order = 10 AND label = $t$Cybersecurity$t$");
+    expect(MIGRATION).toContain("slug = 'cybersecurity-grc'");
+    expect(MIGRATION).toContain("slug = 'privacy-ai-governance'");
+    expect(MIGRATION).toContain("slug = 'privai-guard'");
+    expect(MIGRATION).toContain("slug = 'dbnms'");
+    expect(MIGRATION).toContain("page_key = 'home'");
+    expect(MIGRATION).toContain("SELECT id INTO STRICT home_id");
+    expect(MIGRATION.indexOf("Content writes begin")).toBeGreaterThan(
+      MIGRATION.indexOf("audited pre-V4 state"),
+    );
+  });
+
   it("keeps the schema migration free of career-content cutover", () => {
     expect(SCHEMA).toContain("ADD COLUMN IF NOT EXISTS hero_kicker text");
     expect(SCHEMA).toContain("hero_kicker IS NULL");
