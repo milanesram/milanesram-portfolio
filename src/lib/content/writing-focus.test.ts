@@ -8,13 +8,13 @@ import {
 
 const CYBER: PublishedFocusLabel = {
   slug: "cybersecurity-grc",
-  label: "Cybersecurity / GRC",
+  label: "GRC, IT Risk & Security Compliance",
   sortOrder: 10,
 };
 
 const PRIVACY: PublishedFocusLabel = {
   slug: "privacy-ai-governance",
-  label: "Privacy / AI Governance",
+  label: "Privacy, Compliance & Assurance",
   sortOrder: 20,
 };
 
@@ -31,7 +31,9 @@ describe("selectRelatedPublishedFocuses", () => {
       publishedFocuses: [CYBER, PRIVACY],
     });
 
-    expect(formatFocusRelevanceLabels(focuses)).toBe("Cybersecurity / GRC");
+    expect(formatFocusRelevanceLabels(focuses)).toBe(
+      "GRC, IT Risk & Security Compliance",
+    );
     expect(formatFocusRelevanceLabels(focuses)).not.toMatch(/both tracks/i);
   });
 
@@ -42,7 +44,7 @@ describe("selectRelatedPublishedFocuses", () => {
     });
 
     expect(formatFocusRelevanceLabels(focuses)).toBe(
-      "Cybersecurity / GRC · Privacy / AI Governance",
+      "GRC, IT Risk & Security Compliance · Privacy, Compliance & Assurance",
     );
     expect(formatFocusRelevanceLabels(focuses)).not.toBe(
       "Relevant to both tracks",
@@ -57,7 +59,7 @@ describe("selectRelatedPublishedFocuses", () => {
     });
 
     expect(formatFocusRelevanceLabels(focuses)).toBe(
-      "Cybersecurity / GRC · Privacy / AI Governance · Technology / IT Risk",
+      "GRC, IT Risk & Security Compliance · Privacy, Compliance & Assurance · Technology / IT Risk",
     );
   });
 
@@ -115,7 +117,7 @@ describe("toRelatedFocuses", () => {
     expect(toRelatedFocuses([PRIVACY])).toEqual([
       {
         href: "/focus/privacy-ai-governance",
-        label: "Privacy / AI Governance",
+        label: "Privacy, Compliance & Assurance",
       },
     ]);
   });

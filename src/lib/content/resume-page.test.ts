@@ -34,7 +34,7 @@ function track(overrides: Partial<ResumeTrackRow> = {}): ResumeTrackRow {
   return {
     id: "11111111-1111-4111-8111-111111111111",
     slug: "cybersecurity-grc",
-    title: "Cybersecurity / GRC",
+    title: "Resume A — GRC, IT Risk & Security Compliance",
     summary: "Controls and IT risk.",
     delivery_mode: "request",
     request_cta_label: "View this profile",
@@ -59,6 +59,18 @@ describe("resume track mapping", () => {
 
   afterAll(() => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = previous;
+  });
+
+  it("does not publish an attached PDF while delivery remains request", () => {
+    const mapped = mapResumeTrack(
+      track({ media_assets: ASSET }),
+      publicUrlFor,
+    );
+
+    expect(mapped?.title).toBe("Resume A — GRC, IT Risk & Security Compliance");
+    expect(mapped?.slug).toBe("cybersecurity-grc");
+    expect(mapped?.media).toBeNull();
+    expect(mapped?.href).toBe("/focus/cybersecurity-grc");
   });
 
   it("keeps request tracks on the Focus href without a download", () => {
@@ -87,7 +99,7 @@ describe("resume track mapping", () => {
     expect(mapped?.ctaLabel).toBe(UNAVAILABLE_RESUME_LABEL);
   });
 
-  it("maps the Cybersecurity / GRC track to its public resume PDF", () => {
+  it("maps a public-file GRC track to its resume PDF without renaming the route", () => {
     const mapped = mapResumeTrack(
       track({
         delivery_mode: "public_file",
@@ -108,12 +120,12 @@ describe("resume track mapping", () => {
     });
   });
 
-  it("maps the Privacy / AI Governance track to its public resume PDF", () => {
+  it("maps a public-file privacy track to its resume PDF without renaming the route", () => {
     const mapped = mapResumeTrack(
       track({
         id: "22222222-2222-4222-8222-222222222222",
         slug: "privacy-ai-governance",
-        title: "Privacy / AI Governance",
+        title: "Resume B — Privacy, Compliance & Assurance",
         home_kicker: "Resume B",
         delivery_mode: "public_file",
         focus_pages: { slug: "privacy-ai-governance", status: "published" },
@@ -192,7 +204,7 @@ describe("resume track mapping", () => {
       track({
         id: "22222222-2222-4222-8222-222222222222",
         slug: "privacy-ai-governance",
-        title: "Privacy / AI Governance",
+        title: "Resume B — Privacy, Compliance & Assurance",
         focus_pages: { slug: "privacy-ai-governance", status: "published" },
       }),
       () => null,

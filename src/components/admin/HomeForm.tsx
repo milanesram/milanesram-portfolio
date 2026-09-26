@@ -116,6 +116,17 @@ export function HomeForm({
       <fieldset className="space-y-5">
         <legend className="font-serif text-xl text-ink">Hero</legend>
         <label className={labelClass}>
+          Kicker
+          <input
+            name="hero_kicker"
+            required
+            maxLength={80}
+            defaultValue={page?.hero_kicker ?? ""}
+            disabled={pending}
+            className={fieldClass}
+          />
+        </label>
+        <label className={labelClass}>
           Headline
           <input
             name="headline"

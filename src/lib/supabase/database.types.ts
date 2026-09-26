@@ -527,6 +527,7 @@ export type Database = {
           singleton_key: "default";
           status: ContentStatus;
           featured_project_id: string | null;
+          hero_kicker: string | null;
           headline: string;
           lede: string;
           primary_cta_label: string;

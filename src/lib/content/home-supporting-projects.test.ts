@@ -69,12 +69,12 @@ describe("home supporting project selection", () => {
     ]);
 
     expect(selected.map((project) => project.slug)).toEqual([
-      "milanesram-portfolio",
       "dbnms",
+      "milanesram-portfolio",
     ]);
     expect(HOME_SUPPORTING_PROJECT_SPECS.map((spec) => spec.slug)).toEqual([
-      "milanesram-portfolio",
       "dbnms",
+      "milanesram-portfolio",
     ]);
   });
 

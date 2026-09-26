@@ -16,8 +16,9 @@ const ABOUT_ROW: AboutPageRow = {
   id: "c52c0001-0000-4000-8000-000000000001",
   status: "published",
   kicker: "About",
-  headline: "From privacy and governance work to cybersecurity and risk.",
-  lede: "An earned Northwestern MSIS sits on a foundation of privacy practice.",
+  headline:
+    "Privacy, compliance and information-security risk across operations, regulation and technology.",
+  lede: "I am a legally trained privacy, compliance and information-security risk professional and former privacy regulator.",
   journey_heading: "Professional journey",
   education_heading: "Education at a glance",
   speaking_heading: "Speaking and advisory",

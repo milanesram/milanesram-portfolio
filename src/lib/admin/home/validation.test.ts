@@ -10,6 +10,7 @@ function form(entries: Array<[string, string]>) {
 }
 
 const required = [
+  ["hero_kicker", "READY NOW. BUILT TO ADAPT."],
   ["headline", "Headline"],
   ["lede", "Lede"],
   ["primary_cta_label", "View experience"],
@@ -49,6 +50,10 @@ describe("home href validation", () => {
     expect(parseHomeHref("/experience", "CTA")).toEqual({
       ok: true,
       value: "/experience",
+    });
+    expect(parseHomeHref("/#role-focus", "CTA")).toEqual({
+      ok: true,
+      value: "/#role-focus",
     });
     expect(parseHomeHref("https://example.com/x", "CTA").ok).toBe(true);
   });

@@ -4,6 +4,7 @@ import { statusFromIntent, type ProfileIntent } from "@/lib/admin/settings/valid
 const INTENTS = new Set(["draft", "publish", "unpublish", "archive", "keep"]);
 
 const LIMITS = {
+  heroKicker: 80,
   headline: 200,
   lede: 2000,
   ctaLabel: 80,
@@ -50,6 +51,7 @@ export type ParsedHomeCredentialLink = {
 
 export type ParsedHomePageInput = {
   id: string | null;
+  heroKicker: string;
   headline: string;
   lede: string;
   primaryCtaLabel: string;
@@ -137,7 +139,7 @@ export function parseHomeHref(raw: string, label: string): ParseResult<string> {
   }
 
   if (value.startsWith("/") && !value.startsWith("//")) {
-    if (!/^\/[A-Za-z0-9/_-]*$/.test(value)) {
+    if (!/^\/[A-Za-z0-9/_-]*(?:#[A-Za-z0-9_-]+)?$/.test(value)) {
       return { ok: false, error: `${label} URL is not a valid internal path.` };
     }
 
@@ -219,6 +221,7 @@ export function parseHomePageFormData(
   if (!featuredProjectId.ok) return featuredProjectId;
 
   const fields = {
+    heroKicker: requiredText(formData, "hero_kicker", LIMITS.heroKicker, "Hero kicker"),
     headline: requiredText(formData, "headline", LIMITS.headline, "Headline"),
     lede: requiredText(formData, "lede", LIMITS.lede, "Lede"),
     primaryCtaLabel: requiredText(
@@ -567,6 +570,7 @@ export function parseHomePageFormData(
     ok: true,
     value: {
       id: id.value,
+      heroKicker: fields.heroKicker.ok ? fields.heroKicker.value : "",
       headline: fields.headline.ok ? fields.headline.value : "",
       lede: fields.lede.ok ? fields.lede.value : "",
       primaryCtaLabel: fields.primaryCtaLabel.ok ? fields.primaryCtaLabel.value : "",

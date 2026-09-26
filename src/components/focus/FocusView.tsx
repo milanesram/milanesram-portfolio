@@ -8,6 +8,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/layout/Container";
 import {
+  FOCUS_PUBLIC_ROUTES,
   otherFocusRoute,
   type PublicFocusPage,
 } from "@/lib/content/focus";
@@ -22,10 +23,8 @@ export function FocusView({
 }) {
   const authorization = visibleWorkAuthorization(workAuthorization);
   const other = otherFocusRoute(page.slug);
-  const resumeLabel =
-    page.slug === "cybersecurity-grc"
-      ? "Cybersecurity / GRC resume"
-      : "Privacy / AI Governance resume";
+  const route = FOCUS_PUBLIC_ROUTES.find((item) => item.slug === page.slug);
+  const resumeLabel = route ? `${route.navLabel} resume` : "Resume";
 
   return (
     <>

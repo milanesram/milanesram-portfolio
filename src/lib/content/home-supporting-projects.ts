@@ -14,16 +14,6 @@ import {
  */
 export const HOME_SUPPORTING_PROJECT_SPECS = [
   {
-    slug: "milanesram-portfolio",
-    ctaLabel: "View the production CMS on Projects",
-    preferredTags: [
-      "Supabase Auth",
-      "Row-Level Security",
-      "Supabase/PostgreSQL",
-      "Vercel",
-    ],
-  },
-  {
     slug: "dbnms",
     ctaLabel: "View the breach-notification system on Projects",
     preferredTags: [
@@ -31,6 +21,16 @@ export const HOME_SUPPORTING_PROJECT_SPECS = [
       "Incident reporting",
       "Privacy operations",
       "Regulatory implementation",
+    ],
+  },
+  {
+    slug: "milanesram-portfolio",
+    ctaLabel: "View the production CMS on Projects",
+    preferredTags: [
+      "Supabase Auth",
+      "Row-Level Security",
+      "Supabase/PostgreSQL",
+      "Vercel",
     ],
   },
 ] as const;

@@ -16,9 +16,9 @@ import { isVercelPreviewDeployment } from "./vercel-env";
 
 export { createPageMetadata, createPublicationDetailMetadata } from "./page-metadata";
 
-const seoTitleSuffix = "Cybersecurity, GRC, IT Risk & Privacy";
+const seoTitleSuffix = "Privacy, Compliance, GRC & IT Risk";
 const defaultDescription =
-  "Cybersecurity governance, GRC, technology risk, privacy, and AI governance. Northwestern MSIS graduate with applied work through PrivAI Guard.";
+  "Experienced privacy, compliance and information-security risk professional and former privacy regulator with hands-on work across privacy operations, GRC, IT risk, security compliance, assurance, remediation and technology implementation.";
 
 export async function resolvePublicIndexability(
   pageIndexable = true,
@@ -53,24 +53,20 @@ export async function generateRouteMetadata(
     },
   );
 
-  if (pageKey === "home") {
-    return {
-      ...metadata,
-      title: { absolute: seo.title },
-      openGraph: {
-        ...metadata.openGraph,
-        title: seo.ogTitle,
-        description: seo.ogDescription,
-      },
-      twitter: {
-        ...metadata.twitter,
-        title: seo.ogTitle,
-        description: seo.ogDescription,
-      },
-    };
-  }
-
-  return metadata;
+  return {
+    ...metadata,
+    title: { absolute: seo.title },
+    openGraph: {
+      ...metadata.openGraph,
+      title: seo.ogTitle,
+      description: seo.ogDescription,
+    },
+    twitter: {
+      ...metadata.twitter,
+      title: seo.ogTitle,
+      description: seo.ogDescription,
+    },
+  };
 }
 
 export async function withPublicRobots(metadata: Metadata): Promise<Metadata> {
@@ -95,7 +91,7 @@ export async function generateRootMetadata(): Promise<Metadata> {
   const displayName = profile?.displayName ?? SITE_CHROME_FALLBACK.displayName;
   const shortName = profile?.shortName ?? SITE_CHROME_FALLBACK.shortName;
   const defaultTitle = profile
-    ? `${profile.displayName} — ${seoTitleSuffix}`
+    ? `${profile.displayName} | ${seoTitleSuffix}`
     : SITE_CHROME_FALLBACK.displayName;
   const globallyIndexable = indexable !== false;
 

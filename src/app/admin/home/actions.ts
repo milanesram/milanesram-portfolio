@@ -102,6 +102,7 @@ export async function saveHomePageAction(
   }
 
   const values = {
+    hero_kicker: input.heroKicker,
     headline: input.headline,
     lede: input.lede,
     primary_cta_label: input.primaryCtaLabel,

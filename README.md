@@ -4,7 +4,7 @@
 
 **Production `v1.2.0`** is the current public release.
 
-This repository contains the production portfolio and hosted content-management platform behind [milanesram.com](https://milanesram.com). It is published for professional review as a technical artifact relevant to cybersecurity, GRC, privacy, AI governance, information security, IT risk, and technology roles.
+This repository contains the production portfolio and hosted content-management platform behind [milanesram.com](https://milanesram.com). It presents Rainier (Ram) Milanes as a privacy, compliance and information-security risk professional, with hands-on work across privacy operations, GRC, IT risk, security compliance, assurance, remediation, and technical implementation.
 
 ---
 
@@ -29,8 +29,8 @@ This repository contains the production portfolio and hosted content-management 
 The public site presents:
 
 - professional overview and biography
-- cybersecurity, GRC, and IT risk
-- privacy and AI governance
+- GRC, IT risk, and security compliance
+- privacy, compliance, and assurance
 - professional experience
 - projects
 - professional writing and publications

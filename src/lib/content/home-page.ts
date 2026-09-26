@@ -57,6 +57,7 @@ export type HomeClosing = {
 };
 
 export type PublicHomePage = {
+  heroKicker: string;
   headline: string;
   lede: string;
   chips: HomeChip[];
@@ -81,6 +82,7 @@ export type HomePageRow = {
   id: string;
   status: ContentStatus;
   featured_project_id: string | null;
+  hero_kicker: string | null;
   headline: string;
   lede: string;
   primary_cta_label: string;
@@ -382,6 +384,7 @@ export function toPublicHomePage(args: {
   featuredProject: HomeProjectRecord | null;
 }): PublicHomePage {
   return {
+    heroKicker: args.row.hero_kicker?.trim() ?? "",
     headline: args.row.headline,
     lede: args.row.lede,
     chips: mapHomeChips(args.chips),

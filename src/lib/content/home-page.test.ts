@@ -17,7 +17,8 @@ const HOME_ROW: HomePageRow = {
   id: "c52b0001-0000-4000-8000-000000000001",
   status: "published",
   featured_project_id: "0002fb1b-5c40-41ea-98a9-e62de9dac37e",
-  headline: "Cybersecurity, risk, and privacy work grounded in technical practice.",
+  hero_kicker: "READY NOW. BUILT TO ADAPT.",
+  headline: "Privacy, Compliance & Information Security Risk Professional",
   lede: "Substantial governance and privacy experience.",
   primary_cta_label: "View experience",
   primary_cta_href: "/experience",
@@ -137,12 +138,41 @@ describe("home singleton mapping", () => {
       featuredProject: null,
     });
 
+    expect(page.heroKicker).toBe("READY NOW. BUILT TO ADAPT.");
     expect(page.headline).toBe(HOME_ROW.headline);
     expect(page.primaryCta).toEqual({
       label: "View experience",
       href: "/experience",
     });
     expect(page.chips.map((chip) => chip.label)).toEqual(["Cybersecurity", "GRC"]);
+  });
+
+  it("hides the hero eyebrow when the hosted kicker is null or blank", () => {
+    const blank = toPublicHomePage({
+      row: { ...HOME_ROW, hero_kicker: null },
+      chips: [],
+      proofItems: [],
+      experienceLinks: [],
+      experienceItems: [],
+      experienceParents: [],
+      credentialLinks: [],
+      credentials: [],
+      featuredProject: null,
+    });
+    const whitespace = toPublicHomePage({
+      row: { ...HOME_ROW, hero_kicker: "   " },
+      chips: [],
+      proofItems: [],
+      experienceLinks: [],
+      experienceItems: [],
+      experienceParents: [],
+      credentialLinks: [],
+      credentials: [],
+      featuredProject: null,
+    });
+
+    expect(blank.heroKicker).toBe("");
+    expect(whitespace.heroKicker).toBe("");
   });
 });
 

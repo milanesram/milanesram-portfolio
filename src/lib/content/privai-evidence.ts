@@ -75,14 +75,36 @@ export function projectScreenshotPresentation(
 
 const SECTION_ANCHOR_PATTERN = /^[a-z0-9-]+$/;
 
+const PRIVAI_SCREENSHOT_STATUS =
+  "Public capability claims and screenshots on this page describe the validated capstone MVP unless explicitly identified otherwise.";
+
 export function privaiHeroBoundary(limits: string): string {
-  const text = limits.toLowerCase();
+  const trimmed = limits.trim();
+  const text = trimmed.toLowerCase();
   const hasCoreBoundary =
     text.includes("non-production") &&
     text.includes("synthetic") &&
     (text.includes("human governance") || text.includes("human review"));
 
-  return hasCoreBoundary ? PRIVAI_COMPACT_BOUNDARY : limits.trim();
+  if (!hasCoreBoundary) {
+    return trimmed;
+  }
+
+  if (text.includes("public capability claims and screenshots")) {
+    return trimmed;
+  }
+
+  if (
+    text.includes("validated northwestern") &&
+    text.includes("production-oriented re-engineering is in progress.")
+  ) {
+    return trimmed.replace(
+      "Production-oriented re-engineering is in progress.",
+      `Production-oriented re-engineering is in progress. ${PRIVAI_SCREENSHOT_STATUS}`,
+    );
+  }
+
+  return PRIVAI_COMPACT_BOUNDARY;
 }
 
 function evidenceCorpus(

@@ -18,8 +18,8 @@ import type {
 const CYBER_ROW: FocusPageRow = {
   id: "40170d44-acc6-4f1c-b6fd-a6fbee19c02a",
   slug: "cybersecurity-grc",
-  nav_label: "Cybersecurity / GRC",
-  headline: "Cybersecurity, GRC, and IT risk",
+  nav_label: "GRC, IT Risk & Security Compliance",
+  headline: "GRC, IT Risk & Security Compliance",
   summary: "Cybersecurity governance summary.",
   competencies: ["GRC", "IT risk assessment"],
   featured_project_id: "0002fb1b-5c40-41ea-98a9-e62de9dac37e",
@@ -215,7 +215,7 @@ describe("experience UUID relationships", () => {
       row: {
         ...CYBER_ROW,
         slug: "privacy-ai-governance",
-        nav_label: "Privacy / AI Governance",
+        nav_label: "Privacy, Compliance & Assurance",
       },
       experienceLinks: [
         { experience_item_id: ITEM_A.id, sort_order: 10 },

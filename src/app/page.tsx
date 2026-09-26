@@ -105,6 +105,7 @@ export default async function HomePage() {
   return (
     <>
       <HomeHero
+        eyebrow={home.heroKicker}
         headline={home.headline}
         lede={home.lede}
         chips={home.chips}
@@ -142,20 +143,36 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section className="border-y border-line py-20" aria-label="Selected work">
+      <section className="border-y border-line py-20">
         <Container>
-          {home.featuredProject ? (
-            <HomeFlagshipProject flagship={home.featuredProject} />
-          ) : (
-            <p className="text-base leading-7 text-ink-soft">
-              Featured work is temporarily unavailable.
-            </p>
-          )}
-          <HomeSupportingProjects projects={supportingProjects} />
+          <SectionHeader
+            kicker={home.experienceSection.kicker}
+            title={home.experienceSection.title}
+            lede={home.experienceSection.lede}
+          />
+          <div className="mt-10">
+            {home.experiences.length > 0 ? (
+              home.experiences.map((experience) => (
+                <ExperiencePreview
+                  key={experience.id}
+                  experience={experience}
+                />
+              ))
+            ) : (
+              <p className="text-base leading-7 text-ink-soft">
+                Experience is temporarily unavailable.
+              </p>
+            )}
+          </div>
+          <div className="mt-8">
+            <ButtonLink href={home.experienceSection.cta.href} variant="text">
+              {home.experienceSection.cta.label}
+            </ButtonLink>
+          </div>
         </Container>
       </section>
 
-      <section className="py-20">
+      <section id="role-focus" className="py-20">
         <Container>
           <SectionHeader
             kicker={home.focusSection.kicker}
@@ -199,32 +216,16 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section className="border-y border-line py-20">
+      <section className="border-y border-line py-20" aria-label="Selected work">
         <Container>
-          <SectionHeader
-            kicker={home.experienceSection.kicker}
-            title={home.experienceSection.title}
-            lede={home.experienceSection.lede}
-          />
-          <div className="mt-10">
-            {home.experiences.length > 0 ? (
-              home.experiences.map((experience) => (
-                <ExperiencePreview
-                  key={experience.id}
-                  experience={experience}
-                />
-              ))
-            ) : (
-              <p className="text-base leading-7 text-ink-soft">
-                Experience is temporarily unavailable.
-              </p>
-            )}
-          </div>
-          <div className="mt-8">
-            <ButtonLink href={home.experienceSection.cta.href} variant="text">
-              {home.experienceSection.cta.label}
-            </ButtonLink>
-          </div>
+          {home.featuredProject ? (
+            <HomeFlagshipProject flagship={home.featuredProject} />
+          ) : (
+            <p className="text-base leading-7 text-ink-soft">
+              Featured work is temporarily unavailable.
+            </p>
+          )}
+          <HomeSupportingProjects projects={supportingProjects} />
         </Container>
       </section>
 
