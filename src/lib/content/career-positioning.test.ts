@@ -20,6 +20,9 @@ const SCHEMA = source(
 const MIGRATION = source(
   "supabase/migrations/20260925193100_align_career_positioning_v40.sql",
 );
+const RESUME_ASSETS = source(
+  "supabase/migrations/20260926021000_publish_resume_v40_assets.sql",
+);
 
 describe("career positioning 2.0", () => {
   it("renders homepage sections in the approved order", () => {
@@ -156,5 +159,56 @@ describe("career positioning 2.0", () => {
     expect(MIGRATION).toContain("contact form is not unpublished");
     expect(MIGRATION).toContain("page indexability drifted");
     expect(MIGRATION).not.toMatch(/ENABLE ROW LEVEL SECURITY|CREATE POLICY|GRANT /);
+  });
+});
+
+describe("resume v4.0 public assets", () => {
+  it("publishes exactly two distinct public-file tracks", () => {
+    expect(RESUME_ASSETS).toContain(
+      "Resume A — GRC, IT Risk & Security Compliance",
+    );
+    expect(RESUME_ASSETS).toContain(
+      "Resume B — Privacy, Compliance & Assurance",
+    );
+    expect(RESUME_ASSETS).toContain("delivery_mode = 'public_file'");
+    expect(RESUME_ASSETS).toContain("slug = 'cybersecurity-grc'");
+    expect(RESUME_ASSETS).toContain("slug = 'privacy-ai-governance'");
+    expect(RESUME_ASSETS).toContain(
+      "Resume A and Resume B share a media asset",
+    );
+    expect(RESUME_ASSETS).toContain(
+      "unexpected third published resume track",
+    );
+    expect(RESUME_ASSETS).not.toContain("Resume C");
+    expect(RESUME_ASSETS).not.toMatch(
+      /slug = 'ai-governance'|AI Governance Resume Track/,
+    );
+  });
+
+  it("keeps V3.1 filenames inactive and does not relabel them as V4", () => {
+    expect(RESUME_ASSETS).toContain(
+      "ramilanes_resume_grc_it_risk_v4.pdf",
+    );
+    expect(RESUME_ASSETS).toContain(
+      "ramilanes_resume_privacy_compliance_v4.pdf",
+    );
+    expect(RESUME_ASSETS).toContain(
+      "an active track still references a V3.1 resume",
+    );
+    expect(RESUME_ASSETS).toContain("a V3.1 resume record was altered");
+    expect(RESUME_ASSETS).toContain("byte_size = 133746");
+    expect(RESUME_ASSETS).toContain("byte_size = 134203");
+    expect(RESUME_ASSETS).toContain("123610");
+    expect(RESUME_ASSETS).toContain("123872");
+    expect(RESUME_ASSETS).toContain(
+      "8e3d3cccc789ff770b622750b843d77c83ad4f030d02ad351acf3e8095aca139",
+    );
+    expect(RESUME_ASSETS).toContain(
+      "ff8e0cfe742c048f92d5c0bdc71966fb080fba190696440090face9285d758fb",
+    );
+    expect(RESUME_ASSETS).not.toMatch(
+      /UPDATE public\.media_assets[\s\S]*ramilanes_resume_cybersecurity_grc/,
+    );
+    expect(RESUME_ASSETS).not.toMatch(/ENABLE ROW LEVEL SECURITY|CREATE POLICY|GRANT /);
   });
 });
