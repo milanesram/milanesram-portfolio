@@ -1,4 +1,11 @@
+import { PUBLIC_MEDIA_BUCKET } from "@/lib/content/media-bucket";
 import type { MediaKind, MediaPurpose } from "@/lib/supabase/database.types";
+
+export const RESUME_PDF_UPLOAD_ERROR =
+  "Private resume/CV documents must be managed through the private document workflow. Resume PDFs cannot be stored in public media.";
+
+export const RESUME_PDF_PUBLIC_ERROR =
+  "Resume PDFs cannot be marked public. They are shared only through the private document workflow.";
 
 export const IMAGE_MIME_TYPES = new Set([
   "image/jpeg",
@@ -116,6 +123,28 @@ export function validateUploadFile(args: {
   }
 
   return { ok: true, value: { safeFilename, mimeType: mime } };
+}
+
+export function resolveMediaUploadBucket(args: {
+  kind: MediaKind;
+  isPublic: boolean;
+}): ParseResult<{ bucket: typeof PUBLIC_MEDIA_BUCKET }> {
+  if (args.kind === "resume_pdf") {
+    return { ok: false, error: RESUME_PDF_UPLOAD_ERROR };
+  }
+
+  return { ok: true, value: { bucket: PUBLIC_MEDIA_BUCKET } };
+}
+
+export function assertResumePdfStaysNonPublic(args: {
+  kind: MediaKind;
+  isPublic: boolean;
+}): ParseResult<true> {
+  if (args.kind === "resume_pdf" && args.isPublic) {
+    return { ok: false, error: RESUME_PDF_PUBLIC_ERROR };
+  }
+
+  return { ok: true, value: true };
 }
 
 export function mediaStoragePath(

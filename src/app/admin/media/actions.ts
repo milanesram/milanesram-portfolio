@@ -16,11 +16,12 @@ import {
 } from "@/lib/admin/media/validation";
 import {
   assertMediaNotReferenced,
+  assertResumePdfStaysNonPublic,
   mediaStoragePath,
+  resolveMediaUploadBucket,
   rollbackUploadedObjectIfInsertFailed,
   validateUploadFile,
 } from "@/lib/admin/media/upload";
-import { PUBLIC_MEDIA_BUCKET } from "@/lib/content/media-bucket";
 import type { MediaKind, MediaPurpose } from "@/lib/supabase/database.types";
 import { completePublicCmsMutation } from "@/lib/indexnow";
 import { isPublishedStatus, mediaPaths } from "@/lib/indexnow-content-map";
@@ -83,6 +84,15 @@ export async function saveMediaAction(
   }
 
   const input = parsed.value;
+  const publication = assertResumePdfStaysNonPublic({
+    kind: input.kind,
+    isPublic: input.isPublic,
+  });
+
+  if (!publication.ok) {
+    return { error: publication.error, message: null };
+  }
+
   const existing = await getAdminMediaAsset(auth.supabase, input.id);
 
   if (existing.error || !existing.data) {
@@ -186,12 +196,21 @@ export async function uploadMediaAction(
     return { error: validated.error, message: null };
   }
 
+  const destination = resolveMediaUploadBucket({
+    kind,
+    isPublic: formData.get("is_public") === "on",
+  });
+
+  if (!destination.ok) {
+    return { error: destination.error, message: null };
+  }
+
   const id = randomUUID();
   const bucketPath = mediaStoragePath(purpose, id, validated.value.safeFilename);
   const bytes = Buffer.from(await file.arrayBuffer());
 
   const upload = await auth.supabase.storage
-    .from(PUBLIC_MEDIA_BUCKET)
+    .from(destination.value.bucket)
     .upload(bucketPath, bytes, {
       contentType: validated.value.mimeType,
       upsert: false,
@@ -218,7 +237,7 @@ export async function uploadMediaAction(
   const rolledBack = await rollbackUploadedObjectIfInsertFailed({
     insertError: inserted.error,
     removeObject: () =>
-      auth.supabase.storage.from(PUBLIC_MEDIA_BUCKET).remove([bucketPath]),
+      auth.supabase.storage.from(destination.value.bucket).remove([bucketPath]),
   });
 
   if (!rolledBack.ok) {

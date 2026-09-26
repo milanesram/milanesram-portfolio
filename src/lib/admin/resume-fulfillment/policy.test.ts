@@ -4,6 +4,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ResumeCvRequest } from "@/components/resume/ResumeCvRequest";
+import { PRIVATE_PROFESSIONAL_CV } from "./catalog";
 import {
   applyResumeRequestLifecycle,
   availabilityLabel,
@@ -60,6 +61,14 @@ describe("fulfillment document selection", () => {
     expect(availabilityLabel("professional_cv", false)).toBe(
       "Professional CV — Not yet verified",
     );
+    expect(availabilityLabel("professional_cv", true)).toBe(
+      "Professional CV — Available",
+    );
+    expect(
+      fulfillmentAssetError("professional_cv", {
+        professional_cv: { active: true },
+      }),
+    ).toBeNull();
     expect(availabilityLabel("grc_it_risk", true)).toBe("Resume A — Available");
     expect(availabilityLabel("privacy_compliance", true)).toBe(
       "Resume B — Available",
@@ -188,6 +197,40 @@ describe("private fulfillment database contract", () => {
     expect(purge).not.toContain("status = 'reviewed'");
     expect(migration).toContain("NEW.closed_at := NULL");
     expect(migration).toContain("NEW.closed_at := pg_catalog.now()");
+  });
+});
+
+describe("verified professional CV catalog", () => {
+  const activation = source(
+    "supabase/migrations/20260926070000_activate_private_professional_cv.sql",
+  );
+
+  it("registers one active private CV and leaves public storage untouched", () => {
+    expect(PRIVATE_PROFESSIONAL_CV).toMatchObject({
+      documentKey: "professional_cv",
+      bucket: "private-resumes",
+      objectPath: "cv/v2/ramilanes_professional_cv_v2.pdf",
+      byteSize: 176774,
+      sha256: "c80500801a7383019a20ecd666430d6cdc69e2fc8fd8cfe49c55de730e24f331",
+    });
+    expect(activation.match(/'professional_cv'/g)).toHaveLength(1);
+    expect(activation).toContain(PRIVATE_PROFESSIONAL_CV.objectPath);
+    expect(activation).toContain(String(PRIVATE_PROFESSIONAL_CV.byteSize));
+    expect(activation).toContain(PRIVATE_PROFESSIONAL_CV.sha256);
+    expect(activation).toContain("true");
+    expect(activation).not.toMatch(/DELETE FROM/i);
+    expect(activation).not.toMatch(/public-media/i);
+    expect(activation).not.toMatch(/ON storage\.objects/);
+    expect(source("src/app/resume/page.tsx")).not.toContain(
+      PRIVATE_PROFESSIONAL_CV.objectPath,
+    );
+    expect(source("src/components/contact/ResumeRequestForm.tsx")).not.toContain(
+      PRIVATE_PROFESSIONAL_CV.objectPath,
+    );
+    expect(source("src/app/admin/resume-requests/actions.ts")).toContain(
+      "requireAdminMutation",
+    );
+    expect(SIGNED_LINK_TTL_SECONDS).toBeLessThanOrEqual(SIGNED_LINK_TTL_MAX_SECONDS);
   });
 });
 

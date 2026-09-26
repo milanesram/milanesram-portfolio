@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import type { MediaKind } from "@/lib/supabase/database.types";
 import {
   deleteMediaAction,
   saveMediaAction,
@@ -23,7 +24,9 @@ export function MediaForm({ media }: MediaFormProps) {
     saveMediaAction,
     initialState,
   );
+  const [kind, setKind] = useState<MediaKind>(media.kind);
   const dirtyRef = useRef(false);
+  const resumePdf = kind === "resume_pdf";
 
   useEffect(() => {
     function onBeforeUnload(event: BeforeUnloadEvent) {
@@ -108,6 +111,7 @@ export function MediaForm({ media }: MediaFormProps) {
           defaultValue={media.kind}
           disabled={pending}
           className={fieldClass}
+          onChange={(event) => setKind(event.target.value as MediaKind)}
         >
           <option value="resume_pdf">Resume PDF</option>
           <option value="image">Image</option>
@@ -119,15 +123,16 @@ export function MediaForm({ media }: MediaFormProps) {
         <input
           name="is_public"
           type="checkbox"
-          defaultChecked={media.is_public}
-          disabled={pending}
+          defaultChecked={resumePdf ? false : media.is_public}
+          disabled={pending || resumePdf}
           className="mt-1 h-4 w-4"
         />
         <span>
           Public
           <span className="mt-1 block font-normal text-ink-faint">
-            Anonymous visitors can read this row only when it is also
-            published.
+            {resumePdf
+              ? "Resume PDFs cannot be marked public. They are shared only through the private document workflow."
+              : "This checkbox does not move the file. Media-library files stay in public storage and appear on the site only when they are published and this is checked."}
           </span>
         </span>
       </label>

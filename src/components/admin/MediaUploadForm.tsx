@@ -32,7 +32,6 @@ export function MediaUploadForm() {
         <select name="kind" required disabled={pending} className={fieldClass}>
           <option value="image">Image</option>
           <option value="document">Publication PDF</option>
-          <option value="resume_pdf">Resume PDF</option>
         </select>
       </label>
       <label className={labelClass}>
@@ -47,7 +46,6 @@ export function MediaUploadForm() {
           <option value="journey">Journey</option>
           <option value="portrait">Portrait</option>
           <option value="publication">Publication</option>
-          <option value="resume">Resume</option>
         </select>
       </label>
       <label className={labelClass}>
@@ -70,8 +68,9 @@ export function MediaUploadForm() {
         />
       </label>
       <p className="text-sm leading-6 text-ink-soft">
-        Required for images. Uploaded files start as draft and private unless
-        you mark them public here. Publishing stays a separate action.
+        Required for images. Images and publication PDFs are stored in the
+        public media bucket. They stay off the site until you publish them and
+        mark them public. Resume and CV documents are not uploaded here.
       </p>
       <label className={labelClass}>
         File
@@ -94,8 +93,8 @@ export function MediaUploadForm() {
         <span>
           Public
           <span className="mt-1 block font-normal text-ink-faint">
-            Do not publish a file merely because it was uploaded. The public
-            site still requires published status.
+            This checkbox does not move the file into private storage. A
+            published asset appears on the site only when this is also checked.
           </span>
         </span>
       </label>

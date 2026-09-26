@@ -6,8 +6,9 @@ export default function AdminNewMediaPage() {
       <div>
         <h2 className="font-serif text-2xl text-ink">Upload media</h2>
         <p className="mt-2 text-sm leading-6 text-ink-soft">
-          Images and PDFs only. Files are stored at a UUID path. Upload does not
-          publish the asset or attach it to a page.
+          Images and publication PDFs are stored in the public media bucket.
+          Upload does not publish the asset or attach it to a page. Resume and
+          CV documents are not uploaded here.
         </p>
       </div>
       <div className="rounded-xl border border-line bg-paper-elevated p-6">

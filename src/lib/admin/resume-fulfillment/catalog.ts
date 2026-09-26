@@ -32,6 +32,16 @@ export const PUBLIC_RESUME_V31_PATHS = {
     "resume/07f4993f-d385-4842-9909-f35d4f9be662/ramilanes_resume_privacy_ai_governance.pdf",
 } as const;
 
+export const PRIVATE_PROFESSIONAL_CV = {
+  documentKey: "professional_cv",
+  title: "Comprehensive Professional CV",
+  versionLabel: "V2",
+  bucket: "private-resumes",
+  objectPath: "cv/v2/ramilanes_professional_cv_v2.pdf",
+  byteSize: 176774,
+  sha256: "c80500801a7383019a20ecd666430d6cdc69e2fc8fd8cfe49c55de730e24f331",
+} as const;
+
 export const PRIVATE_RESUME_V31_ARCHIVE_PATHS = {
   grc_it_risk:
     "resume/archive/v3.1/cybersecurity-grc/ramilanes_resume_cybersecurity_grc.pdf",
