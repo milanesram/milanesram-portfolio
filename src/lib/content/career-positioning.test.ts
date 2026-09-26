@@ -162,6 +162,100 @@ describe("career positioning 2.0", () => {
   });
 });
 
+describe("public resume track labels", () => {
+  const LABEL_MIGRATION = source(
+    "supabase/migrations/20260926080000_reconcile_public_resume_track_labels_v40.sql",
+  );
+
+  it("relabels the two current public titles without replaying the V4 cutover", () => {
+    expect(LABEL_MIGRATION).toContain(
+      "Resume A — GRC, IT Risk & Security Compliance",
+    );
+    expect(LABEL_MIGRATION).toContain(
+      "Resume B — Privacy, Compliance & Assurance",
+    );
+    expect(LABEL_MIGRATION).toContain(
+      "title = $t$GRC, IT Risk & Security Compliance$t$",
+    );
+    expect(LABEL_MIGRATION).toContain(
+      "title = $t$Privacy, Compliance & Assurance$t$",
+    );
+    expect(LABEL_MIGRATION).toContain("slug = 'cybersecurity-grc'");
+    expect(LABEL_MIGRATION).toContain("slug = 'privacy-ai-governance'");
+    expect(LABEL_MIGRATION).toContain("delivery_mode = 'request'");
+    expect(LABEL_MIGRATION).toContain("ramilanes_resume_grc_it_risk_v4.pdf");
+    expect(LABEL_MIGRATION).toContain(
+      "ramilanes_resume_privacy_compliance_v4.pdf",
+    );
+    expect(LABEL_MIGRATION).toContain("byte_size = 123610");
+    expect(LABEL_MIGRATION).toContain("byte_size = 123872");
+    expect(LABEL_MIGRATION).not.toContain("20260925193100");
+    expect(LABEL_MIGRATION).not.toMatch(
+      /UPDATE public\.media_assets|storage\.objects|ENABLE ROW LEVEL SECURITY|CREATE POLICY|GRANT /,
+    );
+    expect(MIGRATION).toContain("Resume A — GRC, IT Risk & Security Compliance");
+    expect(MIGRATION).not.toContain(
+      "20260926080000_reconcile_public_resume_track_labels_v40.sql",
+    );
+  });
+
+  it("replaces both homepage card kickers with Professional Focus", () => {
+    const grcKicker = LABEL_MIGRATION.indexOf(
+      "track.home_kicker = $t$Resume A$t$",
+    );
+    const privacyKicker = LABEL_MIGRATION.indexOf(
+      "track.home_kicker = $t$Resume B$t$",
+    );
+
+    expect(grcKicker).toBeGreaterThan(
+      LABEL_MIGRATION.indexOf("slug = 'cybersecurity-grc'"),
+    );
+    expect(privacyKicker).toBeGreaterThan(grcKicker);
+    expect(LABEL_MIGRATION.match(/SET home_kicker = \$t\$Professional Focus\$t\$/g))
+      .toHaveLength(2);
+    expect(LABEL_MIGRATION).toContain(
+      "title = $t$GRC, IT Risk & Security Compliance$t$",
+    );
+    expect(LABEL_MIGRATION).toContain(
+      "title = $t$Privacy, Compliance & Assurance$t$",
+    );
+    expect(LABEL_MIGRATION).not.toMatch(/SET home_kicker = NULL/i);
+    expect(LABEL_MIGRATION).not.toContain("Pathway");
+    expect(LABEL_MIGRATION).not.toMatch(/UPDATE public\.focus_pages/);
+    expect(HOME).toContain("homeKickerByFocusSlug");
+    expect(HOME).toContain("{track.title}");
+    expect(HOME).not.toContain("Resume A");
+    expect(HOME).not.toContain("Resume B");
+    expect(HOME).not.toContain(">Professional Focus<");
+  });
+});
+
+describe("focus evidence order", () => {
+  const FOCUS = source("src/components/focus/FocusView.tsx");
+  const SOCIAL = source("src/app/opengraph-image.tsx");
+
+  it("places selected roles before featured project evidence", () => {
+    const roles = FOCUS.indexOf('kicker="Experience"');
+    const project = FOCUS.indexOf('kicker="Featured evidence"');
+    const competencies = FOCUS.indexOf("What this track emphasizes");
+    const credentials = FOCUS.indexOf('kicker="Credentials"');
+
+    expect(competencies).toBeGreaterThan(FOCUS.indexOf("<PageHero"));
+    expect(roles).toBeGreaterThan(competencies);
+    expect(project).toBeGreaterThan(roles);
+    expect(credentials).toBeGreaterThan(project);
+    expect(FOCUS).toContain("/projects/privai-guard");
+    expect(FOCUS).toContain('slug === "cybersecurity-grc"');
+    expect(FOCUS).not.toContain('href="/focus/');
+  });
+
+  it("uses the single-identity social-card line", () => {
+    expect(SOCIAL).toContain("Privacy · Compliance · Information Security Risk");
+    expect(SOCIAL).not.toContain("Cybersecurity · GRC · IT Risk · Privacy");
+    expect(SOCIAL).toContain("profile?.headline");
+  });
+});
+
 describe("resume v4.0 public assets", () => {
   it("publishes exactly two distinct public-file tracks", () => {
     expect(RESUME_ASSETS).toContain(

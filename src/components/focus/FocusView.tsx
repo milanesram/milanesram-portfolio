@@ -64,21 +64,6 @@ export function FocusView({
         </Container>
       </section>
 
-      {page.featuredProject ? (
-        <section className="border-y border-line py-16">
-          <Container>
-            <SectionHeader
-              kicker="Featured evidence"
-              title={page.featuredProject.name}
-              lede={page.featuredProjectLede || undefined}
-            />
-            <div className="mt-8">
-              <ProjectCard project={page.featuredProject} featured />
-            </div>
-          </Container>
-        </section>
-      ) : null}
-
       {page.experience.length > 0 ? (
         <section className="py-16">
           <Container>
@@ -95,6 +80,21 @@ export function FocusView({
               <ButtonLink href="/experience" variant="text">
                 View full experience
               </ButtonLink>
+            </div>
+          </Container>
+        </section>
+      ) : null}
+
+      {page.featuredProject ? (
+        <section className="border-y border-line py-16">
+          <Container>
+            <SectionHeader
+              kicker="Featured evidence"
+              title={page.featuredProject.name}
+              lede={page.featuredProjectLede || undefined}
+            />
+            <div className="mt-8">
+              <ProjectCard project={page.featuredProject} featured />
             </div>
           </Container>
         </section>

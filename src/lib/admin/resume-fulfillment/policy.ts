@@ -18,8 +18,8 @@ export type FulfillmentDocumentKey = (typeof FULFILLMENT_DOCUMENT_KEYS)[number];
 
 export const FULFILLMENT_DOCUMENT_LABELS: Record<FulfillmentDocumentKey, string> =
   {
-    grc_it_risk: "Resume A — GRC, IT Risk & Security Compliance",
-    privacy_compliance: "Resume B — Privacy, Compliance & Assurance",
+    grc_it_risk: "GRC, IT Risk & Security Compliance",
+    privacy_compliance: "Privacy, Compliance & Assurance",
     professional_cv: "Comprehensive Professional CV",
   };
 
@@ -140,11 +140,15 @@ export function availabilityLabel(
   available: boolean,
 ): string {
   if (document === "grc_it_risk") {
-    return available ? "Resume A — Available" : "Resume A — Not available";
+    return available
+      ? "GRC, IT Risk & Security Compliance — Available"
+      : "GRC, IT Risk & Security Compliance — Not available";
   }
 
   if (document === "privacy_compliance") {
-    return available ? "Resume B — Available" : "Resume B — Not available";
+    return available
+      ? "Privacy, Compliance & Assurance — Available"
+      : "Privacy, Compliance & Assurance — Not available";
   }
 
   return available

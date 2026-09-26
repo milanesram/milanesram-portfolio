@@ -53,7 +53,7 @@ export default async function OpenGraphImage() {
           {headline}
         </div>
         <div style={{ fontSize: 24, color: "#3E4B5C" }}>
-          Cybersecurity · GRC · IT Risk · Privacy
+          Privacy · Compliance · Information Security Risk
         </div>
       </div>
     ),

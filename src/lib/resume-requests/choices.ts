@@ -8,8 +8,8 @@ export const RESUME_REQUEST_CHOICES = [
 export type ResumeRequestChoice = (typeof RESUME_REQUEST_CHOICES)[number];
 
 export const RESUME_REQUEST_LABELS: Record<ResumeRequestChoice, string> = {
-  grc_it_risk: "Resume A — GRC, IT Risk & Security Compliance",
-  privacy_compliance: "Resume B — Privacy, Compliance & Assurance",
+  grc_it_risk: "GRC, IT Risk & Security Compliance",
+  privacy_compliance: "Privacy, Compliance & Assurance",
   professional_cv: "Comprehensive Professional CV",
   not_sure: "Not sure — please recommend the appropriate document",
 };

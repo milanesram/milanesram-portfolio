@@ -69,9 +69,14 @@ describe("fulfillment document selection", () => {
         professional_cv: { active: true },
       }),
     ).toBeNull();
-    expect(availabilityLabel("grc_it_risk", true)).toBe("Resume A — Available");
+    expect(availabilityLabel("grc_it_risk", true)).toBe(
+      "GRC, IT Risk & Security Compliance — Available",
+    );
     expect(availabilityLabel("privacy_compliance", true)).toBe(
-      "Resume B — Available",
+      "Privacy, Compliance & Assurance — Available",
+    );
+    expect(availabilityLabel("grc_it_risk", false)).toBe(
+      "GRC, IT Risk & Security Compliance — Not available",
     );
   });
 

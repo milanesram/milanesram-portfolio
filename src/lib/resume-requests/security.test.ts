@@ -110,12 +110,13 @@ describe("resume request form", () => {
     expect(html).toContain('name="company_website"');
     expect(html).toContain("hidden");
     expect(html).toContain('tabindex="-1"');
-    expect(html).toContain("Resume A — GRC, IT Risk &amp; Security Compliance");
+    expect(html).toContain("GRC, IT Risk &amp; Security Compliance");
+    expect(html).not.toContain("Resume A —");
     expect(html).toContain('value="grc_it_risk" selected=""');
     expect(html).not.toMatch(/phone|home address|salary|social security|linkedin url/i);
   });
 
-  it("preselects Resume B and falls back copy stays available", () => {
+  it("preselects the privacy lane and falls back copy stays available", () => {
     const html = renderToStaticMarkup(
       createElement(ResumeRequestForm, {
         token: "issued-token",
@@ -123,7 +124,8 @@ describe("resume request form", () => {
       }),
     );
 
-    expect(html).toContain("Resume B — Privacy, Compliance &amp; Assurance");
+    expect(html).toContain("Privacy, Compliance &amp; Assurance");
+    expect(html).not.toContain("Resume B —");
     expect(html).toContain(RESUME_REQUEST_LABELS.not_sure);
     expect(html).toContain('value="privacy_compliance" selected=""');
   });
