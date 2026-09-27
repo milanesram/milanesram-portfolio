@@ -41,6 +41,7 @@ const PURPOSES = new Set<MediaPurpose>([
   "journey",
   "project",
   "publication",
+  "public_resume",
   "resume",
 ]);
 

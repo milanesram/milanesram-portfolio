@@ -1,6 +1,9 @@
 import { CareerTrackCard } from "@/components/ui/CareerTrackCard";
 import { resumeTracksLayoutClass } from "@/lib/content/resume-layout";
-import type { PublicResumeTrack } from "@/lib/content/resume-page";
+import {
+  SEND_INQUIRY_CTA_LABEL,
+  type PublicResumeTrack,
+} from "@/lib/content/resume-page";
 
 export function ResumeTracks({ tracks }: { tracks: PublicResumeTrack[] }) {
   if (tracks.length === 0) {
@@ -18,6 +21,8 @@ export function ResumeTracks({ tracks }: { tracks: PublicResumeTrack[] }) {
           ctaLabel={track.ctaLabel}
           external={Boolean(track.media)}
           unavailable={track.unavailable}
+          secondaryHref={track.media ? track.inquiryHref : null}
+          secondaryLabel={SEND_INQUIRY_CTA_LABEL}
         />
       ))}
     </div>

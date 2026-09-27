@@ -33,7 +33,7 @@ export const UPLOAD_FILE_ACCEPT = [...IMAGE_MIME_TYPES, ...PDF_MIME_TYPES].join(
 
 const KIND_PURPOSES: Record<MediaKind, readonly MediaPurpose[]> = {
   image: ["portrait", "journey", "project"],
-  document: ["publication"],
+  document: ["publication", "public_resume"],
   resume_pdf: ["resume"],
 };
 

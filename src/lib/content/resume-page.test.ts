@@ -13,22 +13,36 @@ import type { ResumeMediaRow, ResumeTrackRow } from "./resume-page";
 
 const ASSET: ResumeMediaRow = {
   id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
-  kind: "resume_pdf",
-  purpose: "resume",
+  kind: "document",
+  purpose: "public_resume",
   title: "Resume A",
   mime_type: "application/pdf",
-  bucket_path: "resume/a/resume-a.pdf",
+  bucket_path:
+    "public_resume/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee/rainier-milanes-grc-it-risk-security-compliance-resume.pdf",
   status: "published",
   is_public: true,
 };
 
 const PRIVACY_ASSET: ResumeMediaRow = {
   id: "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
-  kind: "resume_pdf",
-  purpose: "resume",
+  kind: "document",
+  purpose: "public_resume",
   title: "Resume B",
   mime_type: "application/pdf",
-  bucket_path: "resume/b/resume-b.pdf",
+  bucket_path:
+    "public_resume/bbbbbbbb-cccc-4ddd-8eee-ffffffffffff/rainier-milanes-privacy-compliance-assurance-resume.pdf",
+  status: "published",
+  is_public: true,
+};
+
+const LEGACY_V4_ASSET: ResumeMediaRow = {
+  id: "f4739fe2-8d6b-4b13-ad5c-f611e3ab97a5",
+  kind: "resume_pdf",
+  purpose: "resume",
+  title: "Resume A V4.0",
+  mime_type: "application/pdf",
+  bucket_path:
+    "resume/f4739fe2-8d6b-4b13-ad5c-f611e3ab97a5/ramilanes_resume_grc_it_risk_v4.pdf",
   status: "published",
   is_public: true,
 };
@@ -75,6 +89,7 @@ describe("resume track mapping", () => {
     expect(mapped?.media).toBeNull();
     expect(mapped?.href).toBe("/contact?request=grc_it_risk");
     expect(mapped?.ctaLabel).toBe(REQUEST_RESUME_CTA_LABEL);
+    expect(mapped?.inquiryHref).toBe("/contact?inquiry=grc_it_risk");
     expect(mapped?.href).not.toContain("ramilanes_resume_grc_it_risk_v4.pdf");
   });
 
@@ -156,6 +171,7 @@ describe("resume track mapping", () => {
     expect(mapped?.ctaLabel).toBe(PUBLIC_RESUME_CTA_LABEL);
     expect(mapped?.unavailable).toBe(false);
     expect(mapped?.href).toBe(publicUrlFor(ASSET.bucket_path));
+    expect(mapped?.inquiryHref).toBe("/contact?inquiry=grc_it_risk");
     expect(mapped?.media).toEqual({
       id: ASSET.id,
       title: ASSET.title,
@@ -181,6 +197,7 @@ describe("resume track mapping", () => {
     expect(mapped?.slug).toBe("privacy-ai-governance");
     expect(mapped?.ctaLabel).toBe(PUBLIC_RESUME_CTA_LABEL);
     expect(mapped?.href).toBe(publicUrlFor(PRIVACY_ASSET.bucket_path));
+    expect(mapped?.inquiryHref).toBe("/contact?inquiry=privacy_compliance");
     expect(mapped?.media?.id).toBe(PRIVACY_ASSET.id);
     expect(mapped?.href).not.toBe(publicUrlFor(ASSET.bucket_path));
   });
@@ -283,7 +300,7 @@ describe("resume track mapping", () => {
     expect(resumeTracksHavePublicFiles(tracks)).toBe(false);
   });
 
-  it("requires published public resume PDFs", () => {
+  it("requires a published public_resume PDF and refuses legacy or private files", () => {
     expect(
       isEligibleResumeMedia(ASSET, "https://example.test/file.pdf"),
     ).toBe(true);
@@ -293,6 +310,55 @@ describe("resume track mapping", () => {
         "https://example.test/file.pdf",
       ),
     ).toBe(false);
+    expect(
+      isEligibleResumeMedia(
+        { ...ASSET, kind: "resume_pdf", purpose: "resume" },
+        "https://example.test/file.pdf",
+      ),
+    ).toBe(false);
+    expect(
+      isEligibleResumeMedia(
+        {
+          ...LEGACY_V4_ASSET,
+          kind: "document",
+          purpose: "public_resume",
+        },
+        "https://example.test/file.pdf",
+      ),
+    ).toBe(false);
+    expect(
+      isEligibleResumeMedia(
+        {
+          ...ASSET,
+          bucket_path: "cv/v2/ramilanes_professional_cv_v2.pdf",
+        },
+        "https://example.test/file.pdf",
+      ),
+    ).toBe(false);
+    expect(
+      isEligibleResumeMedia(
+        {
+          ...ASSET,
+          bucket_path: "private-resumes/cv/v2/ramilanes_professional_cv_v2.pdf",
+        },
+        "https://example.test/file.pdf",
+      ),
+    ).toBe(false);
+  });
+
+  it("does not map the unsanitized V4.0 media rows to a public download", () => {
+    const mapped = mapResumeTrack(
+      track({
+        delivery_mode: "public_file",
+        media_assets: LEGACY_V4_ASSET,
+      }),
+      publicUrlFor,
+    );
+
+    expect(mapped?.media).toBeNull();
+    expect(mapped?.href).toBeNull();
+    expect(mapped?.ctaLabel).toBe(UNAVAILABLE_RESUME_LABEL);
+    expect(mapped?.inquiryHref).toBe("/contact?inquiry=grc_it_risk");
   });
 
   it("treats tracks with a public file as recruiter-ready", () => {

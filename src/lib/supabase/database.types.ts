@@ -33,6 +33,7 @@ export type MediaPurpose =
   | "journey"
   | "project"
   | "publication"
+  | "public_resume"
   | "resume";
 export type ProjectMediaDisplayRole = "hero" | "workflow" | "gallery";
 export type ResumeDeliveryMode = "request" | "public_file";

@@ -114,6 +114,98 @@ describe("media upload validation", () => {
     expect(removeObject).toHaveBeenCalledOnce();
   });
 
+  it("accepts a sanitized public resume PDF and rejects unsafe resume uploads", () => {
+    expect(
+      validateUploadFile({
+        kind: "document",
+        purpose: "public_resume",
+        filename: "rainier-milanes-grc-it-risk-security-compliance-resume.pdf",
+        mimeType: "application/pdf",
+        byteSize: PDF.byteLength,
+        bytes: PDF,
+      }),
+    ).toMatchObject({
+      ok: true,
+      value: {
+        safeFilename: "rainier-milanes-grc-it-risk-security-compliance-resume.pdf",
+        mimeType: "application/pdf",
+      },
+    });
+
+    expect(
+      validateUploadFile({
+        kind: "resume_pdf",
+        purpose: "public_resume",
+        filename: "resume.pdf",
+        mimeType: "application/pdf",
+        byteSize: PDF.byteLength,
+        bytes: PDF,
+      }).ok,
+    ).toBe(false);
+
+    expect(
+      validateUploadFile({
+        kind: "document",
+        purpose: "public_resume",
+        filename: "resume.pdf",
+        mimeType: "image/png",
+        byteSize: PDF.byteLength,
+        bytes: PDF,
+      }).ok,
+    ).toBe(false);
+
+    expect(
+      validateUploadFile({
+        kind: "document",
+        purpose: "public_resume",
+        filename: "resume.pdf",
+        mimeType: "application/pdf",
+        byteSize: PNG.byteLength,
+        bytes: PNG,
+      }),
+    ).toEqual({ ok: false, error: UPLOAD_CONTENT_MISMATCH });
+
+    expect(
+      validateUploadFile({
+        kind: "document",
+        purpose: "public_resume",
+        filename: "resume.pdf",
+        mimeType: "application/pdf",
+        byteSize: new TextEncoder().encode("not a pdf").byteLength,
+        bytes: new TextEncoder().encode("not a pdf"),
+      }),
+    ).toEqual({ ok: false, error: UPLOAD_CONTENT_MISMATCH });
+
+    expect(
+      validateUploadFile({
+        kind: "document",
+        purpose: "public_resume",
+        filename: "resume.pdf",
+        mimeType: "application/pdf",
+        byteSize: 12 * 1024 * 1024 + 1,
+        bytes: PDF,
+      }),
+    ).toEqual({ ok: false, error: "PDFs must be 12 MB or smaller." });
+
+    expect(
+      validateUploadFile({
+        kind: "document",
+        purpose: "public_resume",
+        filename: "../resume.pdf",
+        mimeType: "application/pdf",
+        byteSize: PDF.byteLength,
+        bytes: PDF,
+      }).ok,
+    ).toBe(false);
+
+    expect(
+      resolveMediaUploadBucket({ kind: "resume_pdf", isPublic: true }),
+    ).toEqual({ ok: false, error: RESUME_PDF_UPLOAD_ERROR });
+    expect(
+      resolveMediaUploadBucket({ kind: "document", isPublic: true }),
+    ).toEqual({ ok: true, value: { bucket: "public-media" } });
+  });
+
   it("rejects resume PDFs before they can enter public media", () => {
     const privateResume = resolveMediaUploadBucket({
       kind: "resume_pdf",

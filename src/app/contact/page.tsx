@@ -1,3 +1,4 @@
+import { ContactForm } from "@/components/contact/ContactForm";
 import { LinkedInProfileBadge } from "@/components/contact/LinkedInProfileBadge";
 import { ResumeRequestForm } from "@/components/contact/ResumeRequestForm";
 import { PageHero } from "@/components/ui/PageHero";
@@ -8,6 +9,8 @@ import {
   RESUME_REQUEST_LEDE,
   parseResumeRequestQuery,
 } from "@/lib/resume-requests/choices";
+import { parseInquiryLaneQuery } from "@/lib/contact/inquiry-prefill";
+import { getPublicContactFormToken } from "@/lib/contact/intake";
 import { getResumeRequestFormToken } from "@/lib/resume-requests/intake";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import {
@@ -25,12 +28,17 @@ export function generateMetadata() {
 export default async function ContactPage({
   searchParams,
 }: {
-  searchParams: Promise<{ request?: string | string[] }>;
+  searchParams: Promise<{
+    request?: string | string[];
+    inquiry?: string | string[];
+  }>;
 }) {
   const query = await searchParams;
   const initialChoice = parseResumeRequestQuery(query.request);
-  const [intakeToken, profileResult, pageResult] = await Promise.all([
+  const initialTrack = parseInquiryLaneQuery(query.inquiry);
+  const [intakeToken, inquiryToken, profileResult, pageResult] = await Promise.all([
     getResumeRequestFormToken(),
+    getPublicContactFormToken(),
     getPublishedSiteProfile(),
     getPublishedContactPage(),
   ]);
@@ -82,6 +90,17 @@ export default async function ContactPage({
             </p>
           )}
         </section>
+        {inquiryToken ? (
+          <section aria-labelledby="send-inquiry-heading" className="space-y-4">
+            <h2
+              id="send-inquiry-heading"
+              className="font-serif text-3xl font-medium tracking-tight text-ink"
+            >
+              Send inquiry
+            </h2>
+            <ContactForm token={inquiryToken} initialTrack={initialTrack} />
+          </section>
+        ) : null}
         <section aria-labelledby="direct-contact-heading" className="space-y-4">
           <h2
             id="direct-contact-heading"

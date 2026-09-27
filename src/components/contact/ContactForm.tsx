@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import type { InquiryTrack } from "@/lib/supabase/database.types";
+import { INQUIRY_TRACK_LABELS } from "@/lib/contact/inquiry-prefill";
 
 const fieldClass =
   "mt-2 min-h-11 w-full rounded-lg border border-line bg-paper px-3 text-ink disabled:opacity-60";
@@ -8,9 +10,10 @@ const labelClass = "block text-sm font-medium text-ink";
 
 type ContactFormProps = {
   token: string;
+  initialTrack?: InquiryTrack;
 };
 
-export function ContactForm({ token }: ContactFormProps) {
+export function ContactForm({ token, initialTrack = "either" }: ContactFormProps) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -151,12 +154,14 @@ export function ContactForm({ token }: ContactFormProps) {
             name="track"
             required
             disabled={pending}
-            defaultValue="either"
+            defaultValue={initialTrack}
             className={fieldClass}
           >
-            <option value="either">Either</option>
-            <option value="cybersecurity_grc">Cybersecurity / GRC</option>
-            <option value="privacy_ai">Privacy / AI</option>
+            <option value="either">{INQUIRY_TRACK_LABELS.either}</option>
+            <option value="cybersecurity_grc">
+              {INQUIRY_TRACK_LABELS.cybersecurity_grc}
+            </option>
+            <option value="privacy_ai">{INQUIRY_TRACK_LABELS.privacy_ai}</option>
           </select>
         </label>
       </div>
@@ -179,7 +184,7 @@ export function ContactForm({ token }: ContactFormProps) {
         disabled={pending}
         className="mt-5 inline-flex min-h-11 items-center rounded-full bg-ink px-5 text-sm font-medium text-paper-elevated disabled:opacity-60"
       >
-        {pending ? "Sending…" : "Send message"}
+        {pending ? "Sending…" : "Send inquiry"}
       </button>
     </form>
   );

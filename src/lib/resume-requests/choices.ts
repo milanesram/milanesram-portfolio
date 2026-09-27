@@ -62,3 +62,13 @@ export function resumeRequestChoiceForSlug(slug: string): ResumeRequestChoice {
 export function resumeRequestHref(slug: string): string {
   return `/contact?request=${resumeRequestChoiceForSlug(slug)}`;
 }
+
+export function resumeInquiryHref(slug: string): string | null {
+  const choice = resumeRequestChoiceForSlug(slug);
+
+  if (choice === "grc_it_risk" || choice === "privacy_compliance") {
+    return `/contact?inquiry=${choice}`;
+  }
+
+  return null;
+}

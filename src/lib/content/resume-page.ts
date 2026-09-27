@@ -1,5 +1,6 @@
 import {
   REQUEST_RESUME_CTA_LABEL,
+  resumeInquiryHref,
   resumeRequestHref,
 } from "@/lib/resume-requests/choices";
 import type {
@@ -36,10 +37,18 @@ export type PublicResumeTrack = {
   unavailable: boolean;
   homeKicker: string | null;
   focusSlug: string | null;
+  inquiryHref: string | null;
 };
 
-export const PUBLIC_RESUME_CTA_LABEL = "View resume";
+export const PUBLIC_RESUME_CTA_LABEL = "Download Resume";
+export const SEND_INQUIRY_CTA_LABEL = "Send Inquiry";
 export const UNAVAILABLE_RESUME_LABEL = "Resume PDF being updated";
+
+/** V4.0 public-media rows that still contain phone and personal location. */
+export const LEGACY_UNSANITIZED_RESUME_MEDIA_IDS = new Set([
+  "f4739fe2-8d6b-4b13-ad5c-f611e3ab97a5",
+  "29a9954b-5169-45dc-9b82-be04e041ba78",
+]);
 
 export type ResumePageRow = {
   status: ContentStatus;
@@ -95,6 +104,8 @@ function unwrap<T>(value: T | T[] | null): T | null {
 function isPrivateResumePath(bucketPath: string): boolean {
   return (
     bucketPath.includes("private-resumes") ||
+    bucketPath.startsWith("cv/") ||
+    bucketPath.includes("professional_cv") ||
     bucketPath.startsWith("resume/v4/") ||
     bucketPath.startsWith("resume/archive/")
   );
@@ -104,13 +115,18 @@ export function isEligibleResumeMedia(
   asset: ResumeMediaRow | null,
   publicUrl: string | null,
 ): asset is ResumeMediaRow {
-  if (!asset || !publicUrl || isPrivateResumePath(asset.bucket_path)) {
+  if (
+    !asset ||
+    !publicUrl ||
+    LEGACY_UNSANITIZED_RESUME_MEDIA_IDS.has(asset.id) ||
+    isPrivateResumePath(asset.bucket_path)
+  ) {
     return false;
   }
 
   return (
-    asset.kind === "resume_pdf" &&
-    asset.purpose === "resume" &&
+    asset.kind === "document" &&
+    asset.purpose === "public_resume" &&
     isPublishedStatus(asset.status) &&
     asset.is_public &&
     (asset.mime_type === "application/pdf" ||
@@ -218,5 +234,6 @@ export function mapResumeTrack(
     unavailable,
     homeKicker: row.home_kicker?.trim() || null,
     focusSlug,
+    inquiryHref: resumeInquiryHref(row.slug),
   };
 }

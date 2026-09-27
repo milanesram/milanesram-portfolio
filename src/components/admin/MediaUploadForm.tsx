@@ -47,6 +47,7 @@ export function MediaUploadForm() {
           <option value="journey">Journey</option>
           <option value="portrait">Portrait</option>
           <option value="publication">Publication</option>
+          <option value="public_resume">Public resume</option>
         </select>
       </label>
       <label className={labelClass}>
