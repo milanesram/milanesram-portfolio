@@ -73,6 +73,9 @@ export function FocusView({
                 <ExperiencePreview
                   key={experience.id}
                   experience={experience}
+                  maxBullets={
+                    page.slug === "privacy-ai-governance" ? 8 : 2
+                  }
                 />
               ))}
             </div>

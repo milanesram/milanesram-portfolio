@@ -5,14 +5,16 @@ export function ExperiencePreview({
   experience,
   track,
   showTitleSecondary = true,
+  maxBullets = 2,
 }: {
   experience: Experience;
   track?: "cyber" | "privacy";
   showTitleSecondary?: boolean;
+  maxBullets?: number;
 }) {
-  const bullets = track
-    ? bulletsForTrack(experience, track).slice(0, 2)
-    : experience.bullets.slice(0, 2);
+  const bullets = (
+    track ? bulletsForTrack(experience, track) : experience.bullets
+  ).slice(0, maxBullets);
 
   return (
     <article className="border-t border-line py-6 first:border-t-0 first:pt-0">

@@ -14,6 +14,8 @@ const MIGRATION = source(
 const ROUTES = source("src/content/site.ts");
 const FOCUS = source("src/lib/content/focus.ts");
 const PRIVACY_PAGE = source("src/app/focus/privacy-ai-governance/page.tsx");
+const FOCUS_VIEW = source("src/components/focus/FocusView.tsx");
+const PREVIEW = source("src/components/ui/ExperiencePreview.tsx");
 
 const PROOF =
   "Presented Philippine breach and compliance developments and regulatory systems at Global Privacy Assembly meetings and represented the Philippines in APEC Cross-Border Privacy Rules discussions.";
@@ -38,6 +40,10 @@ describe("global privacy evidence", () => {
     expect(ROUTES.match(/href: "\/focus\//g)).toHaveLength(2);
     expect(PRIVACY_PAGE).toContain('generateRouteMetadata("focus-privacy-ai-governance")');
     expect(PRIVACY_PAGE).toContain('getPublishedFocusPage("privacy-ai-governance")');
+    expect(PREVIEW).toContain("maxBullets = 2");
+    expect(FOCUS_VIEW).toContain(
+      'page.slug === "privacy-ai-governance" ? 8 : 2',
+    );
   });
 
   it("adds one home proof and the approved international experience", () => {
