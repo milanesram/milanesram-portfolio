@@ -171,7 +171,7 @@ describe("resume track mapping", () => {
     expect(mapped?.ctaLabel).toBe(PUBLIC_RESUME_CTA_LABEL);
     expect(mapped?.unavailable).toBe(false);
     expect(mapped?.href).toBe(publicUrlFor(ASSET.bucket_path));
-    expect(mapped?.inquiryHref).toBe("/contact?inquiry=grc_it_risk");
+    expect(mapped?.inquiryHref).toBeNull();
     expect(mapped?.media).toEqual({
       id: ASSET.id,
       title: ASSET.title,
@@ -197,7 +197,7 @@ describe("resume track mapping", () => {
     expect(mapped?.slug).toBe("privacy-ai-governance");
     expect(mapped?.ctaLabel).toBe(PUBLIC_RESUME_CTA_LABEL);
     expect(mapped?.href).toBe(publicUrlFor(PRIVACY_ASSET.bucket_path));
-    expect(mapped?.inquiryHref).toBe("/contact?inquiry=privacy_compliance");
+    expect(mapped?.inquiryHref).toBeNull();
     expect(mapped?.media?.id).toBe(PRIVACY_ASSET.id);
     expect(mapped?.href).not.toBe(publicUrlFor(ASSET.bucket_path));
   });

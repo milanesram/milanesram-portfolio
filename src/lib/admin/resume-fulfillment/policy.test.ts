@@ -241,14 +241,19 @@ describe("verified professional CV catalog", () => {
 
 describe("public resume and CV presentation", () => {
   it("offers the CV as a separate request, not a third resume card", () => {
-    const html = renderToStaticMarkup(createElement(ResumeCvRequest));
+    const html = renderToStaticMarkup(
+      createElement(ResumeCvRequest, {
+        mailtoHref: "mailto:milanesram@gmail.com",
+      }),
+    );
     const page = source("src/app/resume/page.tsx");
     const form = source("src/components/contact/ResumeRequestForm.tsx");
     const panel = source("src/components/admin/ResumeFulfillmentPanel.tsx");
 
     expect(html).toContain("Need the comprehensive professional record?");
-    expect(html).toContain("Request the CV");
-    expect(html).toContain("/contact?request=professional_cv");
+    expect(html).toContain("Request Professional CV by Email");
+    expect(html).toContain("mailto:milanesram@gmail.com");
+    expect(html).not.toContain("/contact?request=");
     expect(html).not.toContain("Resume A");
     expect(html).not.toContain(".pdf");
     expect(html).not.toContain("private-resumes");

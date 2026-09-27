@@ -119,7 +119,7 @@ describe("contact hierarchy", () => {
     expect(html.indexOf("Authorized to work")).toBeGreaterThan(cv);
   });
 
-  it("keeps a lane-aware fallback when inquiry intake is disabled", () => {
+  it("hides structured inquiry when intake is disabled", () => {
     const html = renderToStaticMarkup(
       createElement(ContactPageSections, {
         channels,
@@ -130,14 +130,13 @@ describe("contact hierarchy", () => {
       }),
     );
 
-    expect(html).toContain("Structured inquiry for Privacy, Compliance &amp; Assurance is temporarily unavailable.");
-    expect(html).toContain("Email and LinkedIn above remain open.");
-    expect(html).toContain("Email about this inquiry");
-    expect(html).toContain(
-      encodeURIComponent("Inquiry — Privacy, Compliance & Assurance"),
-    );
+    expect(html).toContain("mailto:milanesram@gmail.com");
+    expect(html).toContain("https://www.linkedin.com/in/milanesram");
+    expect(html).not.toContain("temporarily unavailable");
+    expect(html).not.toContain("Email about this inquiry");
+    expect(html).not.toContain("subject=");
     expect(html).not.toContain('name="track"');
-    expect(html).not.toContain("Send inquiry</button>");
+    expect(html).not.toContain("Send inquiry");
     expect(html).toContain('value="professional_cv"');
     expect(html).not.toContain('value="grc_it_risk"');
   });
@@ -169,7 +168,9 @@ describe("contact hierarchy", () => {
 
     expect(html).toContain('value="privacy_ai" selected=""');
     expect(html).toContain("Send inquiry");
-    expect(html).toContain("temporarily unavailable");
-    expect(html).toContain("professional CV");
+    expect(html).toContain("Request Professional CV by Email");
+    expect(html).toContain("mailto:milanesram@gmail.com");
+    expect(html).not.toContain("temporarily unavailable");
+    expect(html).not.toContain("professional CV request form");
   });
 });

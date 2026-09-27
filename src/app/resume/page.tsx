@@ -51,8 +51,8 @@ export default async function ResumePage() {
     <>
       <PageHero kicker={page.kicker} title={page.headline} lede={page.lede} />
       <Container className="py-16">
-        <ResumeTracks tracks={tracks} />
-        <ResumeCvRequest />
+        <ResumeTracks tracks={tracks} emailHref={contact?.mailtoHref ?? null} />
+        <ResumeCvRequest mailtoHref={contact?.mailtoHref ?? null} />
         <p className="mt-8 text-sm leading-6 text-ink-soft">
           {hasPublicFiles ? (
             contact ? (

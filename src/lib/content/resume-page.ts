@@ -41,7 +41,7 @@ export type PublicResumeTrack = {
 };
 
 export const PUBLIC_RESUME_CTA_LABEL = "Download Resume";
-export const SEND_INQUIRY_CTA_LABEL = "Send Inquiry";
+export const EMAIL_ME_CTA_LABEL = "Email Me";
 export const UNAVAILABLE_RESUME_LABEL = "Resume PDF being updated";
 
 /** V4.0 public-media rows that still contain phone and personal location. */
@@ -234,6 +234,6 @@ export function mapResumeTrack(
     unavailable,
     homeKicker: row.home_kicker?.trim() || null,
     focusSlug,
-    inquiryHref: resumeInquiryHref(row.slug),
+    inquiryHref: downloadable ? null : resumeInquiryHref(row.slug),
   };
 }

@@ -28,10 +28,15 @@ export function ButtonLink({
   className = "",
 }: ButtonLinkProps) {
   const classes = `inline-flex min-h-11 items-center justify-center rounded-full px-5 text-sm font-medium transition-colors ${variants[variant]} ${className}`;
+  const mailto = href.startsWith("mailto:");
 
-  if (external) {
+  if (external || mailto) {
     return (
-      <a href={href} className={classes} target="_blank" rel="noreferrer">
+      <a
+        href={href}
+        className={classes}
+        {...(external && !mailto ? { target: "_blank", rel: "noreferrer" } : {})}
+      >
         {children}
       </a>
     );

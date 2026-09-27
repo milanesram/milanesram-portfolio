@@ -1,7 +1,7 @@
 import { ContactForm } from "@/components/contact/ContactForm";
-import { InquiryUnavailable } from "@/components/contact/InquiryUnavailable";
 import { LinkedInProfileBadge } from "@/components/contact/LinkedInProfileBadge";
 import { ResumeRequestForm } from "@/components/contact/ResumeRequestForm";
+import { CV_REQUEST_CTA } from "@/components/resume/ResumeCvRequest";
 import type { ResumeContactChannels } from "@/lib/content/contact-page";
 import type { InquiryTrack } from "@/lib/supabase/database.types";
 import {
@@ -76,40 +76,39 @@ export function ContactPageSections({
         )}
       </section>
 
-      <section aria-labelledby="send-inquiry-heading" className="space-y-4">
-        <h2
-          id="send-inquiry-heading"
-          className="font-serif text-3xl font-medium tracking-tight text-ink"
-        >
-          Send inquiry
-        </h2>
-        {inquiryToken ? (
+      {inquiryToken ? (
+        <section aria-labelledby="send-inquiry-heading" className="space-y-4">
+          <h2
+            id="send-inquiry-heading"
+            className="font-serif text-3xl font-medium tracking-tight text-ink"
+          >
+            Send inquiry
+          </h2>
           <ContactForm token={inquiryToken} initialTrack={inquiryTrack} />
-        ) : (
-          <InquiryUnavailable
-            track={inquiryTrack}
-            emailHref={channels.email?.href ?? null}
-          />
-        )}
-      </section>
+        </section>
+      ) : null}
 
-      <section aria-labelledby="cv-request-heading" className="space-y-4">
-        <h2
-          id="cv-request-heading"
-          className="font-serif text-3xl font-medium tracking-tight text-ink"
-        >
-          {RESUME_REQUEST_HEADING}
-        </h2>
-        <p className="text-base leading-7 text-ink-soft">{RESUME_REQUEST_LEDE}</p>
-        {cvToken ? (
-          <ResumeRequestForm token={cvToken} />
-        ) : (
-          <p className="rounded-xl border border-line bg-paper-elevated p-6 text-sm leading-6 text-ink-soft">
-            The professional CV request form is temporarily unavailable. Email
-            and LinkedIn remain open.
-          </p>
-        )}
-      </section>
+      {cvToken || channels.email ? (
+        <section aria-labelledby="cv-request-heading" className="space-y-4">
+          <h2
+            id="cv-request-heading"
+            className="font-serif text-3xl font-medium tracking-tight text-ink"
+          >
+            {RESUME_REQUEST_HEADING}
+          </h2>
+          <p className="text-base leading-7 text-ink-soft">{RESUME_REQUEST_LEDE}</p>
+          {cvToken ? (
+            <ResumeRequestForm token={cvToken} />
+          ) : channels.email ? (
+            <a
+              className="inline-flex min-h-11 items-center text-base text-accent hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              href={channels.email.href}
+            >
+              {CV_REQUEST_CTA}
+            </a>
+          ) : null}
+        </section>
+      ) : null}
 
       {workAuthorization ? (
         <p className="text-sm text-ink-faint">{workAuthorization}</p>

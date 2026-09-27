@@ -20,7 +20,7 @@ export function CareerTrackCard({
   external = false,
   unavailable = false,
   secondaryHref = null,
-  secondaryLabel = "Send Inquiry",
+  secondaryLabel = "Email Me",
 }: CareerTrackCardProps) {
   const heading = (
     <>
