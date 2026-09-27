@@ -72,7 +72,7 @@ const SEEDED_PUBLICATION_SEO_TITLES = [
 describe("publication SEO title data flow", () => {
   it("selects nullable seo_title from public and admin publication queries", () => {
     expect(PUBLICATIONS_SOURCE).toContain(
-      '"id, slug, title, seo_title, document_kind, rights_status, author, publisher, published_on, year_label, abstract, external_url, track, status, sort_order, media_id"',
+      '"id, slug, title, seo_title, document_kind, rights_status, author, publisher, published_on, year_label, abstract, external_url, track, status, sort_order, media_id, featured_order"',
     );
     expect(PUBLICATIONS_SOURCE).toContain("seo_title: string | null");
     expect(PUBLICATIONS_SOURCE).toContain("seoTitle: string | null");

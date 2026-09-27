@@ -4,6 +4,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { WritingIndexCard } from "@/components/writing/WritingIndexCard";
 import {
   groupPublishedWriting,
+  selectFeaturedWriting,
   type PublishedPublication,
 } from "@/lib/content/publications";
 
@@ -18,6 +19,7 @@ export function WritingIndex({
   lede: string;
   publications: PublishedPublication[];
 }) {
+  const featured = selectFeaturedWriting(publications);
   const { lead, availableHere, publishedElsewhere } =
     groupPublishedWriting(publications);
 
@@ -37,9 +39,36 @@ export function WritingIndex({
   return (
     <>
       <PageHero kicker={kicker} title={title} lede={lede} />
-      <section className="py-16" aria-label="Lead publication">
+      {featured.length > 0 ? (
+        <section className="py-16" aria-label="Featured Writing">
+          <Container>
+            <SectionHeader title="Featured Writing" />
+            <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {featured.map((publication) => (
+                <WritingIndexCard
+                  key={publication.slug}
+                  publication={publication}
+                />
+              ))}
+            </div>
+          </Container>
+        </section>
+      ) : null}
+      {/*
+        Featured works stay in All Writing. The groups below are the complete
+        published library, including those three, so the library count is unchanged.
+      */}
+      <section
+        className={
+          featured.length > 0 ? "border-t border-line py-16" : "py-16"
+        }
+        aria-label="All Writing"
+      >
         <Container>
-          <WritingIndexCard publication={lead} featured />
+          <SectionHeader title="All Writing" />
+          <div className="mt-10">
+            <WritingIndexCard publication={lead} featured />
+          </div>
         </Container>
       </section>
       {availableHere.length > 0 ? (

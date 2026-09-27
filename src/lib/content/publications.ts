@@ -33,7 +33,7 @@ export type { RelatedFocus };
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const PUBLICATION_SELECT =
-  "id, slug, title, seo_title, document_kind, rights_status, author, publisher, published_on, year_label, abstract, external_url, track, status, sort_order, media_id" as const;
+  "id, slug, title, seo_title, document_kind, rights_status, author, publisher, published_on, year_label, abstract, external_url, track, status, sort_order, media_id, featured_order" as const;
 
 const DOCUMENT_KIND_LABELS: Record<DocumentKind, string> = {
   publication: "Publication",
@@ -62,6 +62,7 @@ export type PublishedPublication = {
   trackRelevance: string | null;
   relatedFocuses: RelatedFocus[];
   sortOrder: number;
+  featuredOrder: number | null;
   availability: PublicationAvailability;
   pdfUrl: string | null;
 };
@@ -98,6 +99,7 @@ type PublicationRow = {
   status: ContentStatus;
   sort_order: number;
   media_id: string | null;
+  featured_order: number | null;
 };
 
 function isPublishedStatus(status: ContentStatus): boolean {
@@ -124,6 +126,43 @@ export function getAvailabilityLabel(
   }
 
   return "Read on this site";
+}
+
+const FEATURED_WRITING_ORDERS = [1, 2, 3] as const;
+
+/**
+ * Featured Writing is a recruiter slice. It does not replace the library
+ * and does not use focus-page `featured_publication_id`.
+ * Returns the three published items in featured order, or an empty list
+ * when the hosted set is not exactly orders 1, 2, and 3.
+ */
+export function selectFeaturedWriting(
+  publications: PublishedPublication[],
+): PublishedPublication[] {
+  const featured = publications.filter(
+    (
+      item,
+    ): item is PublishedPublication & {
+      featuredOrder: (typeof FEATURED_WRITING_ORDERS)[number];
+    } =>
+      item.featuredOrder === 1 ||
+      item.featuredOrder === 2 ||
+      item.featuredOrder === 3,
+  );
+  const orders = featured
+    .map((item) => item.featuredOrder)
+    .sort((left, right) => left - right);
+
+  if (
+    orders.length !== FEATURED_WRITING_ORDERS.length ||
+    orders.some((order, index) => order !== FEATURED_WRITING_ORDERS[index])
+  ) {
+    return [];
+  }
+
+  return [...featured].sort(
+    (left, right) => left.featuredOrder - right.featuredOrder,
+  );
 }
 
 export function groupPublishedWriting(
@@ -233,6 +272,12 @@ function mapPublication(
     trackRelevance: formatFocusRelevanceLabels(relatedFocuses),
     relatedFocuses: toRelatedFocuses(relatedFocuses),
     sortOrder: row.sort_order,
+    featuredOrder:
+      row.featured_order === 1 ||
+      row.featured_order === 2 ||
+      row.featured_order === 3
+        ? row.featured_order
+        : null,
     availability,
     pdfUrl: availability === "pdf" ? pdfUrl : null,
   };

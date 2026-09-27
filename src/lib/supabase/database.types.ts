@@ -464,6 +464,7 @@ export type Database = {
           status: ContentStatus;
           sort_order: number;
           media_id: string | null;
+          featured_order: number | null;
         };
         Insert: {
           id?: string;
@@ -482,6 +483,7 @@ export type Database = {
           status?: ContentStatus;
           sort_order?: number;
           media_id?: string | null;
+          featured_order?: number | null;
           created_at?: string;
           updated_at?: string;
         };
