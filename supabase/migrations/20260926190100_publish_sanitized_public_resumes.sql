@@ -1,6 +1,7 @@
 -- Point the two public resume tracks at sanitized public_resume derivatives.
 -- Does not upload, overwrite, or delete Storage objects.
 --
+-- The hosted V4.0 rows are already is_public false and still published.
 -- Future release must remove these unsanitized objects from the public-media
 -- bucket after the new objects are verified. Setting is_public false does not
 -- revoke a known public object URL:
@@ -106,7 +107,7 @@ BEGIN
       AND media.kind = 'resume_pdf'
       AND media.purpose = 'resume'
       AND media.status = 'published'
-      AND media.is_public IS TRUE
+      AND media.is_public IS FALSE
   ) OR NOT EXISTS (
     SELECT 1
     FROM public.resume_tracks AS track
@@ -124,7 +125,7 @@ BEGIN
       AND media.kind = 'resume_pdf'
       AND media.purpose = 'resume'
       AND media.status = 'published'
-      AND media.is_public IS TRUE
+      AND media.is_public IS FALSE
   ) THEN
     RAISE EXCEPTION
       'Public resume cutover refused: current V4.0 track or media state drifted';
@@ -224,7 +225,7 @@ BEGIN
     id = old_grc_id
     AND bucket_path = old_grc_path
     AND byte_size = 123610
-    AND is_public IS TRUE
+    AND is_public IS FALSE
     AND status = 'published';
 
   GET DIAGNOSTICS updated_count = ROW_COUNT;
@@ -242,7 +243,7 @@ BEGIN
     id = old_privacy_id
     AND bucket_path = old_privacy_path
     AND byte_size = 123872
-    AND is_public IS TRUE
+    AND is_public IS FALSE
     AND status = 'published';
 
   GET DIAGNOSTICS updated_count = ROW_COUNT;
