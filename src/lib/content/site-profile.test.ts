@@ -15,7 +15,7 @@ import {
 
 const HOSTED_PUBLISHED_ROW: HostedSiteProfileFields = {
   display_name: "Rainier (Ram) Milanes",
-  headline: "Privacy, Compliance & Information Security Risk Professional",
+  headline: "Global Privacy, Compliance & Information Security Risk Professional",
   summary:
     "I help organizations turn regulatory, privacy, cybersecurity, and technology-risk requirements into workable controls, operating processes, remediation, and auditable evidence.",
   work_authorization: "",
@@ -30,7 +30,7 @@ describe("hosted profile mapping", () => {
       displayName: "Rainier (Ram) Milanes",
       shortName: "Ram Milanes",
       initials: "RM",
-      headline: "Privacy, Compliance & Information Security Risk Professional",
+      headline: "Global Privacy, Compliance & Information Security Risk Professional",
       summary: HOSTED_PUBLISHED_ROW.summary,
       email: "milanesram@gmail.com",
       linkedinUrl: "https://www.linkedin.com/in/milanesram/",
@@ -154,7 +154,7 @@ describe("public footer and shared chrome", () => {
 
     expect(footer.displayName).toBe("Rainier (Ram) Milanes");
     expect(footer.headline).toBe(
-      "Privacy, Compliance & Information Security Risk Professional",
+      "Global Privacy, Compliance & Information Security Risk Professional",
     );
     expect(footer.workAuthorization).toBeNull();
     expect(footer.contact?.email).toBe("milanesram@gmail.com");

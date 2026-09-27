@@ -18,7 +18,7 @@ const HOME_ROW: HomePageRow = {
   status: "published",
   featured_project_id: "0002fb1b-5c40-41ea-98a9-e62de9dac37e",
   hero_kicker: "READY NOW. BUILT TO ADAPT.",
-  headline: "Privacy, Compliance & Information Security Risk Professional",
+  headline: "Global Privacy, Compliance & Information Security Risk Professional",
   lede: "Substantial governance and privacy experience.",
   primary_cta_label: "View experience",
   primary_cta_href: "/experience",

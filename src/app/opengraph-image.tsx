@@ -53,7 +53,7 @@ export default async function OpenGraphImage() {
           {headline}
         </div>
         <div style={{ fontSize: 24, color: "#3E4B5C" }}>
-          Privacy · Compliance · Information Security Risk
+          Global Privacy · Compliance · Information Security Risk
         </div>
       </div>
     ),

@@ -16,9 +16,9 @@ import { isVercelPreviewDeployment } from "./vercel-env";
 
 export { createPageMetadata, createPublicationDetailMetadata } from "./page-metadata";
 
-const seoTitleSuffix = "Privacy, Compliance, GRC & IT Risk";
+const seoTitleSuffix = "Global Privacy, Compliance & Information Security Risk";
 const defaultDescription =
-  "Experienced privacy, compliance and information-security risk professional and former privacy regulator with hands-on work across privacy operations, GRC, IT risk, security compliance, assurance, remediation and technology implementation.";
+  "Global privacy, compliance and information-security risk professional and former privacy regulator with hands-on work across privacy operations, GRC, IT risk, security compliance, assurance, remediation and technology implementation.";
 
 export async function resolvePublicIndexability(
   pageIndexable = true,
