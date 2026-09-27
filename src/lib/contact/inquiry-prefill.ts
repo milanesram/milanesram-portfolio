@@ -32,3 +32,29 @@ export function parseInquiryLaneQuery(
 export function isInquiryTrack(value: string): value is InquiryTrack {
   return TRACKS.has(value as InquiryTrack);
 }
+
+export function inquiryFallbackSubject(track: InquiryTrack): string | null {
+  if (track === "cybersecurity_grc") {
+    return "Inquiry — GRC, IT Risk & Security Compliance";
+  }
+
+  if (track === "privacy_ai") {
+    return "Inquiry — Privacy, Compliance & Assurance";
+  }
+
+  return null;
+}
+
+export function mailtoWithInquirySubject(
+  emailHref: string,
+  track: InquiryTrack,
+): string {
+  const subject = inquiryFallbackSubject(track);
+
+  if (!subject || !emailHref.toLowerCase().startsWith("mailto:")) {
+    return emailHref;
+  }
+
+  const separator = emailHref.includes("?") ? "&" : "?";
+  return `${emailHref}${separator}subject=${encodeURIComponent(subject)}`;
+}

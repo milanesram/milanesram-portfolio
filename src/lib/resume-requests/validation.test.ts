@@ -15,7 +15,7 @@ const validBody = {
   fullName: "  Portfolio   UAT Recruiter  ",
   email: " UAT.Recruiter@Example.com ",
   organization: "  Portfolio   UAT ",
-  resumeChoice: "grc_it_risk",
+  resumeChoice: "professional_cv",
   message: "  Synthetic test.  ",
 };
 
@@ -29,20 +29,22 @@ describe("resume request validation", () => {
       fullName: "Portfolio UAT Recruiter",
       email: "uat.recruiter@example.com",
       organization: "Portfolio UAT",
-      resumeChoice: "grc_it_risk",
+      resumeChoice: "professional_cv",
       message: "Synthetic test.",
     });
   });
 
-  it("accepts a comprehensive CV request", () => {
-    const parsed = parsePublicResumeRequest({
-      ...validBody,
-      resumeChoice: "professional_cv",
-    });
+  it("rejects public resume lane choices", () => {
+    for (const resumeChoice of ["grc_it_risk", "privacy_compliance", "not_sure"]) {
+      const parsed = parsePublicResumeRequest({
+        ...validBody,
+        resumeChoice,
+      });
 
-    expect(parsed.ok).toBe(true);
-    if (!parsed.ok) return;
-    expect(parsed.value.resumeChoice).toBe("professional_cv");
+      expect(parsed.ok).toBe(false);
+      if (parsed.ok) return;
+      expect(parsed.fields.resumeChoice).toBe("invalid");
+    }
   });
 
   it("accepts a common mail provider and an empty optional message", () => {

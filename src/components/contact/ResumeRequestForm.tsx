@@ -2,11 +2,9 @@
 
 import { useId, useRef, useState } from "react";
 import {
-  RESUME_REQUEST_CHOICES,
-  RESUME_REQUEST_LABELS,
+  PUBLIC_RESUME_REQUEST_CHOICE,
   RESUME_REQUEST_PRIVACY_NOTE,
   RESUME_REQUEST_SUCCESS,
-  type ResumeRequestChoice,
 } from "@/lib/resume-requests/choices";
 import {
   parsePublicResumeRequest,
@@ -22,21 +20,16 @@ const labelClass = "block text-sm font-medium text-ink";
 
 type ResumeRequestFormProps = {
   token: string;
-  initialChoice: ResumeRequestChoice;
 };
 
 const FIELD_ORDER: ResumeRequestField[] = [
   "fullName",
   "email",
   "organization",
-  "resumeChoice",
   "message",
 ];
 
-export function ResumeRequestForm({
-  token,
-  initialChoice,
-}: ResumeRequestFormProps) {
+export function ResumeRequestForm({ token }: ResumeRequestFormProps) {
   const baseId = useId();
   const successRef = useRef<HTMLParagraphElement>(null);
   const [pending, setPending] = useState(false);
@@ -242,38 +235,12 @@ export function ResumeRequestForm({
         ) : null}
       </div>
 
-      <div>
-        <label htmlFor={fieldId("resumeChoice")} className={labelClass}>
-          Document requested{" "}
-          <span className="font-normal text-ink-faint">(required)</span>
-        </label>
-        <select
-          id={fieldId("resumeChoice")}
-          name="resumeChoice"
-          required
-          aria-required="true"
-          aria-invalid={Boolean(fieldErrors.resumeChoice)}
-          aria-describedby={describedBy("resumeChoice")}
-          defaultValue={initialChoice}
-          disabled={pending}
-          className={fieldClass}
-        >
-          {RESUME_REQUEST_CHOICES.map((choice) => (
-            <option key={choice} value={choice}>
-              {RESUME_REQUEST_LABELS[choice]}
-            </option>
-          ))}
-        </select>
-        {fieldErrors.resumeChoice ? (
-          <p
-            id={fieldId("resumeChoice-error")}
-            role="alert"
-            className="mt-2 text-sm text-danger"
-          >
-            {resumeRequestFieldMessage("resumeChoice", fieldErrors.resumeChoice)}
-          </p>
-        ) : null}
-      </div>
+      <input type="hidden" name="resumeChoice" value={PUBLIC_RESUME_REQUEST_CHOICE} />
+      {fieldErrors.resumeChoice ? (
+        <p role="alert" className="text-sm text-danger">
+          {resumeRequestFieldMessage("resumeChoice", fieldErrors.resumeChoice)}
+        </p>
+      ) : null}
 
       <div>
         <label htmlFor={fieldId("message")} className={labelClass}>

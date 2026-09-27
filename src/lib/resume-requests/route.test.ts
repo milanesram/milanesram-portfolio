@@ -33,7 +33,7 @@ const valid = {
   fullName: "Portfolio UAT Recruiter",
   email: "uat.recruiter@example.com",
   organization: "Portfolio UAT",
-  resumeChoice: "grc_it_risk",
+  resumeChoice: "professional_cv",
   message: "Synthetic production-readiness test. No response required.",
 };
 
@@ -90,6 +90,19 @@ describe("resume request route", () => {
     const body = await response.json();
     expect(response.status).toBe(400);
     expect(body.fields.resumeChoice).toBe("invalid");
+    expect(mockedSubmit).not.toHaveBeenCalled();
+  });
+
+  it("rejects a public resume lane that is no longer a request choice", async () => {
+    const response = await post({
+      ...valid,
+      resumeChoice: "grc_it_risk",
+      token: token(),
+    });
+    const body = await response.json();
+    expect(response.status).toBe(400);
+    expect(body.fields.resumeChoice).toBe("invalid");
+    expect(mockedSubmit).not.toHaveBeenCalled();
   });
 
   it("returns a generic failure when storage is unavailable", async () => {

@@ -14,15 +14,17 @@ export const RESUME_REQUEST_LABELS: Record<ResumeRequestChoice, string> = {
   not_sure: "Not sure — please recommend the appropriate document",
 };
 
+export const PUBLIC_RESUME_REQUEST_CHOICE = "professional_cv" as const;
+
 export const REQUEST_RESUME_CTA_LABEL = "Request a copy";
 
-export const RESUME_REQUEST_HEADING = "Request a resume";
+export const RESUME_REQUEST_HEADING = "Request Professional CV";
 
 export const RESUME_REQUEST_LEDE =
-  "Choose the resume most relevant to the opportunity and provide enough information for me to respond.";
+  "The comprehensive professional CV is available by request.";
 
 export const RESUME_REQUEST_PRIVACY_NOTE =
-  "Your information will be used only to review and respond to this professional resume request. Please do not submit sensitive personal information.";
+  "Your information will be used only to review and respond to this professional CV request. Please do not submit sensitive personal information.";
 
 export const RESUME_REQUEST_SUCCESS =
   "Request received. Thank you — I’ll review the information and respond through the email address you provided.";

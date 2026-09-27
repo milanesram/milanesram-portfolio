@@ -5,7 +5,6 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { createElement } from "react";
 import { ResumeRequestForm } from "@/components/contact/ResumeRequestForm";
 import {
-  RESUME_REQUEST_LABELS,
   RESUME_REQUEST_PRIVACY_NOTE,
   RESUME_REQUEST_SUCCESS,
 } from "./choices";
@@ -93,41 +92,31 @@ describe("resume request form", () => {
     const html = renderToStaticMarkup(
       createElement(ResumeRequestForm, {
         token: "issued-token",
-        initialChoice: "grc_it_risk",
       }),
     );
 
     expect(html).toContain("Full name");
     expect(html).toContain("Professional email");
     expect(html).toContain("Organization");
-    expect(html).toContain("Document requested");
-    expect(html).toContain("Comprehensive Professional CV");
+    expect(html).not.toContain("Document requested");
+    expect(html).not.toContain("<select");
+    expect(html).toContain('name="resumeChoice"');
+    expect(html).toContain('value="professional_cv"');
+    expect(html).not.toContain('value="grc_it_risk"');
+    expect(html).not.toContain('value="privacy_compliance"');
+    expect(html).not.toContain("Not sure");
     expect(html).toContain("Opportunity context or message (optional)");
     expect(html).toContain("(required)");
     expect(html).toContain(RESUME_REQUEST_PRIVACY_NOTE);
+    expect(html).toContain("professional CV request");
     expect(html).toContain("Send request");
     expect(html).toContain('aria-required="true"');
     expect(html).toContain('name="company_website"');
     expect(html).toContain("hidden");
     expect(html).toContain('tabindex="-1"');
-    expect(html).toContain("GRC, IT Risk &amp; Security Compliance");
     expect(html).not.toContain("Resume A —");
-    expect(html).toContain('value="grc_it_risk" selected=""');
-    expect(html).not.toMatch(/phone|home address|salary|social security|linkedin url/i);
-  });
-
-  it("preselects the privacy lane and falls back copy stays available", () => {
-    const html = renderToStaticMarkup(
-      createElement(ResumeRequestForm, {
-        token: "issued-token",
-        initialChoice: "privacy_compliance",
-      }),
-    );
-
-    expect(html).toContain("Privacy, Compliance &amp; Assurance");
     expect(html).not.toContain("Resume B —");
-    expect(html).toContain(RESUME_REQUEST_LABELS.not_sure);
-    expect(html).toContain('value="privacy_compliance" selected=""');
+    expect(html).not.toMatch(/phone|home address|salary|social security|linkedin url/i);
   });
 
   it("keeps the success message available to a live region", () => {

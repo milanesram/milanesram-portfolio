@@ -11,6 +11,10 @@ const CONTACT_PAGE_SOURCE = readFileSync(
   resolve(import.meta.dirname, "../../app/contact/page.tsx"),
   "utf8",
 );
+const CONTACT_SECTIONS_SOURCE = readFileSync(
+  resolve(import.meta.dirname, "../../components/contact/ContactPageSections.tsx"),
+  "utf8",
+);
 const ROOT_LAYOUT_SOURCE = readFileSync(
   resolve(import.meta.dirname, "../../app/layout.tsx"),
   "utf8",
@@ -35,10 +39,11 @@ describe("LinkedIn public profile badge", () => {
   });
 
   it("is scoped to Contact and keeps the native LinkedIn channel link", () => {
-    expect(CONTACT_PAGE_SOURCE).toContain("LinkedInProfileBadge");
-    expect(CONTACT_PAGE_SOURCE).toContain("channels.linkedin");
-    expect(CONTACT_PAGE_SOURCE).toContain("channel.href");
-    expect(CONTACT_PAGE_SOURCE).toContain("channel.text");
+    expect(CONTACT_PAGE_SOURCE).toContain("ContactPageSections");
+    expect(CONTACT_SECTIONS_SOURCE).toContain("LinkedInProfileBadge");
+    expect(CONTACT_SECTIONS_SOURCE).toContain("channels.linkedin");
+    expect(CONTACT_SECTIONS_SOURCE).toContain("channel.href");
+    expect(CONTACT_SECTIONS_SOURCE).toContain("channel.text");
     expect(ROOT_LAYOUT_SOURCE).not.toContain("platform.linkedin.com");
     expect(ROOT_LAYOUT_SOURCE).not.toContain("LinkedInProfileBadge");
   });

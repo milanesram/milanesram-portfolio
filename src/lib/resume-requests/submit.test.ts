@@ -14,7 +14,7 @@ const input = {
   fullName: "Portfolio UAT Recruiter",
   email: "uat.recruiter@example.com",
   organization: "Portfolio UAT",
-  resumeChoice: "grc_it_risk" as const,
+  resumeChoice: "professional_cv" as const,
   message: "Synthetic production-readiness test. No response required.",
 };
 
@@ -33,7 +33,7 @@ describe("resume request storage", () => {
       p_full_name: input.fullName,
       p_email: input.email,
       p_organization: input.organization,
-      p_resume_choice: "grc_it_risk",
+      p_resume_choice: "professional_cv",
       p_message: input.message,
       p_fingerprint_hash: "a".repeat(64),
       p_email_hash: "b".repeat(64),

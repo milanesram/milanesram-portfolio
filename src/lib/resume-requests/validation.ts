@@ -1,7 +1,4 @@
-import {
-  isResumeRequestChoice,
-  type ResumeRequestChoice,
-} from "./choices";
+import { PUBLIC_RESUME_REQUEST_CHOICE } from "./choices";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -32,7 +29,7 @@ export type PublicResumeRequestInput = {
   fullName: string;
   email: string;
   organization: string;
-  resumeChoice: ResumeRequestChoice;
+  resumeChoice: typeof PUBLIC_RESUME_REQUEST_CHOICE;
   message: string | null;
 };
 
@@ -111,14 +108,14 @@ export function parsePublicResumeRequest(
   }
 
   const choiceRaw = asString(body.resumeChoice);
-  let resumeChoice: ResumeRequestChoice | null = null;
+  let resumeChoice: typeof PUBLIC_RESUME_REQUEST_CHOICE | null = null;
 
   if (choiceRaw == null || choiceRaw.trim() === "") {
     fields.resumeChoice = "required";
-  } else if (!isResumeRequestChoice(choiceRaw)) {
+  } else if (choiceRaw !== PUBLIC_RESUME_REQUEST_CHOICE) {
     fields.resumeChoice = "invalid";
   } else {
-    resumeChoice = choiceRaw;
+    resumeChoice = PUBLIC_RESUME_REQUEST_CHOICE;
   }
 
   const messageRaw = asString(body.message);
@@ -182,7 +179,7 @@ export function resumeRequestFieldMessage(
   }
 
   if (field === "resumeChoice") {
-    return "Choose a document.";
+    return "This request is only available for the professional CV.";
   }
 
   return "Keep the message under 1,500 characters.";
