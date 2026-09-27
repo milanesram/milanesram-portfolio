@@ -11,7 +11,7 @@ function form(entries: Array<[string, string]>) {
 
 const required = [
   ["organization", "Scionetrade Corporation"],
-  ["title", "Legal Officer"],
+  ["title", "Legal Consultant"],
   ["location_display", "Philippines"],
   ["kind", "additional"],
   ["sort_order", "70"],

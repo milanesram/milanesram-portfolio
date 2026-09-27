@@ -30,7 +30,7 @@ const RAM: PublishedExperienceRow = {
 const SCIONETRADE: PublishedExperienceRow = {
   id: "c52e0001-0000-4000-8000-000000000001",
   organization: "Scionetrade Corporation",
-  title: "Legal Officer",
+  title: "Legal Consultant",
   title_secondary:
     "Additional designation: Data Protection Officer · Contract / Project – Part-Time",
   location_display: "Philippines",
@@ -188,7 +188,7 @@ describe("hosted-only Experience mapping", () => {
       expect.objectContaining({
         id: SCIONETRADE.id,
         organization: "Scionetrade Corporation",
-        title: "Legal Officer",
+        title: "Legal Consultant",
         titleSecondary:
           "Additional designation: Data Protection Officer · Contract / Project – Part-Time",
         startLabel: "2018",

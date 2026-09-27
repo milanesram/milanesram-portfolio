@@ -18,8 +18,8 @@ export const metrics: Metric[] = [
   {
     id: "registered-entities-2024",
     value: "10,000+",
-    label: "Registered entities",
+    label: "DPS and DPO registrations",
     context:
-      "More than 10,000 data-processing systems and DPO registered entities were on the national registration system by 30 September 2024.",
+      "More than 10,000 Data Processing System (DPS) and Data Protection Officer (DPO) registrations were on record by 30 September 2024.",
   },
 ];
