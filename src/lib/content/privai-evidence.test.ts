@@ -58,28 +58,29 @@ function mediaItem(
 }
 
 describe("privai hero boundary", () => {
-  it("uses the compact early boundary when hosted limits still state the core facts", () => {
-    expect(privaiHeroBoundary(LIVE_LIMITS)).toBe(PRIVAI_COMPACT_BOUNDARY);
+  it("shows the hosted boundary once when it already states the core facts", () => {
+    expect(privaiHeroBoundary(LIVE_LIMITS)).toBe(LIVE_LIMITS);
+    expect(PRIVAI_COMPACT_BOUNDARY).toMatch(/capstone/i);
     expect(PRIVAI_COMPACT_BOUNDARY).toMatch(/non-production/i);
     expect(PRIVAI_COMPACT_BOUNDARY).toMatch(/synthetic demonstration data/i);
     expect(PRIVAI_COMPACT_BOUNDARY).toMatch(/human governance review/i);
     expect(PRIVAI_COMPACT_BOUNDARY).not.toMatch(/enterprise/i);
     expect(PRIVAI_COMPACT_BOUNDARY.toLowerCase()).not.toContain("saas");
+    expect(PRIVAI_COMPACT_BOUNDARY.toLowerCase()).not.toContain("production-ready");
   });
 
-  it("states the validated capstone status without dropping the non-production boundary", () => {
+  it("does not append a second status paragraph to an already qualified boundary", () => {
     const limits =
       "Validated Northwestern MSIS capstone MVP. Production-oriented re-engineering is in progress. Non-production. Synthetic demonstration data only. Human governance review — not automated legal or regulatory decisioning.";
     const hero = privaiHeroBoundary(limits);
 
-    expect(hero).toContain(
+    expect(hero).toBe(limits);
+    expect(hero).not.toContain(
       "Public capability claims and screenshots on this page describe the validated capstone MVP unless explicitly identified otherwise.",
     );
     expect(hero).toMatch(/non-production/i);
     expect(hero).toMatch(/synthetic demonstration data/i);
     expect(hero).toMatch(/human governance review/i);
-    expect(hero.toLowerCase()).not.toContain("commercial saas");
-    expect(hero.toLowerCase()).not.toContain("enterprise production software");
   });
 
   it("falls back to hosted limits when the compact sentence would drop a required fact", () => {

@@ -37,7 +37,7 @@ export const PRIVAI_EARLY_CAPABILITY_CANDIDATES = [
 export const PRIVAI_EARLY_CAPABILITY_LIMIT = 6;
 
 export const PRIVAI_COMPACT_BOUNDARY =
-  "Non-production MSIS capstone MVP. Synthetic demonstration data only. Human governance review — not automated legal or regulatory decisioning.";
+  "Northwestern MSIS capstone — cloud-deployed non-production MVP. Synthetic demonstration data only. Human governance review — not automated legal or regulatory decisioning.";
 
 export const PRIVAI_PAGE_DESCRIPTION =
   "Shadow AI governance MVP with structured assessment, human review, remediation, and audit evidence. Non-production capstone; synthetic data only.";
@@ -75,9 +75,6 @@ export function projectScreenshotPresentation(
 
 const SECTION_ANCHOR_PATTERN = /^[a-z0-9-]+$/;
 
-const PRIVAI_SCREENSHOT_STATUS =
-  "Public capability claims and screenshots on this page describe the validated capstone MVP unless explicitly identified otherwise.";
-
 export function privaiHeroBoundary(limits: string): string {
   const trimmed = limits.trim();
   const text = trimmed.toLowerCase();
@@ -90,21 +87,7 @@ export function privaiHeroBoundary(limits: string): string {
     return trimmed;
   }
 
-  if (text.includes("public capability claims and screenshots")) {
-    return trimmed;
-  }
-
-  if (
-    text.includes("validated northwestern") &&
-    text.includes("production-oriented re-engineering is in progress.")
-  ) {
-    return trimmed.replace(
-      "Production-oriented re-engineering is in progress.",
-      `Production-oriented re-engineering is in progress. ${PRIVAI_SCREENSHOT_STATUS}`,
-    );
-  }
-
-  return PRIVAI_COMPACT_BOUNDARY;
+  return trimmed;
 }
 
 function evidenceCorpus(
