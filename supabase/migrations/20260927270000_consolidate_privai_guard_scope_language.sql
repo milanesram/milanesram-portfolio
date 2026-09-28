@@ -20,7 +20,7 @@ DECLARE
   new_foundation text := $t$The frozen MVP uses a compact stack so architecture supports the workflow rather than becoming the story: Next.js, React, and TypeScript for role-aware interfaces; Supabase Auth and PostgreSQL with Row Level Security and controlled database functions for persistence and authorization; Vercel for cloud hosting; and GitHub for source control and repository quality gates. GitHub Actions validates the repository; this case study does not claim that GitHub Actions deploys to Vercel.$t$;
   old_home text := $t$A non-production Shadow AI governance MVP I designed and developed that turns risky employee AI use into structured privacy-risk triage, human review, and auditable remediation. Validated Northwestern MSIS capstone MVP; production-oriented re-engineering in progress.$t$;
   new_home text := $t$A Shadow AI governance MVP I designed and developed that turns risky employee AI use into structured privacy-risk triage, human review, and auditable remediation.$t$;
-  reengineering text text := $t$PrivAI Guard is now undergoing production-oriented re-engineering to expand policy and control coverage, operational adoption, human governance workflows, security and authorization controls, remediation, and auditable governance design.
+  reengineering_body text := $t$PrivAI Guard is now undergoing production-oriented re-engineering to expand policy and control coverage, operational adoption, human governance workflows, security and authorization controls, remediation, and auditable governance design.
 
 This work is in progress. Capabilities under re-engineering are not represented here as released production functionality until they are implemented and validated.$t$;
 BEGIN
@@ -119,7 +119,7 @@ BEGIN
     WHERE id = 'c5213101-0000-4000-8000-000000000080'
       AND heading = 'Current Development — Production-Oriented Re-engineering'
       AND status = 'published'
-      AND body = reengineering_text
+      AND body = reengineering_body
   ) OR NOT EXISTS (
     SELECT 1 FROM public.home_page
     WHERE singleton_key = 'default'
