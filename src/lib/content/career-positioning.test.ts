@@ -97,8 +97,8 @@ describe("career positioning 2.0", () => {
   it("keeps focus route slugs and updates public labels", () => {
     expect(ROUTES).toContain('slug: "cybersecurity-grc"');
     expect(ROUTES).toContain('href: "/focus/cybersecurity-grc"');
-    expect(ROUTES).toContain('slug: "privacy-ai-governance"');
-    expect(ROUTES).toContain('href: "/focus/privacy-ai-governance"');
+    expect(ROUTES).toContain('slug: "privacy-compliance-assurance"');
+    expect(ROUTES).toContain('href: "/focus/privacy-compliance-assurance"');
     expect(ROUTES).toContain('navLabel: "GRC, IT Risk & Security Compliance"');
     expect(ROUTES).toContain('navLabel: "Privacy, Compliance & Assurance"');
     expect(ROUTES).not.toContain('navLabel: "Cybersecurity / GRC"');

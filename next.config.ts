@@ -50,6 +50,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/focus/privacy-ai-governance",
+        destination: "/focus/privacy-compliance-assurance",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

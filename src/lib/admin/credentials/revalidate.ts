@@ -5,7 +5,7 @@ export function revalidateCredentialSurfaces(id?: string) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/focus/cybersecurity-grc");
-  revalidatePath("/focus/privacy-ai-governance");
+  revalidatePath("/focus/privacy-compliance-assurance");
   revalidatePath("/admin/credentials");
   revalidatePath("/admin/education");
   revalidatePath("/admin/certifications");

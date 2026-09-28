@@ -74,7 +74,7 @@ export function FocusView({
                   key={experience.id}
                   experience={experience}
                   maxBullets={
-                    page.slug === "privacy-ai-governance" ? 8 : 2
+                    page.slug === "privacy-compliance-assurance" ? 8 : 2
                   }
                 />
               ))}

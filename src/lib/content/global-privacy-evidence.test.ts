@@ -13,7 +13,7 @@ const MIGRATION = source(
 );
 const ROUTES = source("src/content/site.ts");
 const FOCUS = source("src/lib/content/focus.ts");
-const PRIVACY_PAGE = source("src/app/focus/privacy-ai-governance/page.tsx");
+const PRIVACY_PAGE = source("src/app/focus/privacy-compliance-assurance/page.tsx");
 const FOCUS_VIEW = source("src/components/focus/FocusView.tsx");
 const PREVIEW = source("src/components/ui/ExperiencePreview.tsx");
 
@@ -35,14 +35,14 @@ describe("global privacy evidence", () => {
     expect(MIGRATION).toContain("slug = 'cybersecurity-grc'");
     expect(MIGRATION).toContain("SET sort_order = 20");
     expect(FOCUS).toContain('.order("sort_order", { ascending: true })');
-    expect(ROUTES).toContain('href: "/focus/privacy-ai-governance"');
+    expect(ROUTES).toContain('href: "/focus/privacy-compliance-assurance"');
     expect(ROUTES).toContain('href: "/focus/cybersecurity-grc"');
     expect(ROUTES.match(/href: "\/focus\//g)).toHaveLength(2);
     expect(PRIVACY_PAGE).toContain('generateRouteMetadata("focus-privacy-ai-governance")');
-    expect(PRIVACY_PAGE).toContain('getPublishedFocusPage("privacy-ai-governance")');
+    expect(PRIVACY_PAGE).toContain('getPublishedFocusPage("privacy-compliance-assurance")');
     expect(PREVIEW).toContain("maxBullets = 2");
     expect(FOCUS_VIEW).toContain(
-      'page.slug === "privacy-ai-governance" ? 8 : 2',
+      'page.slug === "privacy-compliance-assurance" ? 8 : 2',
     );
   });
 

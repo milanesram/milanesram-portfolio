@@ -17,7 +17,7 @@ export const PAGE_SEO_PATHS: Record<PageSeoKey, string> = {
   home: "",
   about: "/about",
   "focus-cybersecurity-grc": "/focus/cybersecurity-grc",
-  "focus-privacy-ai-governance": "/focus/privacy-ai-governance",
+  "focus-privacy-ai-governance": "/focus/privacy-compliance-assurance",
   experience: "/experience",
   projects: "/projects",
   writing: "/writing",

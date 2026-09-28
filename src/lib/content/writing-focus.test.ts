@@ -13,7 +13,7 @@ const CYBER: PublishedFocusLabel = {
 };
 
 const PRIVACY: PublishedFocusLabel = {
-  slug: "privacy-ai-governance",
+  slug: "privacy-compliance-assurance",
   label: "Privacy, Compliance & Assurance",
   sortOrder: 20,
 };
@@ -86,12 +86,12 @@ describe("selectRelatedPublishedFocuses", () => {
     const focuses = selectRelatedPublishedFocuses({
       track: "cybersecurity_grc",
       publishedFocuses: [CYBER, PRIVACY],
-      featuredOnSlugs: ["privacy-ai-governance"],
+      featuredOnSlugs: ["privacy-compliance-assurance"],
     });
 
     expect(focuses.map((focus) => focus.slug)).toEqual([
       "cybersecurity-grc",
-      "privacy-ai-governance",
+      "privacy-compliance-assurance",
     ]);
   });
 
@@ -116,7 +116,7 @@ describe("toRelatedFocuses", () => {
   it("builds focus hrefs from hosted slugs", () => {
     expect(toRelatedFocuses([PRIVACY])).toEqual([
       {
-        href: "/focus/privacy-ai-governance",
+        href: "/focus/privacy-compliance-assurance",
         label: "Privacy, Compliance & Assurance",
       },
     ]);

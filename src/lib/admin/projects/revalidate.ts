@@ -4,7 +4,7 @@ export function revalidateProjectSurfaces(slug?: string) {
   revalidatePath("/projects");
   revalidatePath("/");
   revalidatePath("/focus/cybersecurity-grc");
-  revalidatePath("/focus/privacy-ai-governance");
+  revalidatePath("/focus/privacy-compliance-assurance");
   revalidatePath("/admin/projects");
 
   if (slug) {

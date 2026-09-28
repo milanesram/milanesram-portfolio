@@ -18,7 +18,7 @@ const FALLBACK_PATHS = [
   "/resume",
   "/contact",
   "/focus/cybersecurity-grc",
-  "/focus/privacy-ai-governance",
+  "/focus/privacy-compliance-assurance",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

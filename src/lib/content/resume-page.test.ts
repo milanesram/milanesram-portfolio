@@ -188,13 +188,14 @@ describe("resume track mapping", () => {
         title: "Resume B — Privacy, Compliance & Assurance",
         home_kicker: "Resume B",
         delivery_mode: "public_file",
-        focus_pages: { slug: "privacy-ai-governance", status: "published" },
+        focus_pages: { slug: "privacy-compliance-assurance", status: "published" },
         media_assets: PRIVACY_ASSET,
       }),
       publicUrlFor,
     );
 
     expect(mapped?.slug).toBe("privacy-ai-governance");
+    expect(mapped?.focusSlug).toBe("privacy-compliance-assurance");
     expect(mapped?.ctaLabel).toBe(PUBLIC_RESUME_CTA_LABEL);
     expect(mapped?.href).toBe(publicUrlFor(PRIVACY_ASSET.bucket_path));
     expect(mapped?.inquiryHref).toBeNull();
@@ -266,7 +267,7 @@ describe("resume track mapping", () => {
         id: "22222222-2222-4222-8222-222222222222",
         slug: "privacy-ai-governance",
         title: "Resume B — Privacy, Compliance & Assurance",
-        focus_pages: { slug: "privacy-ai-governance", status: "published" },
+        focus_pages: { slug: "privacy-compliance-assurance", status: "published" },
       }),
       () => null,
     );

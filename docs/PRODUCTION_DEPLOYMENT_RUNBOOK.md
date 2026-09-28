@@ -105,7 +105,7 @@ Do this only in Step 52J.
 
 Public:
 
-- `/` `/about` `/focus/cybersecurity-grc` `/focus/privacy-ai-governance`
+- `/` `/about` `/focus/cybersecurity-grc` `/focus/privacy-compliance-assurance`
 - `/experience` `/projects` `/projects/privai-guard`
 - `/writing` plus one hosted-PDF detail and the NCSP link-only detail
 - `/credentials` `/resume` `/contact`

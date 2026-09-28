@@ -119,13 +119,13 @@ describe("publication path mapping", () => {
         wasPublished: true,
         isPublished: true,
         newSlug: "example",
-        featuredFocusSlugs: ["privacy-ai-governance", "not-a-public-focus"],
+        featuredFocusSlugs: ["privacy-compliance-assurance", "not-a-public-focus"],
         track: "cybersecurity_grc",
       }),
     ).toEqual([
       "/writing",
       "/writing/example",
-      "/focus/privacy-ai-governance",
+      "/focus/privacy-compliance-assurance",
       "/focus/cybersecurity-grc",
     ]);
   });
@@ -143,7 +143,7 @@ describe("project path mapping", () => {
       "/projects",
       "/",
       "/focus/cybersecurity-grc",
-      "/focus/privacy-ai-governance",
+      "/focus/privacy-compliance-assurance",
     ]);
   });
 
@@ -169,7 +169,7 @@ describe("project path mapping", () => {
       "/projects",
       "/",
       "/focus/cybersecurity-grc",
-      "/focus/privacy-ai-governance",
+      "/focus/privacy-compliance-assurance",
       "/projects/privai-guard",
     ]);
   });
@@ -205,7 +205,7 @@ describe("experience path mapping", () => {
       "/experience",
       "/",
       "/focus/cybersecurity-grc",
-      "/focus/privacy-ai-governance",
+      "/focus/privacy-compliance-assurance",
     ]);
   });
 
@@ -220,7 +220,7 @@ describe("experience path mapping", () => {
       "/experience",
       "/",
       "/focus/cybersecurity-grc",
-      "/focus/privacy-ai-governance",
+      "/focus/privacy-compliance-assurance",
     ]);
   });
 
@@ -246,7 +246,7 @@ describe("credential path mapping", () => {
       "/credentials",
       "/",
       "/focus/cybersecurity-grc",
-      "/focus/privacy-ai-governance",
+      "/focus/privacy-compliance-assurance",
     ]);
   });
 
@@ -276,8 +276,8 @@ describe("credential path mapping", () => {
 describe("focus path mapping", () => {
   it("maps only the two public focus routes", () => {
     expect(focusPagePath("cybersecurity-grc")).toBe("/focus/cybersecurity-grc");
-    expect(focusPagePath("privacy-ai-governance")).toBe(
-      "/focus/privacy-ai-governance",
+    expect(focusPagePath("privacy-compliance-assurance")).toBe(
+      "/focus/privacy-compliance-assurance",
     );
     expect(focusPagePath("anything-else")).toBeNull();
   });

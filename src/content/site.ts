@@ -13,8 +13,8 @@ export const FOCUS_PUBLIC_ROUTES = [
     navLabel: "GRC, IT Risk & Security Compliance",
   },
   {
-    slug: "privacy-ai-governance",
-    href: "/focus/privacy-ai-governance",
+    slug: "privacy-compliance-assurance",
+    href: "/focus/privacy-compliance-assurance",
     navLabel: "Privacy, Compliance & Assurance",
   },
 ] as const;

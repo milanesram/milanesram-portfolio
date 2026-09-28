@@ -15,7 +15,7 @@ import type {
 
 export const PUBLIC_FOCUS_SLUGS = [
   "cybersecurity-grc",
-  "privacy-ai-governance",
+  "privacy-compliance-assurance",
 ] as const;
 
 export type PublicFocusSlug = (typeof PUBLIC_FOCUS_SLUGS)[number];
@@ -33,7 +33,7 @@ export const SITE_WIDE_PUBLIC_PATHS = [
   "/resume",
   "/contact",
   "/focus/cybersecurity-grc",
-  "/focus/privacy-ai-governance",
+  "/focus/privacy-compliance-assurance",
 ] as const;
 
 const FOCUS_HOME_AND_RESUME = ["/", "/resume"] as const;
@@ -72,8 +72,8 @@ export function focusPagePath(slug: string | null | undefined): string | null {
     return "/focus/cybersecurity-grc";
   }
 
-  if (slug === "privacy-ai-governance") {
-    return "/focus/privacy-ai-governance";
+  if (slug === "privacy-compliance-assurance") {
+    return "/focus/privacy-compliance-assurance";
   }
 
   return null;
@@ -105,11 +105,11 @@ function focusPathsForTrack(track: TrackTag | null | undefined): string[] {
   }
 
   if (track === "privacy_ai") {
-    return ["/focus/privacy-ai-governance"];
+    return ["/focus/privacy-compliance-assurance"];
   }
 
   if (track === "all") {
-    return ["/focus/cybersecurity-grc", "/focus/privacy-ai-governance"];
+    return ["/focus/cybersecurity-grc", "/focus/privacy-compliance-assurance"];
   }
 
   return [];
@@ -174,7 +174,7 @@ export function projectPaths(args: {
     "/projects",
     "/",
     "/focus/cybersecurity-grc",
-    "/focus/privacy-ai-governance",
+    "/focus/privacy-compliance-assurance",
     projectDetailPath(args.oldSlug),
     projectDetailPath(args.slug),
   ]);
@@ -213,7 +213,7 @@ export function experiencePaths(args: {
     "/experience",
     "/",
     "/focus/cybersecurity-grc",
-    "/focus/privacy-ai-governance",
+    "/focus/privacy-compliance-assurance",
   ]);
 }
 
@@ -245,7 +245,7 @@ export function credentialPaths(args: {
     "/credentials",
     "/",
     "/focus/cybersecurity-grc",
-    "/focus/privacy-ai-governance",
+    "/focus/privacy-compliance-assurance",
     args.affectsAbout ? "/about" : null,
   ]);
 }

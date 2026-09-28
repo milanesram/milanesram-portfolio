@@ -42,7 +42,7 @@ function revalidateFocusSurfaces(id?: string) {
   revalidatePath("/");
   revalidatePath("/resume");
   revalidatePath("/focus/cybersecurity-grc");
-  revalidatePath("/focus/privacy-ai-governance");
+  revalidatePath("/focus/privacy-compliance-assurance");
 
   if (id) {
     revalidatePath(`/admin/skills/${id}`);

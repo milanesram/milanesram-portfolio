@@ -217,7 +217,7 @@ Do not store a license number. Philippine-law public copy must not imply U.S. ba
 
 Public Focus and Home track cards read published hosted Focus records. Changing a Focus summary updates the Focus page and Home cards. Resume tracks are edited under **Resume**. Home kickers (`Resume A` / `Resume B`) live on `resume_tracks.home_kicker`.
 
-Saves revalidate `/focus/cybersecurity-grc`, `/focus/privacy-ai-governance`, `/`, and `/admin/skills`.
+Saves revalidate `/focus/cybersecurity-grc`, `/focus/privacy-compliance-assurance`, `/`, and `/admin/skills`.
 
 ---
 

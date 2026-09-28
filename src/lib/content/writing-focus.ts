@@ -20,7 +20,7 @@ export type RelatedFocus = {
 
 const TRACK_FOCUS_SLUGS: Record<Exclude<TrackTag, "all">, readonly string[]> = {
   cybersecurity_grc: ["cybersecurity-grc"],
-  privacy_ai: ["privacy-ai-governance"],
+  privacy_ai: ["privacy-compliance-assurance"],
 };
 
 export function selectRelatedPublishedFocuses(args: {

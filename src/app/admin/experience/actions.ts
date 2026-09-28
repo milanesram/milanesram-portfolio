@@ -48,7 +48,7 @@ function revalidateAdminExperience(id?: string) {
   revalidatePath("/experience");
   revalidatePath("/");
   revalidatePath("/focus/cybersecurity-grc");
-  revalidatePath("/focus/privacy-ai-governance");
+  revalidatePath("/focus/privacy-compliance-assurance");
 
   if (id) {
     revalidatePath(`/admin/experience/${id}`);

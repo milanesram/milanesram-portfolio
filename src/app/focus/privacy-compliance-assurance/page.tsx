@@ -15,7 +15,7 @@ export function generateMetadata() {
 
 export default async function PrivacyFocusPage() {
   const [result, profileResult] = await Promise.all([
-    getPublishedFocusPage("privacy-ai-governance"),
+    getPublishedFocusPage("privacy-compliance-assurance"),
     getPublishedSiteProfile(),
   ]);
 

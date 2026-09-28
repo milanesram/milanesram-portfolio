@@ -214,7 +214,7 @@ describe("experience UUID relationships", () => {
     const page = toPublicFocusPage({
       row: {
         ...CYBER_ROW,
-        slug: "privacy-ai-governance",
+        slug: "privacy-compliance-assurance",
         nav_label: "Privacy, Compliance & Assurance",
       },
       experienceLinks: [

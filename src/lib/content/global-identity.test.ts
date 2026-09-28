@@ -62,10 +62,11 @@ describe("global professional identity", () => {
       "Privacy, Compliance & Information Security Risk Professional",
     );
     expect(HISTORICAL).not.toContain(IDENTITY);
-    expect(ROUTES).toContain('href: "/focus/privacy-ai-governance"');
+    expect(ROUTES).toContain('href: "/focus/privacy-compliance-assurance"');
     expect(ROUTES).toContain('navLabel: "Privacy, Compliance & Assurance"');
     expect(ROUTES).toContain('navLabel: "GRC, IT Risk & Security Compliance"');
-    expect(SITEMAP).toContain('"/focus/privacy-ai-governance"');
+    expect(SITEMAP).toContain('"/focus/privacy-compliance-assurance"');
+    expect(SITEMAP).not.toContain('"/focus/privacy-ai-governance"');
     expect(SITE_URL).toContain('export const CANONICAL_SITE_URL = "https://milanesram.com"');
   });
 });
