@@ -8,14 +8,14 @@
 
 export const FOCUS_PUBLIC_ROUTES = [
   {
-    slug: "cybersecurity-grc",
-    href: "/focus/cybersecurity-grc",
-    navLabel: "GRC, IT Risk & Security Compliance",
-  },
-  {
     slug: "privacy-compliance-assurance",
     href: "/focus/privacy-compliance-assurance",
     navLabel: "Privacy, Compliance & Assurance",
+  },
+  {
+    slug: "cybersecurity-grc",
+    href: "/focus/cybersecurity-grc",
+    navLabel: "GRC, IT Risk & Security Compliance",
   },
 ] as const;
 
