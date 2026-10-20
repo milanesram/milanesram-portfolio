@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { WritingIndex } from "@/components/writing/WritingIndex";
 import {
-  groupPublishedWriting,
+  indexPublishedWriting,
   selectFeaturedWriting,
   type PublishedPublication,
 } from "@/lib/content/publications";
@@ -85,8 +85,11 @@ function hasStandaloneCc(value: string): boolean {
 }
 
 function publication(overrides: Partial<PublishedPublication>): PublishedPublication {
+  const slug = overrides.slug ?? "example";
+
   return {
-    slug: "example",
+    id: overrides.id ?? slug,
+    slug,
     title: "Example",
     seoTitle: null,
     documentKind: "publication",
@@ -214,7 +217,8 @@ describe("V4-03D featured writing", () => {
     expect(FEATURED).not.toMatch(/SET (title|abstract|year_label|media_id|external_url|slug)\b/);
     expect(FEATURED).toContain("focus-page featured publication changed");
 
-    const featured = selectFeaturedWriting(library);
+    const indexed = indexPublishedWriting(library);
+    const featured = selectFeaturedWriting(indexed);
     expect(featured.map((item) => item.featuredOrder)).toEqual([1, 2, 3]);
     expect(featured.map((item) => item.slug)).toEqual(
       FEATURED_WORKS.map((work) => work.slug),
@@ -225,16 +229,10 @@ describe("V4-03D featured writing", () => {
       "https://cdn.test/healthcare.pdf",
     ]);
     expect(featured[2]?.externalUrl).toBeNull();
-
-    const grouped = groupPublishedWriting(library);
-    const librarySlugs = [
-      grouped.lead?.slug,
-      ...grouped.availableHere.map((item) => item.slug),
-      ...grouped.publishedElsewhere.map((item) => item.slug),
-    ];
-    expect(librarySlugs).toEqual(library.map((item) => item.slug));
-    for (const work of FEATURED_WORKS) {
-      expect(librarySlugs).toContain(work.slug);
+    expect(indexed.map((item) => item.id)).toEqual(library.map((item) => item.id));
+    expect(new Set(indexed.map((item) => item.id)).size).toBe(indexed.length);
+    for (const work of featured) {
+      expect(indexed.map((item) => item.id)).toContain(work.id);
     }
 
     expect(selectFeaturedWriting(library.map((item) => ({ ...item, featuredOrder: null })))).toEqual(
@@ -249,9 +247,12 @@ describe("V4-03D featured writing", () => {
     ).toEqual([]);
 
     expect(WRITING_INDEX).toContain('title="Featured Writing"');
-    expect(WRITING_INDEX).toContain('title="All Writing"');
-    expect(WRITING_INDEX).toContain("selectFeaturedWriting(publications)");
-    expect(WRITING_INDEX).toContain("groupPublishedWriting(publications)");
+    expect(WRITING_INDEX).toContain('title="All publications"');
+    expect(WRITING_INDEX).toContain("selectFeaturedWriting(indexed)");
+    expect(WRITING_INDEX).toContain("indexPublishedWriting(publications)");
+    expect(WRITING_INDEX).not.toContain('title="All Writing"');
+    expect(WRITING_INDEX).not.toContain('aria-label="Available here"');
+    expect(WRITING_INDEX).not.toContain('aria-label="Published elsewhere"');
     expect(WRITING_INDEX).not.toContain("featuredPublicationId");
     expect(PUBLICATIONS).toContain("featuredPublicationId");
     expect(PUBLICATIONS).toContain("featured_order");
@@ -265,9 +266,11 @@ describe("V4-03D featured writing", () => {
       }),
     );
     const featuredAt = html.indexOf("Featured Writing");
-    const allAt = html.indexOf("All Writing");
+    const allAt = html.indexOf("All publications");
     expect(featuredAt).toBeGreaterThan(-1);
     expect(allAt).toBeGreaterThan(featuredAt);
+    expect(html).not.toContain('aria-label="Available here"');
+    expect(html).not.toContain('aria-label="All Writing"');
     for (const work of FEATURED_WORKS) {
       expect(html.indexOf(work.title)).toBeGreaterThan(featuredAt);
       expect(html.indexOf(work.title)).toBeLessThan(allAt);

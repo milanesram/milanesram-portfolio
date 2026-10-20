@@ -118,11 +118,9 @@ describe("career positioning 2.0", () => {
   });
 
   it("uses the new identity in root metadata and hosted SEO", () => {
+    expect(METADATA).toContain("Privacy, Governance & Information Systems");
     expect(METADATA).toContain(
-      "Global Privacy, Compliance & Information Security Risk",
-    );
-    expect(METADATA).toContain(
-      "Global privacy, compliance and information-security risk professional and former privacy regulator",
+      "I’m Rainier (Ram) Milanes, a privacy professional, former Philippine privacy regulator",
     );
     expect(METADATA).not.toContain("Privacy, Compliance, GRC & IT Risk");
     expect(METADATA).not.toContain("Cybersecurity, GRC, IT Risk & Privacy");
@@ -256,9 +254,7 @@ describe("focus evidence order", () => {
   });
 
   it("uses the single-identity social-card line", () => {
-    expect(SOCIAL).toContain(
-      "Global Privacy · Compliance · Information Security Risk",
-    );
+    expect(SOCIAL).toContain("Privacy · Governance · Information Systems");
     expect(SOCIAL).not.toContain("Cybersecurity · GRC · IT Risk · Privacy");
     expect(SOCIAL).toContain("profile?.headline");
   });

@@ -23,6 +23,7 @@ export function ResumeTracks({
           key={track.id}
           title={track.title}
           summary={track.summary}
+          fileLabel={track.fileLabel}
           href={track.href}
           ctaLabel={track.ctaLabel}
           external={Boolean(track.media)}

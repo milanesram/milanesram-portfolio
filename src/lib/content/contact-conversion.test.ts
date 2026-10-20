@@ -41,6 +41,7 @@ function track(
     summary: `${title} summary`,
     href,
     ctaLabel: "Download Resume",
+    fileLabel: "PDF",
     deliveryMode: "public_file",
     media: {
       id: href,

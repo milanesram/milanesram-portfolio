@@ -3,6 +3,7 @@ import {
   REQUEST_RESUME_CTA_LABEL,
 } from "@/lib/resume-requests/choices";
 import {
+  formatResumeFileLabel,
   isEligibleResumeMedia,
   mapResumeTrack,
   resumeTracksHavePublicFiles,
@@ -178,6 +179,30 @@ describe("resume track mapping", () => {
       publicUrl: publicUrlFor(ASSET.bucket_path),
       mimeType: "application/pdf",
     });
+    expect(mapped?.fileLabel).toBe("PDF");
+    expect(mapped?.focusSlug).toBe("cybersecurity-grc");
+  });
+
+  it("labels a public PDF with its exact byte size and allows a track without a focus page", () => {
+    const mapped = mapResumeTrack(
+      track({
+        slug: "information-technology-systems",
+        title: "Information Technology and Systems",
+        delivery_mode: "public_file",
+        focus_pages: null,
+        home_kicker: null,
+        media_assets: { ...ASSET, byte_size: 167120 },
+      }),
+      publicUrlFor,
+    );
+
+    expect(mapped?.focusSlug).toBeNull();
+    expect(mapped?.href).toBe(publicUrlFor(ASSET.bucket_path));
+    expect(mapped?.fileLabel).toBe("PDF · 167,120 bytes");
+    expect(formatResumeFileLabel("application/pdf", 167120)).toBe(
+      "PDF · 167,120 bytes",
+    );
+    expect(formatResumeFileLabel("text/plain", 12)).toBeNull();
   });
 
   it("maps a public-file privacy track to its resume PDF without renaming the route", () => {

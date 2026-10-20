@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   formatExperienceDateRange,
   interpretPublishedExperiencesResponse,
+  splitExperienceContributions,
   toPublicExperience,
   toPublicExperiences,
   type PublishedExperienceItemRow,
@@ -204,6 +205,24 @@ describe("hosted-only Experience mapping", () => {
     ]);
 
     expect(page.bullets).toEqual([]);
+  });
+});
+
+describe("experience contribution scan", () => {
+  it("keeps the first contributions visible and the rest available", () => {
+    const items = ["scope", "one", "two", "three", "four"];
+    expect(splitExperienceContributions(items)).toEqual({
+      visible: ["scope", "one", "two"],
+      additional: ["three", "four"],
+    });
+    expect(splitExperienceContributions(items.slice(0, 2))).toEqual({
+      visible: ["scope", "one"],
+      additional: [],
+    });
+    expect(splitExperienceContributions([])).toEqual({
+      visible: [],
+      additional: [],
+    });
   });
 });
 

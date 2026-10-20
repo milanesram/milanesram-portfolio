@@ -6,6 +6,7 @@ type CareerTrackCardProps = {
   summary: string;
   href?: string | null;
   ctaLabel?: string;
+  fileLabel?: string | null;
   external?: boolean;
   unavailable?: boolean;
   secondaryHref?: string | null;
@@ -17,6 +18,7 @@ export function CareerTrackCard({
   summary,
   href,
   ctaLabel = "View this profile",
+  fileLabel = null,
   external = false,
   unavailable = false,
   secondaryHref = null,
@@ -31,6 +33,9 @@ export function CareerTrackCard({
         {title}
       </h2>
       <p className="mt-3 flex-1 text-base leading-7 text-ink-soft">{summary}</p>
+      {fileLabel ? (
+        <p className="mt-3 text-sm text-ink-faint">{fileLabel}</p>
+      ) : null}
     </>
   );
   const body = (

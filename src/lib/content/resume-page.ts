@@ -32,6 +32,7 @@ export type PublicResumeTrack = {
   summary: string;
   href: string | null;
   ctaLabel: string;
+  fileLabel: string | null;
   deliveryMode: ResumeDeliveryMode;
   media: PublicResumeMedia | null;
   unavailable: boolean;
@@ -39,6 +40,24 @@ export type PublicResumeTrack = {
   focusSlug: string | null;
   inquiryHref: string | null;
 };
+
+export function formatResumeFileLabel(
+  mimeType: string | null | undefined,
+  byteSize: number | null | undefined,
+): string | null {
+  const mime = mimeType?.trim().toLowerCase() ?? "";
+  const pdf = mime === "application/pdf" || mime === "application/x-pdf";
+
+  if (!pdf) {
+    return null;
+  }
+
+  if (byteSize == null || !Number.isFinite(byteSize) || byteSize <= 0) {
+    return "PDF";
+  }
+
+  return `PDF · ${Math.round(byteSize).toLocaleString("en-US")} bytes`;
+}
 
 export const PUBLIC_RESUME_CTA_LABEL = "Download Resume";
 export const EMAIL_ME_CTA_LABEL = "Email Me";
@@ -68,6 +87,7 @@ export type ResumeMediaRow = {
   title: string;
   mime_type: string | null;
   bucket_path: string;
+  byte_size?: number | null;
   status: ContentStatus;
   is_public: boolean;
 };
@@ -229,6 +249,9 @@ export function mapResumeTrack(
     summary,
     href: trackHref,
     ctaLabel,
+    fileLabel: downloadable
+      ? formatResumeFileLabel(asset?.mime_type, asset?.byte_size)
+      : null,
     deliveryMode,
     media: publicMedia,
     unavailable,

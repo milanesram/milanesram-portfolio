@@ -22,24 +22,24 @@ const HISTORICAL = source(
 
 const IDENTITY = "Global Privacy, Compliance & Information Security Risk Professional";
 const DESCRIPTION =
-  "Global privacy, compliance and information-security risk professional and former privacy regulator with hands-on work across privacy operations, GRC, IT risk, security compliance, assurance, remediation and technology implementation.";
+  "I’m Rainier (Ram) Milanes, a privacy professional, former Philippine privacy regulator, and Northwestern MSIS graduate. My career spans corporate legal and operational work, privacy programs, regulatory leadership, consulting, and technical implementation.";
 
 describe("global professional identity", () => {
   it("uses one shared identity in default metadata and the social card", () => {
-    expect(METADATA).toContain(
-      "Global Privacy, Compliance & Information Security Risk",
-    );
+    expect(METADATA).toContain("Privacy, Governance & Information Systems");
     expect(METADATA).toContain(DESCRIPTION);
     expect(METADATA).toContain("template: `%s — ${shortName}`");
     expect(METADATA).not.toContain("Privacy, Compliance, GRC & IT Risk");
-    expect(SOCIAL).toContain("Global Privacy · Compliance · Information Security Risk");
+    expect(SOCIAL).toContain("Privacy · Governance · Information Systems");
     expect(SOCIAL).toContain("profile?.headline");
     expect(SOCIAL).not.toContain("Cybersecurity · GRC · IT Risk · Privacy");
   });
 
   it("reconciles only the shared hosted identity records", () => {
     expect(MIGRATION).toContain(IDENTITY);
-    expect(MIGRATION).toContain(DESCRIPTION);
+    expect(MIGRATION).toContain(
+      "Global privacy, compliance and information-security risk professional and former privacy regulator with hands-on work across privacy operations, GRC, IT risk, security compliance, assurance, remediation and technology implementation.",
+    );
     expect(MIGRATION).toContain(
       "Rainier (Ram) Milanes | Global Privacy, Compliance & Information Security Risk",
     );

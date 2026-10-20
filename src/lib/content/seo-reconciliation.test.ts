@@ -24,11 +24,9 @@ const RESUME_DESCRIPTION =
 
 describe("seo reconciliation", () => {
   it("keeps the approved home identity in default metadata", () => {
+    expect(METADATA).toContain("Privacy, Governance & Information Systems");
     expect(METADATA).toContain(
-      "Global Privacy, Compliance & Information Security Risk",
-    );
-    expect(METADATA).toContain(
-      "Global privacy, compliance and information-security risk professional and former privacy regulator",
+      "I’m Rainier (Ram) Milanes, a privacy professional, former Philippine privacy regulator",
     );
     expect(METADATA).not.toContain("Privacy and AI Governance");
   });

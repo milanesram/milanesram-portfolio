@@ -121,6 +121,20 @@ export function toPresentationTracks(track: TrackTag): Array<TrackId | "all"> {
   return ["all"];
 }
 
+export function splitExperienceContributions<T>(
+  items: T[],
+  visibleCount = 3,
+): { visible: T[]; additional: T[] } {
+  const count = Number.isFinite(visibleCount)
+    ? Math.max(0, Math.floor(visibleCount))
+    : 3;
+
+  return {
+    visible: items.slice(0, count),
+    additional: items.slice(count),
+  };
+}
+
 export function bulletsForTrack(
   experience: Experience,
   track?: "cyber" | "privacy",

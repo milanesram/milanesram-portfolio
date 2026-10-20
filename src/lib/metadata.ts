@@ -16,9 +16,9 @@ import { isVercelPreviewDeployment } from "./vercel-env";
 
 export { createPageMetadata, createPublicationDetailMetadata } from "./page-metadata";
 
-const seoTitleSuffix = "Global Privacy, Compliance & Information Security Risk";
+const seoTitleSuffix = "Privacy, Governance & Information Systems";
 const defaultDescription =
-  "Global privacy, compliance and information-security risk professional and former privacy regulator with hands-on work across privacy operations, GRC, IT risk, security compliance, assurance, remediation and technology implementation.";
+  "I’m Rainier (Ram) Milanes, a privacy professional, former Philippine privacy regulator, and Northwestern MSIS graduate. My career spans corporate legal and operational work, privacy programs, regulatory leadership, consulting, and technical implementation.";
 
 export async function resolvePublicIndexability(
   pageIndexable = true,

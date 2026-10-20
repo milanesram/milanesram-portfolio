@@ -47,6 +47,7 @@ const DOCUMENT_KIND_LABELS: Record<DocumentKind, string> = {
 export type PublicationAvailability = "pdf" | "external" | "html_only";
 
 export type PublishedPublication = {
+  id: string;
   slug: string;
   title: string;
   seoTitle: string | null;
@@ -76,6 +77,30 @@ export type WritingLibraryGroups = {
   availableHere: PublishedPublication[];
   publishedElsewhere: PublishedPublication[];
 };
+
+/**
+ * Complete public index. Order is the caller’s editorial order.
+ * Identity is the publication id, then slug. Title is not an identity.
+ */
+export function indexPublishedWriting(
+  publications: PublishedPublication[],
+): PublishedPublication[] {
+  const seen = new Set<string>();
+  const indexed: PublishedPublication[] = [];
+
+  for (const publication of publications) {
+    const key = publication.id.trim() || publication.slug.trim();
+
+    if (!key || seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    indexed.push(publication);
+  }
+
+  return indexed;
+}
 
 export type PublishedPublicationResult =
   | { ok: true; publication: PublishedPublication }
@@ -257,6 +282,7 @@ function mapPublication(
   });
 
   return {
+    id: row.id,
     slug: row.slug,
     title: row.title,
     seoTitle: row.seo_title?.trim() || null,
