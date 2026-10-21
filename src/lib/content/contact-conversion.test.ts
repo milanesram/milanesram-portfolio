@@ -103,7 +103,9 @@ describe("recruiter contact conversion", () => {
     expect(grc).toBeGreaterThan(privacy);
     expect(html).toContain("https://example.test/privacy.pdf");
     expect(html).toContain("https://example.test/grc.pdf");
-    expect(html.match(/Email Me/g)).toHaveLength(2);
+    expect(html.match(/>Email Me</g)).toHaveLength(2);
+    expect(html).toContain('aria-label="Email Me: Privacy, Compliance &amp; Assurance"');
+    expect(html).toContain('aria-label="Download Resume: GRC, IT Risk &amp; Security Compliance"');
     expect(html.match(/mailto:milanesram@gmail.com/g)).toHaveLength(2);
     expect(html).not.toContain("Send Inquiry");
     expect(html).not.toContain("inquiry=");

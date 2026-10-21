@@ -38,7 +38,11 @@ export function WritingIndexCard({
         {getAvailabilityLabel(publication.availability)}
       </p>
       <div className="mt-6">
-        <ButtonLink href={`/writing/${publication.slug}`} variant="accent">
+        <ButtonLink
+          href={`/writing/${publication.slug}`}
+          variant="accent"
+          ariaLabel={`Read publication: ${publication.title}`}
+        >
           Read publication
         </ButtonLink>
       </div>

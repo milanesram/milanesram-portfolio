@@ -59,10 +59,19 @@ export function CareerTrackCard({
       <article className={className}>
         {heading}
         <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap">
-          <ButtonLink href={href} external={external} variant="primary">
+          <ButtonLink
+            href={href}
+            external={external}
+            variant="primary"
+            ariaLabel={`${ctaLabel}: ${title}`}
+          >
             {ctaLabel}
           </ButtonLink>
-          <ButtonLink href={secondaryHref} variant="secondary">
+          <ButtonLink
+            href={secondaryHref}
+            variant="secondary"
+            ariaLabel={`${secondaryLabel}: ${title}`}
+          >
             {secondaryLabel}
           </ButtonLink>
         </div>

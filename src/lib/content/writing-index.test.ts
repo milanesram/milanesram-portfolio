@@ -93,5 +93,7 @@ describe("publication index", () => {
     expect(html).not.toContain("Duplicate featured");
     expect(html).not.toContain('aria-label="Available here"');
     expect(html).not.toContain('aria-label="All Writing"');
+    expect(html).toContain('aria-label="Read publication: Featured one"');
+    expect(html).toContain('aria-label="Read publication: Featured three"');
   });
 });

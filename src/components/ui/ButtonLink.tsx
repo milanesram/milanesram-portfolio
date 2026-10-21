@@ -18,6 +18,7 @@ type ButtonLinkProps = {
   variant?: Variant;
   external?: boolean;
   className?: string;
+  ariaLabel?: string;
 };
 
 export function ButtonLink({
@@ -26,6 +27,7 @@ export function ButtonLink({
   variant = "primary",
   external = false,
   className = "",
+  ariaLabel,
 }: ButtonLinkProps) {
   const classes = `inline-flex min-h-11 items-center justify-center rounded-full px-5 text-sm font-medium transition-colors ${variants[variant]} ${className}`;
   const mailto = href.startsWith("mailto:");
@@ -35,6 +37,7 @@ export function ButtonLink({
       <a
         href={href}
         className={classes}
+        aria-label={ariaLabel}
         {...(external && !mailto ? { target: "_blank", rel: "noreferrer" } : {})}
       >
         {children}
@@ -43,7 +46,7 @@ export function ButtonLink({
   }
 
   return (
-    <Link href={href} className={classes}>
+    <Link href={href} className={classes} aria-label={ariaLabel}>
       {children}
     </Link>
   );
