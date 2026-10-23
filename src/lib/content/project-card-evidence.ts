@@ -1,14 +1,26 @@
 const PRIVAI_GUARD_SLUG = "privai-guard";
 
 /**
- * Allowlisted public source links. The `projects` table has no external URL
- * column; do not read a GitHub address from summary, tagline, or stack.
+ * Allowlisted public links. The `projects` table has no external URL column;
+ * do not read an address from summary, tagline, or stack.
  */
-export const PUBLIC_PROJECT_SOURCE_LINKS = {
-  "milanesram-portfolio": {
-    href: "https://github.com/milanesram/milanesram-portfolio",
-    label: "View public source on GitHub",
-  },
+export const PUBLIC_PROJECT_LINKS = {
+  "milanesram-portfolio": [
+    {
+      href: "https://github.com/milanesram/milanesram-portfolio",
+      label: "View public source on GitHub",
+    },
+  ],
+  tuloy: [
+    {
+      href: "https://tuloy-career.creamykite256.chatgpt.site/about/",
+      label: "About Tuloy",
+    },
+    {
+      href: "https://github.com/milanesram/tuloy",
+      label: "View on GitHub",
+    },
+  ],
 } as const;
 
 export type ProjectCardSourceLink = {
@@ -21,7 +33,7 @@ export type ProjectCardEvidence = {
   stack: string[];
   href: string;
   caseStudyCta: boolean;
-  source: ProjectCardSourceLink | null;
+  sources: readonly ProjectCardSourceLink[];
 };
 
 type ProjectCardEvidenceInput = {
@@ -30,12 +42,16 @@ type ProjectCardEvidenceInput = {
   stack: string[];
 };
 
-function sourceLinkForSlug(slug: string): ProjectCardSourceLink | null {
+function linksForSlug(slug: string): readonly ProjectCardSourceLink[] {
   if (slug === "milanesram-portfolio") {
-    return PUBLIC_PROJECT_SOURCE_LINKS["milanesram-portfolio"];
+    return PUBLIC_PROJECT_LINKS["milanesram-portfolio"];
   }
 
-  return null;
+  if (slug === "tuloy") {
+    return PUBLIC_PROJECT_LINKS.tuloy;
+  }
+
+  return [];
 }
 
 export function projectCardEvidence(
@@ -54,6 +70,6 @@ export function projectCardEvidence(
         ? "/projects/privai-guard"
         : `/projects#${project.slug}`,
     caseStudyCta: project.slug === PRIVAI_GUARD_SLUG,
-    source: sourceLinkForSlug(project.slug),
+    sources: linksForSlug(project.slug),
   };
 }

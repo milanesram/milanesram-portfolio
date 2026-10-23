@@ -52,15 +52,21 @@ export function ProjectCard({
           Read the PrivAI Guard case study
         </Link>
       ) : null}
-      {evidence.source ? (
-        <a
-          href={evidence.source.href}
-          className="mt-6 inline-flex text-sm font-medium text-accent hover:underline"
-          target="_blank"
-          rel="noreferrer"
-        >
-          {evidence.source.label}
-        </a>
+      {evidence.sources.length > 0 ? (
+        <ul className="mt-6 flex list-none flex-col items-start gap-3 p-0">
+          {evidence.sources.map((source) => (
+            <li key={source.href}>
+              <a
+                href={source.href}
+                className="inline-flex text-sm font-medium text-accent hover:underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {source.label}
+              </a>
+            </li>
+          ))}
+        </ul>
       ) : null}
     </article>
   );

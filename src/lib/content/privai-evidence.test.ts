@@ -283,7 +283,7 @@ describe("privai metadata and listing isolation", () => {
 
     expect(evidence.href).toBe("/projects/privai-guard");
     expect(evidence.caseStudyCta).toBe(true);
-    expect(evidence.source).toBeNull();
+    expect(evidence.sources).toEqual([]);
     expect(evidence.contribution).toBe("Designed and developed");
   });
 });
