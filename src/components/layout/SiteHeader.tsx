@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { navPrimary } from "@/content";
 import {
   selectHeaderIdentity,
@@ -17,7 +17,26 @@ export function SiteHeader({ profile }: { profile: PublicSiteProfile | null }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const menuId = useId();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { displayName, href } = selectHeaderIdentity(profile);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      setOpen(false);
+      menuButtonRef.current?.focus({ focusVisible: true } as FocusOptions);
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-paper-elevated/95 backdrop-blur-sm">
@@ -61,6 +80,7 @@ export function SiteHeader({ profile }: { profile: PublicSiteProfile | null }) {
         </div>
 
         <button
+          ref={menuButtonRef}
           type="button"
           className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-line text-sm font-medium lg:hidden"
           aria-expanded={open}

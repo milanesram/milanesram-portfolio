@@ -19,9 +19,11 @@ describe("resumeTracksLayoutClass", () => {
     expect(resumeTracksLayoutClass(2)).not.toContain("max-w-xl");
   });
 
-  it("uses an equal three-column treatment for three tracks", () => {
-    expect(resumeTracksLayoutClass(3)).toContain("md:grid-cols-3");
-    expect(resumeTracksLayoutClass(3)).not.toContain("lg:grid-cols-2");
+  it("keeps three tracks in one column until the extra-large breakpoint", () => {
+    const layout = resumeTracksLayoutClass(3);
+    expect(layout).toContain("xl:grid-cols-3");
+    expect(layout).not.toContain("md:grid-cols-3");
+    expect(layout).not.toContain("lg:grid-cols-3");
   });
 
   it("keeps four or more tracks on a wrapping responsive grid", () => {

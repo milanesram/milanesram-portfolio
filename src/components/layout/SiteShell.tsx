@@ -15,7 +15,7 @@ export function SiteShell({
         Skip to main content
       </a>
       <SiteHeader profile={profile} />
-      <main id="main" className="flex-1">
+      <main id="main" tabIndex={-1} className="flex-1 scroll-mt-16 outline-none">
         {children}
       </main>
       <SiteFooter profile={profile} />

@@ -2,6 +2,8 @@
  * Variable-count Resume track layout.
  *
  * Count drives CSS only. Hosted `resume_tracks` remain the card authority.
+ * Three tracks stay in one column through tablet widths. Three columns start
+ * at the xl breakpoint, where each card is wide enough for its actions.
  */
 export function resumeTracksLayoutClass(count: number): string {
   if (count <= 0) {
@@ -17,7 +19,7 @@ export function resumeTracksLayoutClass(count: number): string {
   }
 
   if (count === 3) {
-    return "grid gap-6 md:grid-cols-3";
+    return "grid gap-6 xl:grid-cols-3";
   }
 
   return "grid gap-6 sm:grid-cols-2 xl:grid-cols-3";
