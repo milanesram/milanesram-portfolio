@@ -7,6 +7,7 @@ import {
   getPublishedProjects,
   toPresentationProject,
 } from "@/lib/content/projects";
+import { arrangeProjectsIndex } from "@/lib/content/projects-index";
 import { generateRouteMetadata } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
@@ -56,6 +57,7 @@ export default async function ProjectsPage() {
   }
 
   const chrome = chromeResult.page;
+  const arranged = result.ok ? arrangeProjectsIndex(result.projects) : null;
   const leadMedia = result.ok
     ? await getPublishedLeadMediaBySlug(result.projects.map((project) => project.slug))
     : new Map();
@@ -67,31 +69,44 @@ export default async function ProjectsPage() {
         title={chrome.headline}
         lede={chrome.lede}
       />
-      <Container className="grid gap-6 py-16 lg:grid-cols-2">
-        {result.ok ? (
-          result.projects.length === 0 ? (
-            <p className="text-base leading-7 text-ink-soft lg:col-span-2">
-              No published projects are available.
-            </p>
-          ) : (
-            result.projects.map((project) => {
-              const view = toPresentationProject(project);
-              return (
-                <ProjectCard
-                  key={view.slug}
-                  project={view}
-                  featured={view.featured}
-                  headingLevel="h2"
-                  leadMedia={leadMedia.get(view.slug) ?? null}
-                />
-              );
-            })
-          )
-        ) : (
-          <p className="text-base leading-7 text-ink-soft lg:col-span-2">
+      <Container className="flex flex-col gap-10 py-16">
+        {!result.ok ? (
+          <p className="text-base leading-7 text-ink-soft">
             Projects are temporarily unavailable.
           </p>
-        )}
+        ) : result.projects.length === 0 ? (
+          <p className="text-base leading-7 text-ink-soft">
+            No published projects are available.
+          </p>
+        ) : arranged ? (
+          <>
+            {arranged.featured ? (
+              <ProjectCard
+                project={toPresentationProject(arranged.featured)}
+                featured={arranged.featured.featured}
+                headingLevel="h2"
+                layout="alongside"
+                leadMedia={leadMedia.get(arranged.featured.slug) ?? null}
+              />
+            ) : null}
+            {arranged.rest.length > 0 ? (
+              <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+                {arranged.rest.map((project) => {
+                  const view = toPresentationProject(project);
+                  return (
+                    <ProjectCard
+                      key={view.slug}
+                      project={view}
+                      featured={view.featured}
+                      headingLevel="h2"
+                      leadMedia={leadMedia.get(view.slug) ?? null}
+                    />
+                  );
+                })}
+              </div>
+            ) : null}
+          </>
+        ) : null}
       </Container>
     </>
   );

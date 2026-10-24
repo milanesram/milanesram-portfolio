@@ -10,26 +10,42 @@ export function ProjectCard({
   featured = false,
   leadMedia = null,
   headingLevel = "h3",
+  layout = "stacked",
 }: {
   project: Project;
   featured?: boolean;
   leadMedia?: PublishedProjectMedia | null;
   headingLevel?: "h2" | "h3";
+  layout?: "stacked" | "alongside";
 }) {
   const evidence = projectCardEvidence(project);
   const Title = headingLevel;
+  const alongside = layout === "alongside";
 
   return (
     <article
       id={project.slug}
-      className="overflow-hidden rounded-lg border border-line bg-paper-elevated shadow-[var(--shadow)]"
+      className={`min-w-0 overflow-hidden rounded-lg border border-line bg-paper-elevated shadow-[var(--shadow)] ${
+        alongside ? "lg:grid lg:grid-cols-2 lg:items-start" : ""
+      }`}
     >
-      {leadMedia ? <ProjectLeadVisual media={leadMedia} bleed /> : null}
-      <div className={`p-6 ${featured ? "lg:p-8" : ""}`}>
+      {leadMedia ? (
+        <ProjectLeadVisual
+          media={leadMedia}
+          bleed
+          sizes={
+            alongside
+              ? "(min-width: 1024px) 36rem, calc(100vw - 2.5rem)"
+              : undefined
+          }
+          captionClassName={alongside ? "px-6 py-4 lg:pb-8" : undefined}
+        />
+      ) : null}
+      <div className={`min-w-0 p-6 ${featured || alongside ? "lg:p-8" : ""}`}>
       <EditorialKicker>
         {featured ? "Featured project" : project.yearLabel}
       </EditorialKicker>
-      <Title className="font-serif text-2xl font-medium leading-snug text-ink">{project.name}</Title>
+      <Title className="font-serif text-2xl font-medium leading-snug break-words text-ink">{project.name}</Title>
       <p className="mt-1 text-sm text-ink-faint">
         {project.tagline}
         {featured ? ` · ${project.yearLabel}` : null}

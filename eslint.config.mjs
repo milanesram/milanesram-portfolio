@@ -7,11 +7,19 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
+    // Default ignores of eslint-config-next. Patterns without a leading
+    // wildcard are root-relative, so nested worktrees and their build
+    // output need their own patterns.
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "**/.next/**",
+    "**/out/**",
+    "**/build/**",
+    "**/next-env.d.ts",
+    ".worktrees/**",
+    "**/.worktrees/**",
   ]),
 ]);
 

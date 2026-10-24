@@ -43,10 +43,14 @@ export function ProjectLeadVisual({
   media,
   fallback = "none",
   bleed = false,
+  sizes,
+  captionClassName,
 }: {
   media: PublishedProjectMedia | null;
   fallback?: "motif" | "none";
   bleed?: boolean;
+  sizes?: string;
+  captionClassName?: string;
 }) {
   if (!media) {
     return fallback === "motif" ? <ProjectMotif /> : null;
@@ -61,11 +65,13 @@ export function ProjectLeadVisual({
           width={SCREENSHOT_WIDTH}
           height={SCREENSHOT_HEIGHT}
           className="h-auto w-full"
-          sizes="(min-width: 1024px) 22rem, calc(100vw - 2.5rem)"
+          sizes={sizes ?? "(min-width: 1024px) 22rem, calc(100vw - 2.5rem)"}
         />
       </div>
       <figcaption
-        className={`text-sm leading-6 text-ink-soft ${bleed ? "px-6 pt-3" : "mt-3"}`}
+        className={`text-sm leading-6 text-ink-soft ${
+          captionClassName ?? (bleed ? "px-6 pt-3" : "mt-3")
+        }`}
       >
         {media.caption}
       </figcaption>
