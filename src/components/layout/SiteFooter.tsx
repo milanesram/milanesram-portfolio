@@ -14,6 +14,7 @@ export function SiteFooter({
 
   return (
     <footer className="mt-auto border-t border-line bg-paper-elevated">
+      <div aria-hidden="true" className="h-px bg-copper-decorative/80" />
       <div className="mx-auto grid max-w-[72rem] gap-10 px-5 py-12 sm:px-8 lg:grid-cols-4">
         <div>
           <p className="font-serif text-xl text-ink">{identity.displayName}</p>

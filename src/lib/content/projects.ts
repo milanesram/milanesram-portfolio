@@ -3,9 +3,11 @@ import {
   isPublishedStatus,
   mapProject,
   mapPublishedProjectMedia,
+  selectLeadProjectMedia,
   type ProjectMediaRow,
   type PublishedProject,
   type PublishedProjectDetail,
+  type PublishedProjectMedia,
 } from "@/lib/content/project-map";
 
 export type {
@@ -115,4 +117,59 @@ export async function getPublishedProjectBySlug(
           project.id,
         ),
   };
+}
+
+const PROJECT_MEDIA_COLUMNS =
+  "id, project_id, display_role, caption, sort_order, status, media_assets(id, bucket_path, kind, purpose, title, alt_text, mime_type, byte_size, status, is_public)";
+
+export async function getPublishedLeadMediaBySlug(
+  slugs: Array<string | null | undefined>,
+): Promise<Map<string, PublishedProjectMedia>> {
+  const unique = [
+    ...new Set(
+      slugs
+        .map((slug) => slug?.trim() ?? "")
+        .filter((slug) => SLUG_PATTERN.test(slug) && slug.length <= 80),
+    ),
+  ];
+
+  if (unique.length === 0) {
+    return new Map();
+  }
+
+  const supabase = createPublicSupabaseClient();
+  const { data: projects, error: projectError } = await supabase
+    .from("projects")
+    .select("id, slug")
+    .in("slug", unique)
+    .eq("status", "published");
+
+  if (projectError || !projects || projects.length === 0) {
+    return new Map();
+  }
+
+  const ids = projects.map((project) => project.id);
+  const { data, error } = await supabase
+    .from("project_media")
+    .select(PROJECT_MEDIA_COLUMNS)
+    .in("project_id", ids)
+    .eq("status", "published")
+    .order("sort_order", { ascending: true });
+
+  if (error || !data) {
+    return new Map();
+  }
+
+  const byId = selectLeadProjectMedia(data as ProjectMediaRow[], ids);
+  const bySlug = new Map<string, PublishedProjectMedia>();
+
+  for (const project of projects) {
+    const lead = byId.get(project.id);
+
+    if (lead) {
+      bySlug.set(project.slug, lead);
+    }
+  }
+
+  return bySlug;
 }

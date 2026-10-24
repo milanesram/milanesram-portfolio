@@ -3,6 +3,7 @@ import { ProjectCard } from "@/components/ui/ProjectCard";
 import { Container } from "@/components/layout/Container";
 import { getPublishedProjectsPage } from "@/lib/content/projects-chrome";
 import {
+  getPublishedLeadMediaBySlug,
   getPublishedProjects,
   toPresentationProject,
 } from "@/lib/content/projects";
@@ -55,6 +56,9 @@ export default async function ProjectsPage() {
   }
 
   const chrome = chromeResult.page;
+  const leadMedia = result.ok
+    ? await getPublishedLeadMediaBySlug(result.projects.map((project) => project.slug))
+    : new Map();
 
   return (
     <>
@@ -77,6 +81,8 @@ export default async function ProjectsPage() {
                   key={view.slug}
                   project={view}
                   featured={view.featured}
+                  headingLevel="h2"
+                  leadMedia={leadMedia.get(view.slug) ?? null}
                 />
               );
             })

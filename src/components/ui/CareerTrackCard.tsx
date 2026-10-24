@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { EditorialKicker } from "@/components/ui/EditorialKicker";
 
 type CareerTrackCardProps = {
   title: string;
@@ -26,10 +27,8 @@ export function CareerTrackCard({
 }: CareerTrackCardProps) {
   const heading = (
     <>
-      <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
-        Resume option
-      </p>
-      <h2 className="mt-3 font-serif text-2xl font-medium tracking-tight text-ink">
+      <EditorialKicker>Resume option</EditorialKicker>
+      <h2 className="font-serif text-2xl font-medium tracking-tight text-ink">
         {title}
       </h2>
       <p className="mt-3 flex-1 text-base leading-7 text-ink-soft">{summary}</p>
@@ -52,7 +51,7 @@ export function CareerTrackCard({
   );
 
   const className =
-    "group flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-[border-color,box-shadow] duration-200 hover:border-ink/15 hover:shadow-[var(--shadow-hover)]";
+    "group flex h-full flex-col rounded-lg border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-[border-color,box-shadow] duration-200 hover:border-accent/40 hover:shadow-[var(--shadow-hover)]";
 
   if (href && secondaryHref && !unavailable) {
     return (

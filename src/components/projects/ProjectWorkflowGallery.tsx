@@ -32,7 +32,7 @@ export function ProjectScreenshotFigure({
     />
   );
   const frameClassName =
-    "block overflow-hidden rounded-xl border border-line bg-paper";
+    "block overflow-hidden rounded-lg border border-line bg-paper ring-1 ring-copper-decorative/35";
 
   return (
     <figure aria-hidden={presentation.figureAriaHidden ? true : undefined}>

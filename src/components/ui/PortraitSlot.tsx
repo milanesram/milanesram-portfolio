@@ -1,8 +1,8 @@
 export function PortraitSlot({ initials = "" }: { initials?: string }) {
   return (
-    <figure className="mx-auto w-full max-w-xs lg:mx-0">
+    <figure>
       <div
-        className="flex aspect-square items-center justify-center rounded-2xl border border-line bg-[linear-gradient(160deg,#efe8db_0%,#f7f4ee_48%,#e7eee9_100%)]"
+        className="flex aspect-[4/5] items-center justify-center bg-[linear-gradient(160deg,#f3eee6_0%,#fffcf8_52%,#e5f0ee_100%)]"
         aria-hidden="true"
       >
         {initials ? (

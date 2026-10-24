@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { ProjectLeadVisual } from "@/components/projects/ProjectLeadVisual";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { EditorialKicker } from "@/components/ui/EditorialKicker";
+import type { PublishedProjectMedia } from "@/lib/content/project-map";
 import {
   HOME_ALL_PROJECTS_CTA,
   HOME_SUPPORTING_SECTION_KICKER,
@@ -9,20 +12,26 @@ import {
 export function HomeSupportingProjects({
   projects,
 }: {
-  projects: HomeSupportingProject[];
+  projects: Array<
+    HomeSupportingProject & { leadMedia?: PublishedProjectMedia | null }
+  >;
 }) {
   return (
     <div className={projects.length > 0 ? "mt-10" : "mt-8"}>
       {projects.length > 0 ? (
         <>
-          <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
-            {HOME_SUPPORTING_SECTION_KICKER}
-          </p>
+          <EditorialKicker>{HOME_SUPPORTING_SECTION_KICKER}</EditorialKicker>
           <ul className="mt-6 grid gap-6 lg:grid-cols-2">
             {projects.map((project) => (
               <li key={project.slug} className="min-w-0">
-                <article className="flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)]">
-                  <h3 className="font-serif text-xl font-medium text-ink">
+                <article className="flex h-full flex-col overflow-hidden rounded-lg border border-line bg-paper-elevated shadow-[var(--shadow)]">
+                  <ProjectLeadVisual
+                    media={project.leadMedia ?? null}
+                    fallback="motif"
+                    bleed
+                  />
+                  <div className="flex flex-1 flex-col p-6">
+                  <h3 className="font-serif text-xl font-medium leading-snug text-ink">
                     {project.name}
                   </h3>
                   <p className="mt-1 text-sm text-ink-faint">{project.tagline}</p>
@@ -49,10 +58,11 @@ export function HomeSupportingProjects({
                   ) : null}
                   <Link
                     href={project.href}
-                    className="mt-6 inline-flex text-sm font-medium text-accent hover:underline"
+                    className="mt-6 inline-flex min-h-11 items-center text-sm font-medium text-accent hover:underline"
                   >
                     {project.ctaLabel}
                   </Link>
+                  </div>
                 </article>
               </li>
             ))}

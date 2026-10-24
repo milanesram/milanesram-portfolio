@@ -1,3 +1,5 @@
+import { EditorialKicker } from "@/components/ui/EditorialKicker";
+
 type SectionHeaderProps = {
   kicker?: string;
   title: string;
@@ -15,11 +17,7 @@ export function SectionHeader({
 
   return (
     <div className="max-w-2xl">
-      {kicker ? (
-        <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-copper">
-          {kicker}
-        </p>
-      ) : null}
+      {kicker ? <EditorialKicker>{kicker}</EditorialKicker> : null}
       <Heading className="font-serif text-3xl font-medium tracking-tight text-ink sm:text-4xl">
         {title}
       </Heading>

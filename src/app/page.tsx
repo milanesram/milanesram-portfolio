@@ -15,6 +15,7 @@ import {
 } from "@/lib/content/focus";
 import { getPublishedHomePage } from "@/lib/content/home";
 import { getPublishedHomeSupportingProjects } from "@/lib/content/home-supporting-projects";
+import { getPublishedLeadMediaBySlug } from "@/lib/content/projects";
 import { getPublishedResumeTracks } from "@/lib/content/resume";
 import { getPublishedSiteProfile } from "@/lib/content/profile";
 import {
@@ -89,6 +90,10 @@ export default async function HomePage() {
   }
 
   const home = homeResult.page;
+  const leadMedia = await getPublishedLeadMediaBySlug([
+    home.featuredProject?.project.slug,
+    ...supportingProjects.map((project) => project.slug),
+  ]);
   const homeKickerByFocusSlug = new Map<string, string>();
 
   if (tracksResult.ok) {
@@ -116,21 +121,27 @@ export default async function HomePage() {
         initials={profile?.initials}
       />
 
-      <section className="py-12" aria-label="Current signals">
-        <Container>
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-6 lg:grid-cols-4">
+      <section className="border-b border-line bg-paper" aria-label="Current signals">
+        <Container className="py-10 sm:py-12">
+          <ul className="grid gap-8 md:grid-cols-2 xl:grid-cols-4 xl:gap-x-0 xl:divide-x xl:divide-line">
             {home.proofItems.map((item) => {
               const content = (
                 <>
-                  <p className="text-sm font-medium text-ink">{item.label}</p>
-                  <p className="mt-1 text-sm text-ink-faint">{item.supporting}</p>
+                  <p className="font-serif text-lg leading-snug text-ink group-hover:underline">
+                    {item.label}
+                  </p>
+                  <span
+                    aria-hidden="true"
+                    className="mt-3 block h-px w-8 bg-copper-decorative"
+                  />
+                  <p className="mt-3 text-sm leading-6 text-ink-soft">{item.supporting}</p>
                 </>
               );
 
               return (
-                <li key={item.id} className="min-w-0 border-l border-line pl-4">
+                <li key={item.id} className="min-w-0 xl:px-6 xl:first:pl-0 xl:last:pr-0">
                   {item.href ? (
-                    <Link href={item.href} className="block hover:text-ink">
+                    <Link href={item.href} className="group block min-h-11">
                       {content}
                     </Link>
                   ) : (
@@ -143,7 +154,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section className="border-y border-line py-20">
+      <section className="border-b border-line bg-paper-muted py-20">
         <Container>
           <SectionHeader
             kicker={home.experienceSection.kicker}
@@ -185,10 +196,14 @@ export default async function HomePage() {
                 <Link
                   key={track.id}
                   href={`/focus/${track.slug}`}
-                  className="group flex h-full flex-col rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-[border-color,box-shadow] duration-200 hover:border-ink/15 hover:shadow-[var(--shadow-hover)]"
+                  className="group flex h-full flex-col rounded-lg border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-[border-color,box-shadow] duration-200 hover:border-accent/40 hover:shadow-[var(--shadow-hover)]"
                 >
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
-                    {homeKickerByFocusSlug.get(track.slug) ?? "Pathway"}
+                    <span>{homeKickerByFocusSlug.get(track.slug) ?? "Pathway"}</span>
+                    <span
+                      aria-hidden="true"
+                      className="ml-3 inline-block h-px w-8 bg-copper-decorative align-middle"
+                    />
                   </p>
                   <h3 className="mt-3 font-serif text-2xl font-medium text-ink">
                     {track.title}
@@ -216,16 +231,24 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      <section className="border-y border-line py-20" aria-label="Selected work">
+      <section className="border-b border-line bg-paper-muted py-20" aria-label="Selected work">
         <Container>
           {home.featuredProject ? (
-            <HomeFlagshipProject flagship={home.featuredProject} />
+            <HomeFlagshipProject
+              flagship={home.featuredProject}
+              leadMedia={leadMedia.get(home.featuredProject.project.slug) ?? null}
+            />
           ) : (
             <p className="text-base leading-7 text-ink-soft">
               Featured work is temporarily unavailable.
             </p>
           )}
-          <HomeSupportingProjects projects={supportingProjects} />
+          <HomeSupportingProjects
+            projects={supportingProjects.map((project) => ({
+              ...project,
+              leadMedia: leadMedia.get(project.slug) ?? null,
+            }))}
+          />
         </Container>
       </section>
 
@@ -263,7 +286,8 @@ export default async function HomePage() {
 
       <section className="py-20">
         <Container>
-          <div className="rounded-2xl border border-line bg-paper-elevated px-6 py-10 sm:px-10">
+          <div className="relative overflow-hidden rounded-lg border border-line bg-paper-elevated px-6 py-10 sm:px-10">
+            <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1 bg-accent" />
             <h2 className="font-serif text-3xl font-medium text-ink">
               {home.closing.heading}
             </h2>

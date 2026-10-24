@@ -194,6 +194,23 @@ export function mapPublishedProjectMedia(
     });
 }
 
+export function selectLeadProjectMedia(
+  rows: ProjectMediaRow[],
+  projectIds: readonly string[],
+): Map<string, PublishedProjectMedia> {
+  const selected = new Map<string, PublishedProjectMedia>();
+
+  for (const projectId of projectIds) {
+    const lead = mapPublishedProjectMedia(rows, projectId)[0];
+
+    if (lead) {
+      selected.set(projectId, lead);
+    }
+  }
+
+  return selected;
+}
+
 export function toPresentationProject(project: PublishedProject): Project {
   return {
     id: project.slug,

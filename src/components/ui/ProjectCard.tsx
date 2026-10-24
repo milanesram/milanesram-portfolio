@@ -1,25 +1,35 @@
 import Link from "next/link";
 import type { Project } from "@/content";
 import { projectCardEvidence } from "@/lib/content/project-card-evidence";
+import type { PublishedProjectMedia } from "@/lib/content/project-map";
+import { ProjectLeadVisual } from "@/components/projects/ProjectLeadVisual";
+import { EditorialKicker } from "@/components/ui/EditorialKicker";
 
 export function ProjectCard({
   project,
   featured = false,
+  leadMedia = null,
+  headingLevel = "h3",
 }: {
   project: Project;
   featured?: boolean;
+  leadMedia?: PublishedProjectMedia | null;
+  headingLevel?: "h2" | "h3";
 }) {
   const evidence = projectCardEvidence(project);
+  const Title = headingLevel;
 
   return (
     <article
       id={project.slug}
-      className={`rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] ${featured ? "lg:p-8" : ""}`}
+      className="overflow-hidden rounded-lg border border-line bg-paper-elevated shadow-[var(--shadow)]"
     >
-      <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
+      {leadMedia ? <ProjectLeadVisual media={leadMedia} bleed /> : null}
+      <div className={`p-6 ${featured ? "lg:p-8" : ""}`}>
+      <EditorialKicker>
         {featured ? "Featured project" : project.yearLabel}
-      </p>
-      <h3 className="mt-3 font-serif text-2xl font-medium text-ink">{project.name}</h3>
+      </EditorialKicker>
+      <Title className="font-serif text-2xl font-medium leading-snug text-ink">{project.name}</Title>
       <p className="mt-1 text-sm text-ink-faint">
         {project.tagline}
         {featured ? ` · ${project.yearLabel}` : null}
@@ -68,6 +78,7 @@ export function ProjectCard({
           ))}
         </ul>
       ) : null}
+      </div>
     </article>
   );
 }

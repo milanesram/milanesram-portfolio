@@ -73,7 +73,7 @@ export function SiteHeader({ profile }: { profile: PublicSiteProfile | null }) {
           </Link>
           <Link
             href="/contact"
-            className="inline-flex min-h-10 items-center rounded-full bg-accent px-4 text-sm font-medium text-paper-elevated transition-colors hover:bg-[#164743]"
+            className="inline-flex min-h-11 items-center rounded-full bg-accent px-4 text-sm font-medium text-paper-elevated transition-colors hover:bg-accent-hover"
           >
             Contact
           </Link>

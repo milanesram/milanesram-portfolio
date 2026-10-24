@@ -4,11 +4,11 @@ type Variant = "primary" | "secondary" | "accent" | "text";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-ink text-paper-elevated hover:bg-[#1b3048] border border-ink",
+    "bg-ink text-paper-elevated hover:bg-ink-hover border border-ink",
   secondary:
-    "bg-transparent text-ink border border-ink/20 hover:border-ink/50 hover:bg-paper-elevated",
+    "bg-transparent text-ink border border-ink/20 hover:border-accent hover:bg-paper-elevated",
   accent:
-    "bg-accent text-paper-elevated hover:bg-[#164743] border border-accent",
+    "bg-accent text-paper-elevated hover:bg-accent-hover border border-accent",
   text: "bg-transparent text-accent underline-offset-4 hover:underline px-0 min-h-0",
 };
 

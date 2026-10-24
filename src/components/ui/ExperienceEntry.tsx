@@ -20,16 +20,16 @@ export function ExperienceEntry({
     <article className="border-t border-line py-8 first:border-t-0 first:pt-0">
       <div className="flex flex-col gap-2 lg:grid lg:grid-cols-[14rem_1fr] lg:gap-10">
         <div>
-          <p className="text-sm text-ink-faint">
+          <p className="text-sm font-medium text-ink-soft">
             {experience.startLabel} – {experience.endLabel}
           </p>
-          <p className="mt-1 text-sm text-ink-faint">{experience.location}</p>
+          <p className="mt-1 text-sm leading-6 text-ink-faint">{experience.location}</p>
         </div>
         <div>
-          <h3 className="font-serif text-2xl font-medium text-ink">
+          <h3 className="font-serif text-2xl font-medium leading-snug tracking-tight text-ink">
             {experience.organization}
           </h3>
-          <p className="mt-1 font-medium text-ink">{experience.title}</p>
+          <p className="mt-2 font-medium text-ink">{experience.title}</p>
           {experience.titleSecondary ? (
             <p className="text-ink-soft">{experience.titleSecondary}</p>
           ) : null}

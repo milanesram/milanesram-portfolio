@@ -28,8 +28,8 @@ export default async function OpenGraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#F4F1EA",
-          color: "#122033",
+          background: "#F8F5EF",
+          color: "#14232D",
           padding: "72px",
         }}
       >
@@ -38,7 +38,7 @@ export default async function OpenGraphImage() {
             fontSize: 28,
             letterSpacing: "0.16em",
             textTransform: "uppercase",
-            color: "#7C5340",
+            color: "#7A4E38",
           }}
         >
           {displayName}
@@ -52,7 +52,7 @@ export default async function OpenGraphImage() {
         >
           {headline}
         </div>
-        <div style={{ fontSize: 24, color: "#3E4B5C" }}>
+        <div style={{ fontSize: 24, color: "#3A4654" }}>
           Privacy · Governance · Information Systems
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { EditorialKicker } from "@/components/ui/EditorialKicker";
 import type { FocusSelectedWriting } from "@/lib/content/focus";
 
 export function FocusWritingCard({
@@ -7,11 +8,11 @@ export function FocusWritingCard({
   publication: FocusSelectedWriting;
 }) {
   return (
-    <article className="rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)]">
-      <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
+    <article className="rounded-lg border border-line bg-paper-elevated p-6 shadow-[var(--shadow)]">
+      <EditorialKicker>
         {publication.documentKindLabel} · {publication.yearLabel}
-      </p>
-      <h3 className="mt-3 font-serif text-2xl font-medium text-ink">
+      </EditorialKicker>
+      <h3 className="font-serif text-2xl font-medium leading-snug text-ink">
         {publication.title}
       </h3>
       <p className="mt-4 line-clamp-4 leading-7 text-ink-soft">

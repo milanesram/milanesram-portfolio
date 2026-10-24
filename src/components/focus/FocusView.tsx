@@ -7,6 +7,7 @@ import { FocusWritingCard } from "@/components/focus/FocusWritingCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/layout/Container";
+import { getPublishedLeadMediaBySlug } from "@/lib/content/projects";
 import {
   FOCUS_PUBLIC_ROUTES,
   otherFocusRoute,
@@ -14,7 +15,7 @@ import {
 } from "@/lib/content/focus";
 import { visibleWorkAuthorization } from "@/lib/content/site-profile";
 
-export function FocusView({
+export async function FocusView({
   page,
   workAuthorization = "",
 }: {
@@ -22,6 +23,9 @@ export function FocusView({
   workAuthorization?: string;
 }) {
   const authorization = visibleWorkAuthorization(workAuthorization);
+  const leadMedia = page.featuredProject
+    ? await getPublishedLeadMediaBySlug([page.featuredProject.slug])
+    : new Map();
   const other = otherFocusRoute(page.slug);
   const route = FOCUS_PUBLIC_ROUTES.find((item) => item.slug === page.slug);
   const resumeLabel = route ? `${route.navLabel} resume` : "Resume";
@@ -89,7 +93,7 @@ export function FocusView({
       ) : null}
 
       {page.featuredProject ? (
-        <section className="border-y border-line py-16">
+        <section className="border-y border-line bg-paper-muted py-16">
           <Container>
             <SectionHeader
               kicker="Featured evidence"
@@ -97,7 +101,11 @@ export function FocusView({
               lede={page.featuredProjectLede || undefined}
             />
             <div className="mt-8">
-              <ProjectCard project={page.featuredProject} featured />
+              <ProjectCard
+                project={page.featuredProject}
+                featured
+                leadMedia={leadMedia.get(page.featuredProject.slug) ?? null}
+              />
             </div>
           </Container>
         </section>

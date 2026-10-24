@@ -1,4 +1,5 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { EditorialKicker } from "@/components/ui/EditorialKicker";
 import {
   getAvailabilityLabel,
   type PublishedPublication,
@@ -15,13 +16,13 @@ export function WritingIndexCard({
 
   return (
     <article
-      className={`rounded-xl border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-[border-color,box-shadow] duration-200 hover:border-ink/15 hover:shadow-[var(--shadow-hover)] ${featured ? "sm:p-8" : ""}`}
+      className={`rounded-lg border border-line bg-paper-elevated p-6 shadow-[var(--shadow)] transition-[border-color,box-shadow] duration-200 hover:border-accent/40 hover:shadow-[var(--shadow-hover)] ${featured ? "sm:p-8" : ""}`}
     >
-      <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
+      <EditorialKicker>
         {publication.documentKindLabel} · {publication.yearLabel}
-      </p>
+      </EditorialKicker>
       <Heading
-        className={`mt-3 font-serif font-medium tracking-tight text-ink ${featured ? "text-3xl sm:text-4xl" : "text-2xl"}`}
+        className={`font-serif font-medium leading-snug tracking-tight text-ink ${featured ? "text-3xl sm:text-4xl" : "text-2xl"}`}
       >
         {publication.title}
       </Heading>

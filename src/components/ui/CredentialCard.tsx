@@ -1,5 +1,6 @@
 import type { Credential } from "@/content/types";
 import { formatCredentialExpiry } from "@/lib/content/credential-map";
+import { EditorialKicker } from "@/components/ui/EditorialKicker";
 
 const kindLabel: Record<Credential["kind"], string> = {
   degree: "Education",
@@ -16,11 +17,11 @@ export function CredentialCard({
   compact?: boolean;
 }) {
   return (
-    <article className="rounded-xl border border-line bg-paper-elevated p-5">
-      <p className="text-xs font-medium uppercase tracking-[0.16em] text-copper">
-        {kindLabel[credential.kind]}
-      </p>
-      <h3 className="mt-2 font-medium text-ink">{credential.name}</h3>
+    <article className="rounded-lg border border-line bg-paper-elevated p-5 shadow-[var(--shadow)]">
+      <EditorialKicker>{kindLabel[credential.kind]}</EditorialKicker>
+      <h3 className="font-serif text-xl font-medium leading-snug text-ink">
+        {credential.name}
+      </h3>
       <p className="mt-1 text-sm text-ink-soft">
         {credential.issuer}
         {credential.yearLabel ? ` · ${credential.yearLabel}` : null}

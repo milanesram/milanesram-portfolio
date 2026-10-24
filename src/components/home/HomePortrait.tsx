@@ -7,13 +7,13 @@ type HomePortraitProps = {
 
 export function HomePortrait({ portrait }: HomePortraitProps) {
   return (
-    <figure className="mx-auto w-full max-w-xs lg:mx-0">
-      <div className="relative aspect-square overflow-hidden rounded-2xl border border-line bg-paper">
+    <figure>
+      <div className="relative aspect-[4/5] overflow-hidden bg-paper">
         <Image
           src={portrait.publicUrl}
           alt={portrait.altText}
           fill
-          sizes="(min-width: 1024px) 16rem, 20rem"
+          sizes="(min-width: 1024px) 23rem, 70vw"
           className="object-cover object-[center_18%]"
           preload
         />

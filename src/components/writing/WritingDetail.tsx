@@ -1,4 +1,5 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { EditorialKicker } from "@/components/ui/EditorialKicker";
 import { CallToAction } from "@/components/ui/CallToAction";
 import { Container } from "@/components/layout/Container";
 import type { PublishedPublication } from "@/lib/content/publications";
@@ -36,10 +37,10 @@ export function WritingDetail({
     <>
       <header className="border-b border-line bg-paper-elevated py-16 sm:py-20">
         <div className="mx-auto max-w-[72rem] px-5 sm:px-8">
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-copper">
+          <EditorialKicker>
             {publication.documentKindLabel} · {publication.yearLabel}
-          </p>
-          <h1 className="max-w-3xl font-serif text-4xl font-medium tracking-tight text-ink sm:text-5xl">
+          </EditorialKicker>
+          <h1 className="max-w-3xl font-serif text-4xl font-medium leading-[1.12] tracking-tight text-ink sm:text-5xl">
             {publication.title}
           </h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-ink-soft">

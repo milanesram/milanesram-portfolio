@@ -3,13 +3,17 @@
 :root {
   --paper: #f4f1ea;
   --paper-elevated: #fffcf7;
+  --paper-muted: #f4f1ea;
   --ink: #122033;
   --ink-soft: #3e4b5c;
   --ink-faint: #626d7a;
   --line: #d5cfc3;
   --accent: #1b5551;
+  --accent-hover: #164743;
   --accent-soft: #e4eeec;
   --copper: #7c5340;
+  --copper-decorative: #7c5340;
+  --ink-hover: #1b3048;
   --focus: #1b5551;
   --danger: #8a2f2b;
   --shadow: 0 1px 2px rgb(18 32 51 / 4%), 0 10px 28px rgb(18 32 51 / 5%);
@@ -18,16 +22,56 @@
   --container-narrow: 42rem;
 }
 
-@theme inline {
+/*
+ * Public pages set these on .site-public. :root stays the admin palette so
+ * owner screens do not pick up the editorial refresh.
+ */
+.site-public {
+  --paper: #f8f5ef;
+  --paper-elevated: #fffcf8;
+  --paper-muted: #f3eee6;
+  --ink: #14232d;
+  --ink-soft: #3a4654;
+  --ink-faint: #5c6772;
+  --line: #e4d8c8;
+  --accent: #23645f;
+  --accent-hover: #1a4e4a;
+  --accent-soft: #e5f0ee;
+  --copper: #7a4e38;
+  --copper-decorative: #b5764e;
+  --ink-hover: #243744;
+  --focus: #1a4e4a;
+  --shadow: 0 1px 2px rgb(20 35 45 / 4%), 0 12px 32px rgb(20 35 45 / 5%);
+  --shadow-hover: 0 1px 2px rgb(20 35 45 / 5%), 0 16px 36px rgb(20 35 45 / 8%);
   --color-paper: var(--paper);
   --color-paper-elevated: var(--paper-elevated);
+  --color-paper-muted: var(--paper-muted);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-ink-faint: var(--ink-faint);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
   --color-copper: var(--copper);
+  --color-copper-decorative: var(--copper-decorative);
+  --color-ink-hover: var(--ink-hover);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-elevated: var(--paper-elevated);
+  --color-paper-muted: var(--paper-muted);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-copper: var(--copper);
+  --color-copper-decorative: var(--copper-decorative);
+  --color-ink-hover: var(--ink-hover);
   --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-source-serif);

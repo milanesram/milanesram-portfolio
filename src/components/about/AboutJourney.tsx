@@ -37,7 +37,7 @@ export function AboutJourney({ heading, items }: AboutJourneyProps) {
           return (
             <li key={item.id}>
               <figure>
-                <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-line bg-paper">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-lg border border-copper-decorative/50 bg-paper">
                   <Image
                     src={item.media.publicUrl}
                     alt={item.media.altText}

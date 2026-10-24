@@ -10,7 +10,7 @@ export function SiteShell({
   profile: PublicSiteProfile | null;
 }) {
   return (
-    <>
+    <div className="site-public flex min-h-full w-full flex-1 flex-col bg-paper text-ink">
       <a href="#main" className="skip-link">
         Skip to main content
       </a>
@@ -19,6 +19,6 @@ export function SiteShell({
         {children}
       </main>
       <SiteFooter profile={profile} />
-    </>
+    </div>
   );
 }

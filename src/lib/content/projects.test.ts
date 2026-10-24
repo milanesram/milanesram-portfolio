@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   mapPublishedProjectMedia,
+  selectLeadProjectMedia,
   toPresentationSection,
   type ProjectMediaRow,
 } from "./project-map";
@@ -91,6 +92,27 @@ describe("project media mapping", () => {
     );
 
     expect(mapped).toEqual([]);
+  });
+
+  it("keeps the first eligible screenshot for each requested project", () => {
+    const selected = selectLeadProjectMedia(
+      [
+        row({
+          id: "7c52e021-0000-4000-8000-000000000002",
+          sort_order: 20,
+        }),
+        row(),
+        row({
+          id: "7c52e021-0000-4000-8000-000000000003",
+          project_id: OTHER_ID,
+          status: "draft",
+        }),
+      ],
+      [PRIVAI_ID, OTHER_ID],
+    );
+
+    expect(selected.get(PRIVAI_ID)?.sortOrder).toBe(10);
+    expect(selected.has(OTHER_ID)).toBe(false);
   });
 });
 
