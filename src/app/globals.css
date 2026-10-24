@@ -64,6 +64,24 @@ body {
   outline-offset: 2px;
 }
 
+/*
+ * Tailwind's transition-colors utility animates outline-color, so the focus
+ * ring fades in over the default 150ms. Keep the other color transitions and
+ * drop only the outline.
+ */
+.transition-colors {
+  transition-property:
+    color,
+    background-color,
+    border-color,
+    text-decoration-color,
+    fill,
+    stroke,
+    --tw-gradient-from,
+    --tw-gradient-via,
+    --tw-gradient-to;
+}
+
 .skip-link {
   position: absolute;
   left: 1rem;

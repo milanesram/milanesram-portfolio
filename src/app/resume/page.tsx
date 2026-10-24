@@ -57,12 +57,12 @@ export default async function ResumePage() {
           {hasPublicFiles ? (
             contact ? (
               <>
-                <a className="text-accent hover:underline" href={contact.mailtoHref}>
+                <a className="text-accent underline underline-offset-2" href={contact.mailtoHref}>
                   {contact.email}
                 </a>
                 {" · "}
                 <a
-                  className="text-accent hover:underline"
+                  className="text-accent underline underline-offset-2"
                   href={contact.linkedinUrl}
                   target="_blank"
                   rel="noreferrer"
@@ -81,12 +81,12 @@ export default async function ResumePage() {
                 <>
                   {" "}
                   by email at{" "}
-                  <a className="text-accent hover:underline" href={contact.mailtoHref}>
+                  <a className="text-accent underline underline-offset-2" href={contact.mailtoHref}>
                     {contact.email}
                   </a>{" "}
                   or via{" "}
                   <a
-                    className="text-accent hover:underline"
+                    className="text-accent underline underline-offset-2"
                     href={contact.linkedinUrl}
                     target="_blank"
                     rel="noreferrer"
